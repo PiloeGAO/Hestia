@@ -1,6 +1,6 @@
 """
     :package:   Hestia
-    :file:      dropDown.py
+    :file:      entity.py
     :brief:     Entity base class.
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
