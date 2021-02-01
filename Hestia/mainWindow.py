@@ -1,7 +1,7 @@
 """
     :package:   Hestia
     :file:      mainWindow.py
-    :author:    PiloeGAO
+    :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
     :brief:     Class to create the main window based on QtWidgets.  
 """
