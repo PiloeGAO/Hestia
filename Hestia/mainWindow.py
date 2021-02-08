@@ -7,6 +7,8 @@
 """
 from Qt import QtWidgets
 
+from .ui.header import Header
+
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
         """Main Window Class.
@@ -33,6 +35,13 @@ class MainWindow(QtWidgets.QWidget):
 
         # Set the main layout component.
         self.mainLayout = QtWidgets.QVBoxLayout()
+
+        # Add header to window.
+        self.header = Header()
+        self.mainLayout.addWidget(self.header)
+
+        # Add spacer after header to fix it.
+        self.mainLayout.addStretch(0)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
