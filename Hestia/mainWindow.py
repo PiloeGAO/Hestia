@@ -7,7 +7,8 @@
 """
 from Qt import QtWidgets
 
-from .ui.header import Header
+from .ui.header         import Header
+from .ui.folderTreeView import FolderTreeView
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -40,8 +41,12 @@ class MainWindow(QtWidgets.QWidget):
         self.header = Header()
         self.mainLayout.addWidget(self.header)
 
+        # Add tree view.
+        self.folderTreeView = FolderTreeView()
+        self.mainLayout.addWidget(self.folderTreeView)
+
         # Add spacer after header to fix it.
-        self.mainLayout.addStretch(0)
+        #self.mainLayout.addStretch(0)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
