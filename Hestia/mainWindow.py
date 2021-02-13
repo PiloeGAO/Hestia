@@ -45,8 +45,5 @@ class MainWindow(QtWidgets.QWidget):
         self.folderTreeView = FolderTreeView()
         self.mainLayout.addWidget(self.folderTreeView)
 
-        # Add spacer after header to fix it.
-        #self.mainLayout.addStretch(0)
-
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
