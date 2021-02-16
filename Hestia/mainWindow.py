@@ -9,6 +9,7 @@ from Qt import QtWidgets
 
 from .ui.header         import Header
 from .ui.folderTreeView import FolderTreeView
+from .ui.contentView    import ContentView
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -35,15 +36,20 @@ class MainWindow(QtWidgets.QWidget):
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout.setSpacing(10)
 
         # Add header to window.
         self.header = Header()
-        self.mainLayout.addWidget(self.header)
+        self.mainLayout.addWidget(self.header, 0, 0, 1, 4)
 
         # Add tree view.
         self.folderTreeView = FolderTreeView()
-        self.mainLayout.addWidget(self.folderTreeView)
+        self.mainLayout.addWidget(self.folderTreeView, 1, 0, 1, 1)
+
+        # Add content view.
+        self.contentView = ContentView()
+        self.mainLayout.addWidget(self.contentView, 1, 1, 1, 3)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
