@@ -10,6 +10,7 @@ from Qt import QtWidgets
 from .ui.header         import Header
 from .ui.folderTreeView import FolderTreeView
 from .ui.contentView    import ContentView
+from .ui.footer         import Footer
 
 class MainWindow(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -50,6 +51,10 @@ class MainWindow(QtWidgets.QWidget):
         # Add content view.
         self.contentView = ContentView()
         self.mainLayout.addWidget(self.contentView, 1, 1, 1, 3)
+
+        # Add footer to window.
+        self.footer = Footer()
+        self.mainLayout.addWidget(self.footer, 2, 0, 1, 4)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
