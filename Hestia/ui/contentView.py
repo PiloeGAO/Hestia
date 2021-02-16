@@ -7,6 +7,7 @@
 """
 from Qt import QtWidgets
 
+from .widgets.entityWidget import EntityWidget
 class ContentView(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
@@ -26,10 +27,10 @@ class ContentView(QtWidgets.QWidget):
         # Set the main layout component.
         self.mainLayout = QtWidgets.QGridLayout()
 
-        for i in range(8):
-            for j in range(8):
-                demoButton = QtWidgets.QPushButton("%s - %s" %(i, j))
-                self.mainLayout.addWidget(demoButton, i, j)
+        for i in range(4):
+            for j in range(4):
+                entity = EntityWidget()
+                self.mainLayout.addWidget(entity, i, j)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
