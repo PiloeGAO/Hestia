@@ -1,0 +1,1 @@
+All icons are Open source from https://icons.getbootstrap.com/ (V 1.3.0).
