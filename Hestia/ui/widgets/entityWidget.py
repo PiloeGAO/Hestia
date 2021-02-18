@@ -37,20 +37,23 @@ class EntityWidget(QtWidgets.QWidget):
         """
         # Setting the main layout as Vertical.
         self.mainLayout = QtWidgets.QVBoxLayout()
+        self.groupBox = QtWidgets.QGroupBox(self.name)
+        self.verticalLayout = QtWidgets.QVBoxLayout()
 
         # Button / Logo.
         self.iconButton = IconButton(self.name, self.description, self.icon, self.iconSize, self.status, self.importAsset)
-        self.mainLayout.addWidget(self.iconButton)
-
-        # Name label.
-        self.nameLabel = QtWidgets.QLabel(self.name)
-        self.mainLayout.addWidget(self.nameLabel)
+        self.verticalLayout.addWidget(self.iconButton)
 
         # Version.
         self.versionDropDown = DropDown("Version", "Current version of the asset", self.versions, 1)
-        self.mainLayout.addWidget(self.versionDropDown)
+        self.verticalLayout.addWidget(self.versionDropDown)
+
+        
+        self.verticalLayout.addStretch(1)
 
         # Add the main layout to the window.
+        self.groupBox.setLayout(self.verticalLayout)
+        self.mainLayout.addWidget(self.groupBox)
         self.setLayout(self.mainLayout)
     
     def importAsset(self):

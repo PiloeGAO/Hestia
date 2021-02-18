@@ -10,13 +10,16 @@ from Qt import QtWidgets
 from .widgets.entityWidget import EntityWidget
 class ContentView(QtWidgets.QWidget):
 
-    def __init__(self, parent=None):
+    def __init__(self, xNumber=4, yNumber=3, parent=None):
         """Content view Class.
 
         Args:
             parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
         """
         super(ContentView, self).__init__(parent=parent)
+
+        self.xNumber = xNumber
+        self.yNumber = yNumber
 
         self.initUI()
     
@@ -27,8 +30,8 @@ class ContentView(QtWidgets.QWidget):
         # Set the main layout component.
         self.mainLayout = QtWidgets.QGridLayout()
 
-        for i in range(4):
-            for j in range(4):
+        for i in range(self.yNumber):
+            for j in range(self.xNumber):
                 entity = EntityWidget(name="Demo",
                                       description="Demo description",
                                       iconPath="./ui/icons/alarm.svg",
