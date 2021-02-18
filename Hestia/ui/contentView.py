@@ -29,7 +29,12 @@ class ContentView(QtWidgets.QWidget):
 
         for i in range(4):
             for j in range(4):
-                entity = EntityWidget()
+                entity = EntityWidget(name="Demo",
+                                      description="Demo description",
+                                      iconPath="./ui/icons/alarm.svg",
+                                      iconSize=64,
+                                      status=1,
+                                      versionList=["001", "002"])
                 self.mainLayout.addWidget(entity, i, j)
 
         # Set main layout to the window.
