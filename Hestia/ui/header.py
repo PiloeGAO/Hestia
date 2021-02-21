@@ -55,4 +55,4 @@ class Header(QtWidgets.QWidget):
     def changeImportAsInstanceState(self):
         """Change the state of the importAsInstance checkbox.
         """
-        self.importAsInstanceState = -self.importAsInstanceState
+        self.importAsInstanceState = self.importAsInstance.checkState()
