@@ -28,6 +28,12 @@ class Header(QtWidgets.QWidget):
         # Set the main layout component.
         self.mainLayout = QtWidgets.QHBoxLayout()
 
+        # Add import as instance checkbox.
+        self.importAsInstance = QtWidgets.QCheckBox("Instance")
+        self.importAsInstance.setToolTip("Import the asset as instance in the scene.")
+        self.importAsInstance.setChecked(True)
+        self.mainLayout.addWidget(self.importAsInstance)
+
         # Add spacer to header.
         self.mainLayout.addStretch()
 
@@ -35,9 +41,10 @@ class Header(QtWidgets.QWidget):
         self.projectSelector = DropDown("Project", "Current project", ["Demo"])
         self.mainLayout.addWidget(self.projectSelector)
 
+        #TODO: ADD PREFERENCES.
         # Add preference button.
-        self.preferenceButton = QtWidgets.QPushButton("Preferences")
-        self.mainLayout.addWidget(self.preferenceButton)
+        #self.preferenceButton = QtWidgets.QPushButton("Preferences")
+        #self.mainLayout.addWidget(self.preferenceButton)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
