@@ -35,6 +35,7 @@ class ContentView(QtWidgets.QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(False)
 
         self.grid = QtWidgets.QGridLayout()
+        self.grid.setContentsMargins(0, 0, 0, 0)
 
         for i in range(self.yNumber):
             for j in range(self.xNumber):
