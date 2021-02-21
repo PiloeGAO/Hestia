@@ -13,7 +13,7 @@ from .ui.contentView    import ContentView
 from .ui.footer         import Footer
 
 class MainWindow(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, winW = 640, winH = 480, parent=None):
         """Main Window Class.
 
         Args:
@@ -21,8 +21,8 @@ class MainWindow(QtWidgets.QWidget):
         """
         super(MainWindow, self).__init__(parent=parent)
 
-        self.windowHeight = 480
-        self.windowWidth = 640
+        self.windowWidth = winW
+        self.windowHeight = winH
 
         self.initUI()
     
