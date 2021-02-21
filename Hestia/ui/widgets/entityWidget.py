@@ -13,10 +13,16 @@ from .iconButton    import IconButton
 from .dropDown      import DropDown
 
 class EntityWidget(QtWidgets.QWidget):
-    """Entity widget class.
+    """Entity widget display class.
 
-    Args:
-        parent ([type], optional): Parent widget. Defaults to None.
+        Args:
+            name (str, optional): [description]. Defaults to "".
+            description (str, optional): [description]. Defaults to "".
+            iconPath (str, optional): [description]. Defaults to "".
+            iconSize (int, optional): [description]. Defaults to 64.
+            status (int, optional): [description]. Defaults to 1.
+            versionList (list, optional): [description]. Defaults to [].
+            parent ([type], optional): [description]. Defaults to None.
     """
     def __init__(self, name="", description="", iconPath="", iconSize=64, status=1, versionList=[], parent=None):
         super(EntityWidget, self).__init__(parent=parent)
@@ -38,7 +44,10 @@ class EntityWidget(QtWidgets.QWidget):
         # Setting the main layout as Vertical.
         self.mainLayout = QtWidgets.QVBoxLayout()
         self.groupBox = QtWidgets.QGroupBox(self.name)
+        
         self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
         self.iconButton = IconButton(self.name, self.description, self.icon, self.iconSize, self.status, self.importAsset)
@@ -48,7 +57,6 @@ class EntityWidget(QtWidgets.QWidget):
         self.versionDropDown = DropDown("Version", "Current version of the asset", self.versions, 1)
         self.verticalLayout.addWidget(self.versionDropDown)
 
-        
         self.verticalLayout.addStretch(1)
 
         # Add the main layout to the window.
