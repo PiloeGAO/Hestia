@@ -19,6 +19,8 @@ class Header(QtWidgets.QWidget):
         """
         super(Header, self).__init__(parent=parent)
 
+        self.importAsInstanceState = True
+
         self.initUI()
     
     def initUI(self):
@@ -31,7 +33,8 @@ class Header(QtWidgets.QWidget):
         # Add import as instance checkbox.
         self.importAsInstance = QtWidgets.QCheckBox("Instance")
         self.importAsInstance.setToolTip("Import the asset as instance in the scene.")
-        self.importAsInstance.setChecked(True)
+        self.importAsInstance.setChecked(self.importAsInstanceState)
+        self.importAsInstance.stateChanged.connect(self.changeImportAsInstanceState)
         self.mainLayout.addWidget(self.importAsInstance)
 
         # Add spacer to header.
@@ -48,3 +51,8 @@ class Header(QtWidgets.QWidget):
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
+    
+    def changeImportAsInstanceState(self):
+        """Change the state of the importAsInstance checkbox.
+        """
+        self.importAsInstanceState = -self.importAsInstanceState
