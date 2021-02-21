@@ -21,6 +21,9 @@ class MainWindow(QtWidgets.QWidget):
         """
         super(MainWindow, self).__init__(parent=parent)
 
+        self.windowHeight = 480
+        self.windowWidth = 640
+
         self.initUI()
     
     def initUI(self):
@@ -31,7 +34,7 @@ class MainWindow(QtWidgets.QWidget):
         self.setWindowTitle("Hestia")
         
         # Set the window size.
-        self.resize(640, 480)
+        self.resize(self.windowWidth, self.windowHeight)
 
         # Set the window style.
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
@@ -46,6 +49,7 @@ class MainWindow(QtWidgets.QWidget):
 
         # Add tree view.
         self.folderTreeView = FolderTreeView()
+        self.folderTreeView.setMaximumWidth(self.windowWidth/3)
         self.mainLayout.addWidget(self.folderTreeView, 1, 0, 1, 1)
 
         # Add content view.
