@@ -5,7 +5,7 @@
     :version:   0.0.1
     :brief:     Class to create the content view of the window.  
 """
-from Qt import QtWidgets
+from Qt import QtWidgets, QtCore
 
 from .widgets.entityWidget import EntityWidget
 class ContentView(QtWidgets.QWidget):
@@ -28,7 +28,13 @@ class ContentView(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout = QtWidgets.QHBoxLayout()
+
+        self.scrollArea = QtWidgets.QScrollArea()
+        self.scrollArea.setVerticalScrollBarPolicy(False)
+        self.scrollArea.setHorizontalScrollBarPolicy(False)
+
+        self.grid = QtWidgets.QGridLayout()
 
         for i in range(self.yNumber):
             for j in range(self.xNumber):
@@ -38,7 +44,14 @@ class ContentView(QtWidgets.QWidget):
                                       iconSize=64,
                                       status=1,
                                       versionList=["001", "002"])
-                self.mainLayout.addWidget(entity, i, j)
+                self.grid.addWidget(entity, i, j)
+
+        self.widget = QtWidgets.QWidget()
+        self.widget.setLayout(self.grid)
+
+        self.scrollArea.setWidget(self.widget)
+
+        self.mainLayout.addWidget(self.scrollArea)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
