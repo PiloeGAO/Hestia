@@ -6,16 +6,29 @@
     :version:   0.0.1
 """
 
-from Hestia.core.project import Project
+from .links.kitsu.kitsuWrapper   import KitsuWrapper
+
+from .project        import Project
+from .category       import Category
+from .entity         import Entity
 
 class Manager():
     """Manager class.
 
     Args:
+        currentManager (str): Manager name. Defaults to "kitsu".
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, projects = []):
+    def __init__(self, currentManager= "kitsu", projects = [], **kwargs):
+        self.__link = None
+
         self.__projects = projects
+
+        if(currentManager == "kitsu"
+            and kwargs["api"] != ""
+            and kwargs["username"] != ""
+            and kwargs["password"] != ""):
+            self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
 
     @property
     def projects(self):
