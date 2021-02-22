@@ -6,25 +6,12 @@
     :version:   0.0.1
 """
 
-import os
-
 class Project():
-    def __init__(self, name = "", path = "", onlineDatas = [], entities = []):
+    def __init__(self, name="", description=""):
         self.__name         = name
+        self.__description  = description
 
-        if(os.path.isdir(path)):
-            self.__path         = path
-            self.__type         = 0
-
-            self.generateEntitiesFromFolderTree(path)
-        else:
-            self.__type         = 1
-
-            self.generateEntitiesFromOnline(onlineDatas)
-
-        self.__types        = ["folder", "online"]
-
-        self.__entities     = entities
+        self.__categories   = []
     
     @property
     def name(self):
@@ -42,35 +29,40 @@ class Project():
         Args:
             name (str): Project's name.
         """
-        self.__name == name
+        self.__name = name
     
     @property
-    def entities(self):
-        """Get the entities stored in the project.
+    def description(self):
+        """Get the description of the project.
 
         Returns:
-            list(class: "Entity"): Entities.
+            str: Project's description.
         """
-        return self.__entities
-    
-    def generateEntitiesFromFolderTree(self, path):
-        """Generate entities from a folder path.
+        return self.__description
+
+    @description.setter
+    def description(self, description):
+        """Set the description fo the project.
 
         Args:
-            path (str): Folder path.
+            description (str): Project's description.
+        """
+        self.__description = description
+    
+    @property
+    def categories(self):
+        """Get the categories of the project.
 
         Returns:
-            class: "NotImplementedError": Method not implemented.
+            list: Project's categories.
         """
-        return NotImplementedError
+        return self.__categories
     
-    def generateEntitiesFromOnline(self, onlineDatas):
-        """Generate entities from online datas.
+    @categories.setter
+    def categories(self, categories):
+        """Set the categories of the project.
 
         Args:
-            onlineDatas (list): Data fetched from online server.
-
-        Returns:
-            class: "NotImplementedError": Method not implemented.
+            categories (list): Project's categories.
         """
-        return NotImplementedError
+        self.__categories = categories

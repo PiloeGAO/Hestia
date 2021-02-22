@@ -14,35 +14,15 @@ class Entity():
         description (str, optional): Entity's description. Defaults to "".
         path (str, optional): Entity's path. Defaults to "".
         icon (str, optional): Entity's icon. Defaults to "".
-        parent (class: "Entity", optional): Entity's parent. Defaults to None.
+        versions (list): Entity's version. Defaults to [].
     """
-    def __init__(self, name = "", description = "", path = "", icon = "", parent = None):
-        self.__parent       = parent
-        self.__type         = "entity"
-
+    def __init__(self, name = "", description = "", path = "", icon = "", versions=[]):
         self.__name         = name
         self.__description  = description
 
         self.__path         = path
         self.__icon         = icon
-    
-    @property
-    def parent(self):
-        """Get the parent of the entity.
-
-        Returns:
-            class: "Entity" : The parent of the entity.
-        """
-        return self.__parent
-    
-    @parent.setter
-    def parent(self, parent):
-        """Set the parent of the entity.
-
-        Args:
-            parent (class: "Entity"): The parent of the entity
-        """
-        self.__parent = parent
+        self.__versions     = versions
     
     @property
     def name(self):
@@ -115,3 +95,21 @@ class Entity():
             icon (str): The icon of the entity
         """
         self.__icon = icon
+    
+    @property
+    def versions(self):
+        """Get versions of the entity.
+
+        Returns:
+            list : Versions of the entity.
+        """
+        return self.__versions
+    
+    @versions.setter
+    def versions(self, versions):
+        """Set versions of the entity.
+
+        Args:
+            versions (list): Versions of the entity
+        """
+        self.__versions = versions
