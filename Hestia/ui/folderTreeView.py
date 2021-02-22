@@ -7,6 +7,8 @@
 """
 from Qt import QtCore, QtWidgets, QtGui
 
+from .widgets.dropDown import DropDown
+
 class FolderTreeView(QtWidgets.QWidget):
     CATEGORY, NONE = range(2) # NONE is set to be able to add new header data to treeview in future.
 
@@ -26,6 +28,15 @@ class FolderTreeView(QtWidgets.QWidget):
 
         # Set the main layout component.
         self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout.setSpacing(0)
+        self.mainLayout.setContentsMargins(0, 0, 0, 0)
+
+        # Add type dropdown.
+        self.type = DropDown(name="Type",
+                                description="The type of category",
+                                datas=["Assets", "Shots"],
+                                defaultValue=0)
+        self.mainLayout.addWidget(self.type)
 
         # Creating the base of the TreeView.
         self.treeView = QtWidgets.QTreeView()
