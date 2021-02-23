@@ -30,10 +30,10 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
 
-    login = LoginWindow(manager=manager)
-    login.show()
-
     window = MainWindow(manager=manager)
-    window.show()
+    window.hide()
+
+    login = LoginWindow(manager=manager, mainWidow=window)
+    login.show()
 
     sys.exit(app.exec_()) 

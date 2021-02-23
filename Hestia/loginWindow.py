@@ -14,15 +14,17 @@ class LoginWindow(QtWidgets.QWidget):
     """Login Window class.
 
     Args:
-        manager (class: "Manager"): Manager of Hestia
+        manager (class: "Manager"): Manager of Hestia.
+        mainWindow (class: "MainWindow"): Main window of Hestia to show on login.
         winW (int, optional): Window width. Defaults to 240.
         winH (int, optional): Window height. Defaults to 320.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, winW = 240, winH = 320, parent=None):
+    def __init__(self, manager, mainWidow, winW = 240, winH = 320, parent=None):
         super(LoginWindow, self).__init__(parent=parent)
 
         self.__manager = manager
+        self.__mainWindow = mainWidow
 
         # Set window preferences.
         self.__windowWidth = winW
@@ -71,6 +73,7 @@ class LoginWindow(QtWidgets.QWidget):
         """
         if (self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)):
             self.hide()
+            self.__mainWindow.show()
         else:
             # TODO: Display error message in UI.
             print("Error")
