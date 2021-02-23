@@ -29,6 +29,12 @@ class Manager():
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
             self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
+            self.__link.login()
+        
+        openProjects = self.__link.getOpenProjects()
+
+        for project in openProjects:
+            self.addProject(self.__link.getDatasFromProject(project))
 
     @property
     def projects(self):

@@ -76,3 +76,11 @@ class Category():
             entities (list): Category's entities.
         """
         self.__entities = entities
+    
+    def addEntity(self, entity):
+        """Add an entity to the category.
+
+        Args:
+            entity (class: "Entity"): New entity to add.
+        """
+        self.__entities.append(entity)

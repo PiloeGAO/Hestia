@@ -66,3 +66,11 @@ class Project():
             categories (list): Project's categories.
         """
         self.__categories = categories
+    
+    def addCategory(self, newCategory):
+        """Add a category to project.
+
+        Args:
+            newCategory (class: "Category"): New category to add.
+        """
+        self.__categories.append(newCategory)
