@@ -13,16 +13,22 @@ from .ui.contentView    import ContentView
 from .ui.footer         import Footer
 
 class MainWindow(QtWidgets.QWidget):
-    def __init__(self, winW = 640, winH = 480, parent=None):
-        """Main Window Class.
+    """Main Window class.
 
-        Args:
-            parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
-        """
+    Args:
+        manager (class: "Manager"): Manager of Hestia
+        winW (int, optional): Window width. Defaults to 640.
+        winH (int, optional): Window height. Defaults to 480.
+        parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
+    """
+    def __init__(self, manager, winW = 640, winH = 480, parent=None):
         super(MainWindow, self).__init__(parent=parent)
 
-        self.windowWidth = winW
-        self.windowHeight = winH
+        self.__manager = manager
+
+        # Set window preferences.
+        self.__windowWidth = winW
+        self.__windowHeight = winH
 
         self.initUI()
     
@@ -34,7 +40,7 @@ class MainWindow(QtWidgets.QWidget):
         self.setWindowTitle("Hestia")
         
         # Set the window size.
-        self.resize(self.windowWidth, self.windowHeight)
+        self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
@@ -49,7 +55,7 @@ class MainWindow(QtWidgets.QWidget):
 
         # Add tree view.
         self.folderTreeView = FolderTreeView()
-        self.folderTreeView.setMaximumWidth(self.windowWidth/3)
+        self.folderTreeView.setMaximumWidth(self.__windowWidth/3)
         self.mainLayout.addWidget(self.folderTreeView, 1, 0, 1, 1)
 
         # Add content view.

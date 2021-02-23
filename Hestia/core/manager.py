@@ -19,22 +19,10 @@ class Manager():
         currentManager (str): Manager name. Defaults to "kitsu".
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, currentManager= "kitsu", projects = [], **kwargs):
+    def __init__(self, projects = [], **kwargs):
         self.__link = None
 
         self.__projects = projects
-
-        if(currentManager == "kitsu"
-            and kwargs["api"] != ""
-            and kwargs["username"] != ""
-            and kwargs["password"] != ""):
-            self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
-            self.__link.login()
-        
-        openProjects = self.__link.getOpenProjects()
-
-        for project in openProjects:
-            self.addProject(self.__link.getDatasFromProject(project))
 
     @property
     def projects(self):
@@ -72,3 +60,23 @@ class Manager():
         for project in self.__projects:
             if(project.name == projectName):
                 del project
+    
+    def connectToOnline(self, service="kitsu", **kwargs):
+        """Connect manager to an online service.
+
+        Args:
+            service (str, optional): Service name. Defaults to "kitsu".
+        """
+        if(service == "kitsu"
+            and kwargs["api"] != ""
+            and kwargs["username"] != ""
+            and kwargs["password"] != ""):
+            self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
+            self.__link.login()
+        else:
+            return ValueError
+        
+        openProjects = self.__link.getOpenProjects()
+
+        for project in openProjects:
+            self.addProject(self.__link.getDatasFromProject(project))

@@ -24,11 +24,12 @@ if __name__ == "__main__":
     username = input("username: ")
     password = input("password: ")
 
-    manager = Manager(api="https://pole3d.cg-wire.com/api/", username=username, password=password)
+    manager = Manager()
+    manager.connectToOnline(api="https://pole3d.cg-wire.com/api/", username=username, password=password)
 
     app = QtWidgets.QApplication(sys.argv)
 
-    window = MainWindow()
+    window = MainWindow(manager=manager)
 
     window.show()
 
