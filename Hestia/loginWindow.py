@@ -74,6 +74,7 @@ class LoginWindow(QtWidgets.QWidget):
         if (self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)):
             self.hide()
             self.__mainWindow.show()
+            self.close()
         else:
             # TODO: Display error message in UI.
             print("Error")

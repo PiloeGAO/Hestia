@@ -21,12 +21,8 @@ if __name__ == "__main__":
     # UI Libs.
     from Hestia.loginWindow     import LoginWindow
     from Hestia.mainWindow      import MainWindow
-
-    username = input("username: ")
-    password = input("password: ")
-
+    
     manager = Manager()
-    manager.connectToOnline(api="https://pole3d.cg-wire.com/api/", username=username, password=password)
 
     app = QtWidgets.QApplication(sys.argv)
 
