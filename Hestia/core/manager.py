@@ -74,8 +74,8 @@ class Manager():
             and kwargs["api"] != ""
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
-            self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
-            self.__link.login()
+            self.__link = KitsuWrapper(api=kwargs["api"])
+            self.__link.login(username=kwargs["username"], password=kwargs["password"])
         else:
             return False
         

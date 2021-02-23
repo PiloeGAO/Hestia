@@ -61,9 +61,14 @@ class LoginWindow(QtWidgets.QWidget):
         self.password = LineEdit(name="Password", description="Password", defaultValue="", isPassword=True)
         self.mainLayout.addWidget(self.password, 2, 0)
 
+        # Create the erro window label.
+        self.errorLabel = QtWidgets.QLabel("Login failed, please verify your login informations.")
+        self.errorLabel.hide()
+        self.mainLayout.addWidget(self.errorLabel, 3, 0)
+
         # Create the login button.
         self.loginButton = IconButton(name="Login", description="Login", iconPath="./ui/icons/check-square-fill.svg", iconScale=64, status=1, functionToInvoke=self.login)
-        self.mainLayout.addWidget(self.loginButton, 3, 0)
+        self.mainLayout.addWidget(self.loginButton, 4, 0)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
@@ -71,10 +76,12 @@ class LoginWindow(QtWidgets.QWidget):
     def login(self):
         """Login to service.
         """
-        if (self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)):
+        connection = self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
+
+        if (connection):
             self.hide()
             self.__mainWindow.show()
             self.close()
         else:
-            # TODO: Display error message in UI.
-            print("Error")
+            # TODO: NOT WORKING, FIND A BETTER WAY.
+            self.errorLabel.show()

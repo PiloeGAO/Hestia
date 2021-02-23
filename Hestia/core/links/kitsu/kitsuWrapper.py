@@ -13,11 +13,16 @@ from ....core.category  import Category
 from ....core.entity    import Entity
 
 class KitsuWrapper():
-    def __init__(self, api="", username="", password=""):
+    def __init__(self, api=""):
         self.__api      = api
-        self.__username = username
-        self.__password = password
         self.__active   = False
+
+    def login(self, username="", password=""):
+        """Login to Gazu.
+
+        Returns:
+            bool: State of the login.
+        """
 
         try:
             gazu.client.set_host(self.__api)
@@ -25,18 +30,12 @@ class KitsuWrapper():
             self.__active = False
         else:
             self.__active = True
-
-    def login(self):
-        """Login to Gazu.
-
-        Returns:
-            bool: State of the login.
-        """
+        
         if (self.__active == False):
             return False
 
         try:
-            gazu.log_in(self.__username, self.__password)
+            gazu.log_in(username, password)
         except gazu.exception.AuthFailedException:
             return False
         else:
