@@ -16,10 +16,11 @@ if __name__ == "__main__":
         sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
     # Core Libs.
-    from Hestia.core.manager import Manager
+    from Hestia.core.manager    import Manager
 
     # UI Libs.
-    from Hestia.mainWindow import MainWindow
+    from Hestia.loginWindow     import LoginWindow
+    from Hestia.mainWindow      import MainWindow
 
     username = input("username: ")
     password = input("password: ")
@@ -29,8 +30,10 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
 
-    window = MainWindow(manager=manager)
+    login = LoginWindow(manager=manager)
+    login.show()
 
+    window = MainWindow(manager=manager)
     window.show()
 
     sys.exit(app.exec_()) 

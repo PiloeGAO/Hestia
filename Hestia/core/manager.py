@@ -66,6 +66,9 @@ class Manager():
 
         Args:
             service (str, optional): Service name. Defaults to "kitsu".
+
+        Returns:
+            bool: Connection status.
         """
         if(service == "kitsu"
             and kwargs["api"] != ""
@@ -74,9 +77,11 @@ class Manager():
             self.__link = KitsuWrapper(api=kwargs["api"], username=kwargs["username"], password=kwargs["password"])
             self.__link.login()
         else:
-            return ValueError
+            return False
         
         openProjects = self.__link.getOpenProjects()
 
         for project in openProjects:
             self.addProject(self.__link.getDatasFromProject(project))
+        
+        return True
