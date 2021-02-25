@@ -16,15 +16,18 @@ class DropDown(QtWidgets.QWidget):
         description (str, optional): Tooltip. Defaults to "".
         datas (list, optional): Data array (Strings or integers only). Defaults to [].
         defaultValue (int, optional): Default value ID. Defaults to 0.
+        functionToInvoke (function, optional): Function to invoke on currentIndexChanged. Defaults to None.
         parent (QtWidgets, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, name="", description="", datas=[], defaultValue=0, parent=None):
+    def __init__(self, name="", description="", datas=[], defaultValue=0, functionToInvoke = None, parent=None):
         super(DropDown, self).__init__(parent=parent)
 
         self.__name = name
         self.__description = description
         self.__datas = datas
         self.__currentValue = defaultValue if defaultValue > 0 and defaultValue < len(self.__datas) else 0
+
+        self.__functionToInvoke = functionToInvoke
 
         self.initUI()
     
@@ -96,3 +99,6 @@ class DropDown(QtWidgets.QWidget):
         """Set current value from drop down.
         """
         self.__currentValue = self.dropDown.currentIndex()
+
+        if(self.__functionToInvoke != None):
+            self.__functionToInvoke()

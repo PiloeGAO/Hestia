@@ -11,14 +11,17 @@ from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
 
 class Header(QtWidgets.QWidget):
-    def __init__(self, manager, parent=None):
+    def __init__(self, manager, mainWindow, parent=None):
         """header Class.
 
         Args:
+            manager (class: "Manager"): The Hestia manager.
+            mainWindow (class: "MainWindow"): The Hestia main window.
             parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
         """
         super(Header, self).__init__(parent=parent)
         self.__manager = manager
+        self.__mainWindow = mainWindow
 
         self.importAsInstanceState = True
 
@@ -42,7 +45,7 @@ class Header(QtWidgets.QWidget):
         self.mainLayout.addStretch()
 
         # Add project selector to header.
-        self.projectSelector = DropDown("Project", "Current project", ["Local"])
+        self.projectSelector = DropDown("Project", "Current project", ["Local"], self.__mainWindow.refreshProject)
         self.mainLayout.addWidget(self.projectSelector)
 
         #TODO: ADD PREFERENCES.

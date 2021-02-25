@@ -56,7 +56,7 @@ class MainWindow(QtWidgets.QWidget):
         self.mainLayout.setSpacing(10)
 
         # Add header to window.
-        self.header = Header(manager=self.__manager)
+        self.header = Header(manager=self.__manager, mainWindow=self)
         self.mainLayout.addWidget(self.header, 0, 0, 1, 4)
 
         # Add tree view.
@@ -79,6 +79,11 @@ class MainWindow(QtWidgets.QWidget):
         """Force refresh of the window.
         """
         self.header.refresh()
+        self.folderTreeView.refresh()
+        self.contentView.refresh()
+        self.footer.refresh()
+    
+    def refreshProject(self):
         self.folderTreeView.refresh()
         self.contentView.refresh()
         self.footer.refresh()
