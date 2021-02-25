@@ -69,7 +69,7 @@ class KitsuWrapper(DefaultWrapper):
         categories = gazu.asset.all_asset_types_for_project(project)
 
         for category in categories:
-            newCategory = Category(name=category["name"], description="", type="Asset")
+            newCategory = Category(name=category["name"], description="", type="Assets")
             newProject.addCategory(newCategory)
         
         # Get, create ad add assets to categories.

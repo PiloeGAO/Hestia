@@ -22,6 +22,7 @@ class Manager():
         self.__link = DefaultWrapper()
 
         self.__projects = projects
+        self.__currentProject = 0
 
     @property
     def projects(self):
@@ -40,6 +41,27 @@ class Manager():
             projects (list(class: "Project")): Projects list.
         """
         self.__projects = projects
+    
+    @property
+    def currentProject(self):
+        """Get the current project.
+
+        Returns:
+            int: Project ID.
+        """
+        return self.__currentProject
+    
+    @currentProject.setter
+    def currentProject(self, newCurrentProject):
+        """Set the current project.
+
+        Args:
+            newCurrentProject (int): New current project.
+        """
+        if(newCurrentProject is int):
+            self.__currentProject = newCurrentProject
+        else:
+            self.__currentProject = 0
     
     @property
     def link(self):
