@@ -7,6 +7,8 @@
 """
 from Qt import QtWidgets
 
+from .loginWindow       import LoginWindow
+
 from .ui.header         import Header
 from .ui.folderTreeView import FolderTreeView
 from .ui.contentView    import ContentView
@@ -21,7 +23,7 @@ class MainWindow(QtWidgets.QWidget):
         winH (int, optional): Window height. Defaults to 480.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, winW = 640, winH = 480, parent=None):
+    def __init__(self, manager, mode="local", winW = 640, winH = 480, parent=None):
         super(MainWindow, self).__init__(parent=parent)
 
         self.__manager = manager
@@ -31,6 +33,10 @@ class MainWindow(QtWidgets.QWidget):
         self.__windowHeight = winH
 
         self.initUI()
+
+        if(mode == "kitsu"):
+            login = LoginWindow(manager=self.__manager, mainWindow=self)
+            login.show()
     
     def initUI(self):
         """Generate the window.
@@ -68,3 +74,8 @@ class MainWindow(QtWidgets.QWidget):
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
+    
+    def refresh(self):
+        """Force refresh of the window.
+        """
+        self.update()

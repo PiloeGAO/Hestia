@@ -5,7 +5,7 @@
     :version:   0.0.1
     :brief:     Class to create the login window based on QtWidgets.  
 """
-from Qt import QtWidgets
+from Qt import QtWidgets, QtCore
 
 from .ui.widgets.lineEdit   import LineEdit
 from .ui.widgets.iconButton import IconButton
@@ -20,11 +20,11 @@ class LoginWindow(QtWidgets.QWidget):
         winH (int, optional): Window height. Defaults to 320.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, mainWidow, winW = 240, winH = 320, parent=None):
+    def __init__(self, manager, mainWindow, winW = 240, winH = 320, parent=None):
         super(LoginWindow, self).__init__(parent=parent)
 
         self.__manager = manager
-        self.__mainWindow = mainWidow
+        self.__mainWindow = mainWindow
 
         # Set window preferences.
         self.__windowWidth = winW
@@ -38,6 +38,7 @@ class LoginWindow(QtWidgets.QWidget):
 
         # Set the window title.
         self.setWindowTitle("Hestia - Login")
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
         
         # Set the window size.
         self.resize(self.__windowWidth, self.__windowHeight)
@@ -81,6 +82,7 @@ class LoginWindow(QtWidgets.QWidget):
         if (connection):
             self.hide()
             self.__mainWindow.show()
+            self.__mainWindow.refresh()
             self.close()
         else:
             # TODO: NOT WORKING, FIND A BETTER WAY.

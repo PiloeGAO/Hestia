@@ -26,10 +26,7 @@ if __name__ == "__main__":
 
     app = QtWidgets.QApplication(sys.argv)
 
-    window = MainWindow(manager=manager)
-    window.hide()
-
-    login = LoginWindow(manager=manager, mainWidow=window)
-    login.show()
+    window = MainWindow(manager=manager, mode="kitsu")
+    window.show()
 
     sys.exit(app.exec_()) 
