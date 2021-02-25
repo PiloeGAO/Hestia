@@ -44,16 +44,16 @@ class FolderTreeView(QtWidgets.QWidget):
         self.treeView.setAlternatingRowColors(True)
 
         # Creating the cutom gui item model.
-        model = QtGui.QStandardItemModel(0, 1, self)
-        model.setHeaderData(self.CATEGORY, QtCore.Qt.Horizontal, "Category")
+        self.categoryModel = QtGui.QStandardItemModel(0, 1, self)
+        self.categoryModel.setHeaderData(self.CATEGORY, QtCore.Qt.Horizontal, "Category")
 
         # Assign model to tree view.
-        self.treeView.setModel(model)
+        self.treeView.setModel(self.categoryModel)
 
         # Add demy items to tree view.
-        self.addItem(model, "Category 01")
-        self.addItem(model, "Category 02")
-        self.addItem(model, "Category 03")
+        self.addItem(self.categoryModel, "Category 01")
+        self.addItem(self.categoryModel, "Category 02")
+        self.addItem(self.categoryModel, "Category 03")
 
         # Adding the treeview to mainLayout.
         self.mainLayout.addWidget(self.treeView)
