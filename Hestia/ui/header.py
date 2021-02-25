@@ -45,7 +45,7 @@ class Header(QtWidgets.QWidget):
         self.mainLayout.addStretch()
 
         # Add project selector to header.
-        self.projectSelector = DropDown("Project", "Current project", ["Local"], self.__mainWindow.refreshProject)
+        self.projectSelector = DropDown("Project", "Current project", ["Local"], self.changeProject)
         self.mainLayout.addWidget(self.projectSelector)
 
         #TODO: ADD PREFERENCES.
@@ -60,6 +60,12 @@ class Header(QtWidgets.QWidget):
         """Change the state of the importAsInstance checkbox.
         """
         self.importAsInstanceState = self.importAsInstance.checkState()
+    
+    def changeProject(self):
+        """Change the project on the manager and update the mainWindow.
+        """
+        self.__manager.currentProject = self.projectSelector.currentValue
+        self.__mainWindow.refreshProject()
 
     def refresh(self):
         """Force refresh of the widget.

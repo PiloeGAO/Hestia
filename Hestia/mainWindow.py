@@ -84,6 +84,8 @@ class MainWindow(QtWidgets.QWidget):
         self.footer.refresh()
     
     def refreshProject(self):
+        """Refresh the window on project change.
+        """
         self.folderTreeView.refresh()
         self.contentView.refresh()
         self.footer.refresh()
