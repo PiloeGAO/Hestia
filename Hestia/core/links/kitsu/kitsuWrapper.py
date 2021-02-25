@@ -8,12 +8,14 @@
 
 import gazu
 
+from ..defaultWrapper   import DefaultWrapper
 from ....core.project   import Project
 from ....core.category  import Category
 from ....core.entity    import Entity
 
-class KitsuWrapper():
+class KitsuWrapper(DefaultWrapper):
     def __init__(self, api=""):
+        super(KitsuWrapper, self).__init__()
         self.__api      = api
         self.__active   = False
 
@@ -36,6 +38,7 @@ class KitsuWrapper():
         except gazu.exception.AuthFailedException:
             return False
         else:
+            self.__username = username
             return True
     
     def getOpenProjects(self):

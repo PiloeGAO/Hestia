@@ -6,11 +6,8 @@
     :version:   0.0.1
 """
 
-from .links.kitsu.kitsuWrapper   import KitsuWrapper
-
-from .project        import Project
-from .category       import Category
-from .entity         import Entity
+from .links.defaultWrapper      import DefaultWrapper
+from .links.kitsu.kitsuWrapper  import KitsuWrapper
 
 class Manager():
     """Manager class.
@@ -20,7 +17,9 @@ class Manager():
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
     def __init__(self, projects = [], **kwargs):
-        self.__link = None
+        self.__version = "0.0.1"
+
+        self.__link = DefaultWrapper()
 
         self.__projects = projects
 
@@ -41,6 +40,24 @@ class Manager():
             projects (list(class: "Project")): Projects list.
         """
         self.__projects = projects
+    
+    @property
+    def link(self):
+        """Get the current link.
+
+        Returns:
+            class: "KitsuWrapper": Current link.
+        """
+        return self.__link
+    
+    @property
+    def version(self):
+        """Get the manager version.
+
+        Returns:
+            str: Manager version.
+        """
+        return self.__version
     
     def addProject(self, project):
         """Add a new project to the projects list.
@@ -70,6 +87,7 @@ class Manager():
         Returns:
             bool: Connection status.
         """
+        #TODO: OPTIMIZE THIS FUNCTION.
         if(service == "kitsu"
             and kwargs["api"] != ""
             and kwargs["username"] != ""

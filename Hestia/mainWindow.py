@@ -63,7 +63,7 @@ class MainWindow(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.contentView, 1, 1, 1, 3)
 
         # Add footer to window.
-        self.footer = Footer()
+        self.footer = Footer(manager=self.__manager)
         self.mainLayout.addWidget(self.footer, 2, 0, 1, 4)
 
         # Set main layout to the window.

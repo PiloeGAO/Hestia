@@ -8,16 +8,19 @@
 from Qt import QtWidgets
 
 class Footer(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, manager, parent=None):
         """Footer Class.
 
         Args:
+            manager (class: "Manager"): The hestia manager.
             parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
         """
         super(Footer, self).__init__(parent=parent)
 
-        self.user = "DEMO"
-        self.version = "0.0.1"
+        self.__manager = manager
+
+        self.user = self.__manager.link.username
+        self.version = self.__manager.version
 
         self.initUI()
     
