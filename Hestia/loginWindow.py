@@ -20,11 +20,12 @@ class LoginWindow(QtWidgets.QWidget):
         winH (int, optional): Window height. Defaults to 320.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, mainWindow, winW = 240, winH = 320, parent=None):
+    def __init__(self, manager, mainWindow, service, winW = 240, winH = 320, parent=None):
         super(LoginWindow, self).__init__(parent=parent)
 
-        self.__manager = manager
-        self.__mainWindow = mainWindow
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
+        self.__service      = service
 
         # Set window preferences.
         self.__windowWidth = winW
@@ -77,7 +78,7 @@ class LoginWindow(QtWidgets.QWidget):
     def login(self):
         """Login to service.
         """
-        connection = self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
+        connection = self.__manager.connectToOnline(service=self.__service, api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
 
         if (connection):
             self.hide()
