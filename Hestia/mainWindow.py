@@ -56,7 +56,7 @@ class MainWindow(QtWidgets.QWidget):
         self.mainLayout.setSpacing(10)
 
         # Add header to window.
-        self.header = Header()
+        self.header = Header(manager=self.__manager)
         self.mainLayout.addWidget(self.header, 0, 0, 1, 4)
 
         # Add tree view.

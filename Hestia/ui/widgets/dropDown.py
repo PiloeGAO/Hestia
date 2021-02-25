@@ -21,10 +21,10 @@ class DropDown(QtWidgets.QWidget):
     def __init__(self, name="", description="", datas=[], defaultValue=0, parent=None):
         super(DropDown, self).__init__(parent=parent)
 
-        self._name = name
-        self._description = description
-        self._datas = datas
-        self._currentValue = defaultValue if defaultValue > 0 and defaultValue < len(self._datas) else 0
+        self.__name = name
+        self.__description = description
+        self.__datas = datas
+        self.__currentValue = defaultValue if defaultValue > 0 and defaultValue < len(self.__datas) else 0
 
         self.initUI()
     
@@ -35,7 +35,29 @@ class DropDown(QtWidgets.QWidget):
         Returns:
             int: Index.
         """
-        return self._currentValue
+        return self.__currentValue
+    
+    @property
+    def datas(self):
+        """Returnt the datas stored in the dropdown.
+
+        Returns:
+            list: Datas.
+        """
+        return self.__datas
+    
+    @datas.setter
+    def datas(self, newDatas):
+        """Set new datas to dropdown.
+
+        Args:
+            newDatas (list): New Datas.
+        """
+        self.__datas = newDatas
+
+        self.dropDown.clear()
+        self.dropDown.addItems(self.__datas)
+        self.update()
     
     def initUI(self):
         """Main UI creation function.
@@ -44,10 +66,10 @@ class DropDown(QtWidgets.QWidget):
         self.mainLayout = QtWidgets.QHBoxLayout()
 
         # Create title.
-        self.title = QtWidgets.QLabel(self._name + " : ")
+        self.title = QtWidgets.QLabel(self.__name + " : ")
 
         # Add description as tooltip.
-        self.title.setToolTip(self._description)
+        self.title.setToolTip(self.__description)
 
         # Add title to main layout.
         self.mainLayout.addWidget(self.title)
@@ -56,10 +78,10 @@ class DropDown(QtWidgets.QWidget):
         self.dropDown = QtWidgets.QComboBox()
 
         # Add datas to drop down.
-        self.dropDown.addItems(self._datas)
+        self.dropDown.addItems(self.__datas)
 
         # Set default index to dropdown.
-        self.dropDown.setCurrentIndex(self._currentValue)
+        self.dropDown.setCurrentIndex(self.__currentValue)
 
         # Connect dropdown with update method.
         self.dropDown.currentIndexChanged.connect(self.changeCurrentValue)
@@ -73,4 +95,4 @@ class DropDown(QtWidgets.QWidget):
     def changeCurrentValue(self):
         """Set current value from drop down.
         """
-        self._currentValue = self.dropDown.currentIndex()
+        self.__currentValue = self.dropDown.currentIndex()

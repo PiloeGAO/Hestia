@@ -11,13 +11,14 @@ from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
 
 class Header(QtWidgets.QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, manager, parent=None):
         """header Class.
 
         Args:
             parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
         """
         super(Header, self).__init__(parent=parent)
+        self.__manager = manager
 
         self.importAsInstanceState = True
 
@@ -41,7 +42,7 @@ class Header(QtWidgets.QWidget):
         self.mainLayout.addStretch()
 
         # Add project selector to header.
-        self.projectSelector = DropDown("Project", "Current project", ["Demo"])
+        self.projectSelector = DropDown("Project", "Current project", ["Local"])
         self.mainLayout.addWidget(self.projectSelector)
 
         #TODO: ADD PREFERENCES.
@@ -60,4 +61,6 @@ class Header(QtWidgets.QWidget):
     def refresh(self):
         """Force refresh of the widget.
         """
+        projectsName = [project.name for project in self.__manager.projects]
+        self.projectSelector.datas = projectsName
         self.update()
