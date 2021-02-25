@@ -18,6 +18,7 @@ class KitsuWrapper(DefaultWrapper):
         super(KitsuWrapper, self).__init__()
         self.__api      = api
         self.__active   = False
+        self._username = ""
 
     def login(self, username="", password=""):
         """Login to Gazu.
@@ -38,7 +39,7 @@ class KitsuWrapper(DefaultWrapper):
         except gazu.exception.AuthFailedException:
             return False
         else:
-            self.__username = username
+            self._username = username + " (Online Mode: Kitsu)"
             return True
     
     def getOpenProjects(self):

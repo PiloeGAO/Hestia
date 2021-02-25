@@ -81,7 +81,6 @@ class LoginWindow(QtWidgets.QWidget):
 
         if (connection):
             self.hide()
-            self.__mainWindow.show()
             self.__mainWindow.refresh()
             self.close()
         else:

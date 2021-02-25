@@ -87,22 +87,20 @@ class Manager():
         Returns:
             bool: Connection status.
         """
-        #TODO: OPTIMIZE THIS FUNCTION.
         if(service == "kitsu"
             and kwargs["api"] != ""
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
             self.__link = KitsuWrapper(api=kwargs["api"])
             isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
-        else:
-            return False
-        
-        if(isUserLoged):
-            openProjects = self.__link.getOpenProjects()
 
-            for project in openProjects:
-                self.addProject(self.__link.getDatasFromProject(project))
-            
-            return True
-        else:
+            if(isUserLoged):
+                openProjects = self.__link.getOpenProjects()
+
+                for project in openProjects:
+                    self.addProject(self.__link.getDatasFromProject(project))
+                
+                return True
+
             return False
+        return False

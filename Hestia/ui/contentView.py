@@ -56,3 +56,8 @@ class ContentView(QtWidgets.QWidget):
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
+
+    def refresh(self):
+        """Force refresh of the widget.
+        """
+        self.update()

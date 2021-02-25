@@ -44,3 +44,10 @@ class Footer(QtWidgets.QWidget):
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
+    
+    def refresh(self):
+        """Force refresh of the widget.
+        """
+        self.user = self.__manager.link.username
+        self.currentUser.setText("Current user: %s" % self.user)
+        self.update()

@@ -70,3 +70,8 @@ class FolderTreeView(QtWidgets.QWidget):
         """
         model.insertRow(0)
         model.setData(model.index(0, self.CATEGORY), name)
+    
+    def refresh(self):
+        """Force refresh of the widget.
+        """
+        self.update()

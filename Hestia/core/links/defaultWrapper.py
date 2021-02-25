@@ -13,7 +13,7 @@ from ..entity    import Entity
 
 class DefaultWrapper(object):
     def __init__(self):
-        self.__username = getpass.getuser() + "(Local Mode)"
+        self._username = getpass.getuser() + "(Local Mode)"
     
     @property
     def username(self):
@@ -22,7 +22,7 @@ class DefaultWrapper(object):
         Returns:
             str: Username.
         """
-        return self.__username
+        return self._username
     
     def getOpenProjects(self):
         """Get open project.

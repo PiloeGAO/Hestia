@@ -56,3 +56,8 @@ class Header(QtWidgets.QWidget):
         """Change the state of the importAsInstance checkbox.
         """
         self.importAsInstanceState = self.importAsInstance.checkState()
+
+    def refresh(self):
+        """Force refresh of the widget.
+        """
+        self.update()

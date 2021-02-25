@@ -78,4 +78,7 @@ class MainWindow(QtWidgets.QWidget):
     def refresh(self):
         """Force refresh of the window.
         """
-        self.update()
+        self.header.refresh()
+        self.folderTreeView.refresh()
+        self.contentView.refresh()
+        self.footer.refresh()
