@@ -33,13 +33,21 @@ class LoginWindow(QtWidgets.QWidget):
 
         self.initUI()
     
+    def closeEvent(self, event):
+        """Close event of the login window.
+
+        Args:
+            event (class: "QtWidgets"): Window event.
+        """
+        self.__mainWindow.close()
+
     def initUI(self):
         """Generate the window.
         """
 
         # Set the window title.
-        self.setWindowTitle("Hestia - Login")
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowTitle("Hestia - Login to %s" % self.__service)
+        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowCloseButtonHint)
         
         # Set the window size.
         self.resize(self.__windowWidth, self.__windowHeight)
