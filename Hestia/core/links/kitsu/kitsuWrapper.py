@@ -27,12 +27,9 @@ class KitsuWrapper():
         try:
             gazu.client.set_host(self.__api)
         except gazu.exception.HostException:
-            self.__active = False
+            return False
         else:
             self.__active = True
-        
-        if (self.__active == False):
-            return False
 
         try:
             gazu.log_in(username, password)

@@ -75,13 +75,16 @@ class Manager():
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
             self.__link = KitsuWrapper(api=kwargs["api"])
-            self.__link.login(username=kwargs["username"], password=kwargs["password"])
+            isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
         else:
             return False
         
-        openProjects = self.__link.getOpenProjects()
+        if(isUserLoged):
+            openProjects = self.__link.getOpenProjects()
 
-        for project in openProjects:
-            self.addProject(self.__link.getDatasFromProject(project))
-        
-        return True
+            for project in openProjects:
+                self.addProject(self.__link.getDatasFromProject(project))
+            
+            return True
+        else:
+            return False
