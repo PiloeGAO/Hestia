@@ -7,6 +7,8 @@
 """
 from Qt import QtWidgets
 
+from .core.manager    import Manager
+
 from .loginWindow       import LoginWindow
 
 from .ui.header         import Header
@@ -18,14 +20,14 @@ class MainWindow(QtWidgets.QWidget):
     """Main Window class.
 
     Args:
-        manager (class: "Manager"): Manager of Hestia
+        manager (class: "Manager", optional): Manager of Hestia. Defaults to Manager().
+        mode (str, optional): Manager mode. Defaults to "local".
         winW (int, optional): Window width. Defaults to 640.
         winH (int, optional): Window height. Defaults to 480.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, mode="local", winW = 640, winH = 480, parent=None):
+    def __init__(self, manager=Manager(), mode="local", winW = 640, winH = 480, parent=None):
         super(MainWindow, self).__init__(parent=parent)
-
         self.__manager = manager
 
         # Set window preferences.
