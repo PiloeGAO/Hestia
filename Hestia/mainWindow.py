@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QWidget):
 
         self.initUI()
 
-        if(mode == "kitsu"):
+        if(mode != "local"):
             login = LoginWindow(manager=self.__manager, mainWindow=self, service=mode)
             login.show()
     
