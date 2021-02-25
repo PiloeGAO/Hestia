@@ -28,8 +28,10 @@ class LoginWindow(QtWidgets.QWidget):
         self.__service      = service
 
         # Set window preferences.
-        self.__windowWidth = winW
+        self.__windowWidth  = winW
         self.__windowHeight = winH
+
+        self.__connection = None
 
         self.initUI()
     
@@ -39,7 +41,8 @@ class LoginWindow(QtWidgets.QWidget):
         Args:
             event (class: "QtWidgets"): Window event.
         """
-        self.__mainWindow.close()
+        if(not self.__connection):
+            self.__mainWindow.close()
 
     def initUI(self):
         """Generate the window.
@@ -86,12 +89,11 @@ class LoginWindow(QtWidgets.QWidget):
     def login(self):
         """Login to service.
         """
-        connection = self.__manager.connectToOnline(service=self.__service, api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
+        self.__connection = self.__manager.connectToOnline(service=self.__service, api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
 
-        if (connection):
+        if (self.__connection):
             self.hide()
             self.__mainWindow.refresh()
             self.close()
         else:
-            # TODO: NOT WORKING, FIND A BETTER WAY.
             self.errorLabel.show()
