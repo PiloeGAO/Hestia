@@ -88,4 +88,8 @@ class MainWindow(QtWidgets.QWidget):
         """
         self.folderTreeView.refresh()
         self.contentView.refresh()
-        self.footer.refresh()
+    
+    def refreshCategory(self):
+        """Refresh the window on category change.
+        """
+        self.contentView.refresh()
