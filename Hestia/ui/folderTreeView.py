@@ -10,8 +10,6 @@ from Qt import QtCore, QtWidgets, QtGui
 from .widgets.dropDown import DropDown
 
 class FolderTreeView(QtWidgets.QWidget):
-    CATEGORY, NONE = range(2) # NONE is set to be able to add new header data to treeview in future.
-
     def __init__(self, manager, parent=None):
         """Folder tree Class.
 
@@ -22,8 +20,8 @@ class FolderTreeView(QtWidgets.QWidget):
         self.__manager = manager
 
         self.__availableTypes = ["Assets", "Shots"]
-        self.__categories = ["Category 01", "Category 02", "Category 03"]
-
+        self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes["Assets"]]
+        
         self.initUI()
     
     def initUI(self):
@@ -39,58 +37,63 @@ class FolderTreeView(QtWidgets.QWidget):
         self.type = DropDown(name="Type",
                                 description="The type of category",
                                 datas=self.__availableTypes,
-                                defaultValue=0)
+                                defaultValue=0,
+                                functionToInvoke=self.refresh)
         self.mainLayout.addWidget(self.type)
 
-        # Creating the base of the TreeView.
-        self.treeView = QtWidgets.QTreeView()
-        self.treeView.setRootIsDecorated(False)
-        self.treeView.setAlternatingRowColors(True)
+        # Creating the base of the TreeView (ScrollArea).
+        self.scrollArea = QtWidgets.QScrollArea()
+        self.scrollArea.setVerticalScrollBarPolicy(False)
+        self.scrollArea.setHorizontalScrollBarPolicy(False)
 
-        # Creating the cutom gui item model.
-        self.categoryModel = QtGui.QStandardItemModel(0, 1, self)
-        self.categoryModel.setHeaderData(self.CATEGORY, QtCore.Qt.Horizontal, "Category")
+        self.categoriesLayout = QtWidgets.QVBoxLayout()
+        self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
 
-        # Assign model to tree view.
-        self.treeView.setModel(self.categoryModel)
+        self.buildTree()
 
-        # Add demy items to tree view.
-        self.addItems(self.categoryModel, self.__categories)
+        self.categoriesWidget = QtWidgets.QWidget()
+        self.categoriesWidget.setLayout(self.categoriesLayout)
 
-        # Adding the treeview to mainLayout.
-        self.mainLayout.addWidget(self.treeView)
+        self.scrollArea.setWidget(self.categoriesWidget)
+        self.mainLayout.addWidget(self.scrollArea)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def addItem(self, model, name):
-        """Add item to tree view.
-
-        Args:
-            model (class: "QtGui.QStandardItemModel"): Model.
-            name (str): Category/Folder name.
+    def buildTree(self):
+        """Build the category tree.
         """
-        model.insertRow(0)
-        model.setData(model.index(0, self.CATEGORY), name)
+
+        if(len(self.__categories) > 0):
+            for category in self.__categories:
+                categoryButton = QtWidgets.QPushButton(category)
+                self.categoriesLayout.addWidget(categoryButton)
+        
+        else:
+            noCategoryText = QtWidgets.QLabel("No categories available.")
+            self.categoriesLayout.addWidget(noCategoryText)
+        
+        
+        self.update()
     
-    def addItems(self, model, names=[]):
-        """Add items to tree view.
-
-        Args:
-            model (class: "QtGui.QStandardItemModel"): Model.
-            name (str): Category/Folder name list. Defaults to [].
+    def cleanTree(self):
+        """Clean the category tree.
         """
-        for name in names:
-            self.addItem(model, name)
+        # Removing the old widgets.
+        for item in reversed(range(self.categoriesLayout.count())):
+            childWidget = self.categoriesLayout.takeAt(item)
+            del childWidget
+        
+        self.update()
     
     def refresh(self):
         """Force refresh of the widget.
         """
-        # Not working > Find a better way to display the treeview.
-        self.categoryModel.clear()
-    
-        self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]]
+        # Not working: I can't find a way to properly clear the self.categoriesLayout.
+        self.cleanTree()
 
-        self.addItems(self.categoryModel, self.__categories)
+        del self.__categories[:]
+        self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]]
+        self.buildTree()
 
         self.update()

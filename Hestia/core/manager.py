@@ -9,6 +9,8 @@
 from .links.defaultWrapper      import DefaultWrapper
 from .links.kitsu.kitsuWrapper  import KitsuWrapper
 
+from .project                   import Project
+
 class Manager():
     """Manager class.
 
@@ -16,7 +18,7 @@ class Manager():
         currentManager (str): Manager name. Defaults to "kitsu".
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, projects = [], **kwargs):
+    def __init__(self, projects = [Project(name="local", description="Local file system.")], **kwargs):
         self.__version = "0.0.1"
 
         self.__link = DefaultWrapper()
@@ -100,7 +102,7 @@ class Manager():
             if(project.name == projectName):
                 del project
     
-    def connectToOnline(self, service="kitsu", **kwargs):
+    def connectToOnline(self, cleanProjects=True, service="kitsu", **kwargs):
         """Connect manager to an online service.
 
         Args:
@@ -109,6 +111,9 @@ class Manager():
         Returns:
             bool: Connection status.
         """
+        if(cleanProjects):
+            self.__projects = []
+
         if(service == "kitsu"
             and kwargs["api"] != ""
             and kwargs["username"] != ""
