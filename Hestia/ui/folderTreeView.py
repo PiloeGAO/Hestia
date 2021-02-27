@@ -7,7 +7,8 @@
 """
 from Qt import QtCore, QtWidgets, QtGui
 
-from .widgets.dropDown import DropDown
+from .widgets.dropDown      import DropDown
+from .widgets.iconButton    import IconButton
 
 class FolderTreeView(QtWidgets.QWidget):
     def __init__(self, manager, parent=None):
@@ -47,7 +48,7 @@ class FolderTreeView(QtWidgets.QWidget):
         self.scrollArea.setHorizontalScrollBarPolicy(False)
 
         self.categoriesLayout = QtWidgets.QVBoxLayout()
-        self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
+        #self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
 
         self.buildTree()
 
@@ -63,16 +64,18 @@ class FolderTreeView(QtWidgets.QWidget):
     def buildTree(self):
         """Build the category tree.
         """
-
         if(len(self.__categories) > 0):
             for category in self.__categories:
                 categoryButton = QtWidgets.QPushButton(category)
                 self.categoriesLayout.addWidget(categoryButton)
+            
+            # Reset the size of the layout properly.
+            self.categoriesWidget.setFixedWidth(self.scrollArea.size().width() - 20)
+            self.categoriesWidget.setFixedHeight(self.scrollArea.size().height())
         
         else:
             noCategoryText = QtWidgets.QLabel("No categories available.")
             self.categoriesLayout.addWidget(noCategoryText)
-        
         
         self.update()
     
@@ -80,20 +83,19 @@ class FolderTreeView(QtWidgets.QWidget):
         """Clean the category tree.
         """
         # Removing the old widgets.
-        for item in reversed(range(self.categoriesLayout.count())):
-            childWidget = self.categoriesLayout.takeAt(item)
-            del childWidget
+        for i in reversed(range(self.categoriesLayout.count())):
+            self.categoriesLayout.itemAt(i).widget().setParent(None)
         
         self.update()
     
     def refresh(self):
         """Force refresh of the widget.
         """
-        # Not working: I can't find a way to properly clear the self.categoriesLayout.
         self.cleanTree()
-
+        
         del self.__categories[:]
         self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]]
+
         self.buildTree()
 
         self.update()
