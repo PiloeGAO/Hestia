@@ -18,10 +18,11 @@ class CategoryWidget(QtWidgets.QWidget):
             parentWidget(class: "FolderTreeView"): Parent of the widget.
             parent (class: "QtWidget", optional): Parent. Defaults to None.
     """
-    def __init__(self, manager, categoryID, parentWidget, parent=None):
+    def __init__(self, manager, mainWindow, categoryID, parentWidget, parent=None):
         super(CategoryWidget, self).__init__(parent=parent)
 
         self.__manager      = manager
+        self.__mainWindow   = mainWindow
         self.__parent       = parentWidget
         self.__categoryID   = categoryID
 
@@ -54,3 +55,4 @@ class CategoryWidget(QtWidgets.QWidget):
         """
         self.__manager.projects[self.__manager.currentProject].currentCategory = self.__categoryID
         self.__parent.refresh()
+        self.__mainWindow.refreshCategory()

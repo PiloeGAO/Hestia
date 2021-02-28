@@ -62,7 +62,7 @@ class MainWindow(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.header, 0, 0, 1, 4)
 
         # Add tree view.
-        self.folderTreeView = FolderTreeView(manager=self.__manager)
+        self.folderTreeView = FolderTreeView(manager=self.__manager, mainWindow=self)
         self.folderTreeView.setMaximumWidth(self.__windowWidth/3)
         self.mainLayout.addWidget(self.folderTreeView, 1, 0, 1, 1)
 

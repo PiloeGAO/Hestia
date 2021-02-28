@@ -15,11 +15,13 @@ class FolderTreeView(QtWidgets.QWidget):
 
     Args:
         manager(class: "Manager"): The Hestia manager.
+        mainWindow(class: "MainWindow"): The Hestia main window.
         parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
     """
-    def __init__(self, manager, parent=None):
+    def __init__(self, manager, mainWindow, parent=None):
         super(FolderTreeView, self).__init__(parent=parent)
-        self.__manager = manager
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
 
         self.__availableTypes = ["Assets", "Shots"]
         self.__categoriesListLength = len([category for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[0]])
@@ -67,7 +69,7 @@ class FolderTreeView(QtWidgets.QWidget):
         """
         if(self.__categoriesListLength > 0):
             for id in range(self.__categoriesListLength):
-                categoryButton = CategoryWidget(self.__manager, id, self)
+                categoryButton = CategoryWidget(manager=self.__manager, mainWindow=self.__mainWindow, categoryID=id, parentWidget=self)
                 self.categoriesLayout.addWidget(categoryButton)
             
             # Reset the size of the layout properly.
