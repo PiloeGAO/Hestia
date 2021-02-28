@@ -12,6 +12,7 @@ class Project():
         self.__description  = description
 
         self.__categories   = []
+        self.__currentCategory = 0
     
     @property
     def name(self):
@@ -66,6 +67,25 @@ class Project():
             categories (list): Project's categories.
         """
         self.__categories = categories
+    
+    @property
+    def currentCategory(self):
+        """Get the current category of the project.
+
+        Returns:
+            int: Category ID.
+        """
+        return self.__currentCategory
+    
+    @currentCategory.setter
+    def currentCategory(self, id):
+        """Set the current category of the project.
+
+        Args:
+            id (int): Category ID.
+        """
+        if(id > 0 and id < len(self.__categories)):
+            self.__currentCategory = id
     
     def addCategory(self, newCategory):
         """Add a category to project.

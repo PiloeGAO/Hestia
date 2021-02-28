@@ -7,21 +7,22 @@
 """
 from Qt import QtCore, QtWidgets, QtGui
 
-from .widgets.dropDown      import DropDown
-from .widgets.iconButton    import IconButton
+from .widgets.dropDown          import DropDown
+from .widgets.categoryWidget    import CategoryWidget
 
 class FolderTreeView(QtWidgets.QWidget):
-    def __init__(self, manager, parent=None):
-        """Folder tree Class.
+    """Folder tree Class.
 
-        Args:
-            parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
-        """
+    Args:
+        manager(class: "Manager"): The Hestia manager.
+        parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
+    """
+    def __init__(self, manager, parent=None):
         super(FolderTreeView, self).__init__(parent=parent)
         self.__manager = manager
 
         self.__availableTypes = ["Assets", "Shots"]
-        self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes["Assets"]]
+        self.__categoriesListLength = len([category for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[0]])
         
         self.initUI()
     
@@ -64,9 +65,9 @@ class FolderTreeView(QtWidgets.QWidget):
     def buildTree(self):
         """Build the category tree.
         """
-        if(len(self.__categories) > 0):
-            for category in self.__categories:
-                categoryButton = QtWidgets.QPushButton(category)
+        if(self.__categoriesListLength > 0):
+            for id in range(self.__categoriesListLength):
+                categoryButton = CategoryWidget(self.__manager, id, self)
                 self.categoriesLayout.addWidget(categoryButton)
             
             # Reset the size of the layout properly.
@@ -93,8 +94,7 @@ class FolderTreeView(QtWidgets.QWidget):
         """
         self.cleanTree()
         
-        del self.__categories[:]
-        self.__categories = [str(category.name) for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]]
+        self.__categoriesListLength = len([category for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]])
 
         self.buildTree()
 
