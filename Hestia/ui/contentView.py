@@ -64,14 +64,16 @@ class ContentView(QtWidgets.QWidget):
     def buildEntitiesGrid(self):
         """Build the entities grid.
         """
+        # TODO: CHECK WITH OTHER PROJECTS TO ENSURE GRID GENERATION IS WORKING PROPERLY.
         entitiesCount = len(self.__entities)
         
         if(entitiesCount > 0):
-            ySize = entitiesCount % self.xSize + 1
+            ySize = entitiesCount % self.xSize + self.xSize + 1
 
             for y in range(ySize):
                 for x in range(self.xSize):
-                    count = x + y * ySize
+                    count = x + y * self.xSize
+
                     if(count < entitiesCount):
                         # Getting entity datas.
                         name = self.__entities[count].name
