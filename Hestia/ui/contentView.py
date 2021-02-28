@@ -15,11 +15,10 @@ class ContentView(QtWidgets.QWidget):
 
     Args:
         manager (class: "Manager"): The Hestia manager.
-        xNumber (int, optional): Number of widgets on X axis. Defaults to 4.
-        yNumber (int, optional): Number of widgets on Y axis. Defaults to 3.
+        xSize (int, optional): Number of widgets on X axis. Defaults to 4.
         parent (class: "QtWidget", optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager, xNumber=4, yNumber=3, parent=None):
+    def __init__(self, manager, xSize=4, parent=None):
         super(ContentView, self).__init__(parent=parent)
         self.__manager  = manager
         self.__project  = self.__manager.projects[self.__manager.currentProject]
@@ -28,8 +27,9 @@ class ContentView(QtWidgets.QWidget):
         if(len(self.__project.categories) > 0):
             self.__category = self.__project.categories[self.__project.currentCategory]
 
-        self.xNumber = xNumber
-        self.yNumber = yNumber
+        self.__entities = self.__category.entities
+
+        self.xSize = xSize
 
         self.initUI()
     
@@ -62,15 +62,46 @@ class ContentView(QtWidgets.QWidget):
     def buildEntitiesGrid(self):
         """Build the entities grid.
         """
-        for i in range(self.yNumber):
-            for j in range(self.xNumber):
-                entity = EntityWidget(name="Demo",
-                                      description="Demo description",
-                                      iconPath="./ui/icons/alarm.svg",
-                                      iconSize=64,
-                                      status=1,
-                                      versionList=["001", "002"])
-                self.grid.addWidget(entity, i, j)
+        entitiesCount = len(self.__entities)
+        
+        if(entitiesCount > 0):
+            ySize = entitiesCount % self.xSize + 1
+
+            for y in range(ySize):
+                for x in range(self.xSize):
+                    count = x + y * ySize
+                    if(count < entitiesCount):
+                        # Getting entity datas.
+                        name = self.__entities[count].name
+                        description = self.__entities[count].description
+
+                        icon = self.__entities[count].icon
+                        if(icon == ""):
+                            icon = "./ui/icons/alarm.svg"
+                        
+                        versions = self.__entities[count].versions
+                        
+                        # Create the widget.
+                        entity = EntityWidget(name=name,
+                                            description=description,
+                                            iconPath=icon,
+                                            iconSize=64,
+                                            status=1,
+                                            versionList=versions)
+                        
+                        self.grid.addWidget(entity, y, x)
+            
+                    # Reset the size of the grid properly.
+                    self.grid.setColumnMinimumWidth(x, (self.scrollArea.size().width() - 20)/4)
+                    self.grid.setRowMinimumHeight(y, (self.scrollArea.size().height() - 20)/4)
+            
+            # Reset the size of the widget.
+            self.widget.setFixedWidth(self.scrollArea.size().width() - 20)
+            self.widget.setFixedHeight(self.scrollArea.size().height() - 20)
+            
+        else:
+            entity = QtWidgets.QLabel("No entities found.")
+            self.grid.addWidget(entity, 0, 0)
 
         self.update
     
@@ -86,4 +117,19 @@ class ContentView(QtWidgets.QWidget):
     def refresh(self):
         """Force refresh of the widget.
         """
+        self.cleanEntitiesGrid()
+
+        # Updating variables.
+        self.__project  = self.__manager.projects[self.__manager.currentProject]
+
+        self.__category = Category(name="Empty", type="Assets")
+        if(len(self.__project.categories) > 0):
+            self.__category = self.__project.categories[self.__project.currentCategory]
+
+        self.__entities = self.__category.entities
+
+        # ---------------------------------------------
+
+        self.buildEntitiesGrid()
+
         self.update()
