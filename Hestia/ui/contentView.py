@@ -97,9 +97,12 @@ class ContentView(QtWidgets.QWidget):
                     self.grid.setColumnMinimumWidth(x, (self.scrollArea.size().width() - 20)/4)
                     self.grid.setRowMinimumHeight(y, (self.scrollArea.size().height() - 20)/4)
             
-            # Reset the size of the widget.
-            self.widget.setFixedWidth(self.scrollArea.size().width() - 20)
-            self.widget.setFixedHeight(self.scrollArea.size().height() - 20)
+            try:
+                # Reset the size of the widget.
+                self.widget.setFixedWidth(self.scrollArea.size().width() - 20)
+                self.widget.setFixedHeight(self.scrollArea.size().height() - 20)
+            except AttributeError:
+                pass
             
         else:
             entity = QtWidgets.QLabel("No entities found.")

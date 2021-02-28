@@ -70,9 +70,12 @@ class FolderTreeView(QtWidgets.QWidget):
                 categoryButton = CategoryWidget(manager=self.__manager, mainWindow=self.__mainWindow, categoryID=id, parentWidget=self)
                 self.categoriesLayout.addWidget(categoryButton)
             
-            # Reset the size of the layout properly.
-            self.categoriesWidget.setFixedWidth(self.scrollArea.size().width() - 20)
-            self.categoriesWidget.setFixedHeight(self.scrollArea.size().height())
+            try:
+                # Reset the size of the layout properly.
+                self.categoriesWidget.setFixedWidth(self.scrollArea.size().width() - 20)
+                self.categoriesWidget.setFixedHeight(self.scrollArea.size().height())
+            except AttributeError:
+                pass
         
         else:
             noCategoryText = QtWidgets.QLabel("No categories available.")

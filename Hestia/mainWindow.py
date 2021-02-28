@@ -36,7 +36,7 @@ class MainWindow(QtWidgets.QWidget):
 
         self.initUI()
 
-        if(mode != "local"):
+        if(mode != "local" and not self.__manager.link.connected):
             login = LoginWindow(manager=self.__manager, mainWindow=self, service=mode)
             login.show()
     

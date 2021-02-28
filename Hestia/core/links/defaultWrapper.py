@@ -13,7 +13,19 @@ from ..entity    import Entity
 
 class DefaultWrapper(object):
     def __init__(self):
-        self._username = getpass.getuser() + "(Local Mode)"
+        self._username  = getpass.getuser() + "(Local Mode)"
+        self.__active   = False
+    
+    
+    
+    @property
+    def connected(self):
+        """Check if the current wrapper is connected.
+
+        Returns:
+            bool: Connection status.
+        """
+        return self.__active
     
     @property
     def username(self):
