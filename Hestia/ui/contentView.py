@@ -18,7 +18,7 @@ class ContentView(QtWidgets.QWidget):
         xSize (int, optional): Number of widgets on X axis. Defaults to 4.
         parent (class: "QtWidget", optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager, xSize=4, parent=None):
+    def __init__(self, manager, xSize=2, parent=None):
         super(ContentView, self).__init__(parent=parent)
         self.__manager  = manager
         self.__project  = self.__manager.projects[self.__manager.currentProject]
@@ -77,7 +77,7 @@ class ContentView(QtWidgets.QWidget):
 
                         icon = self.__entities[count].icon
                         if(icon == ""):
-                            icon = "./ui/icons/alarm.svg"
+                            icon = "./ui/icons/card-image.svg"
                         
                         versions = self.__entities[count].versions
                         

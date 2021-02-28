@@ -53,7 +53,7 @@ class LoginWindow(QtWidgets.QWidget):
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowCloseButtonHint)
         
         # Set the window size.
-        self.resize(self.__windowWidth, self.__windowHeight)
+        #self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
