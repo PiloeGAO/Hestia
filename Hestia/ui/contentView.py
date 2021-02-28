@@ -5,6 +5,8 @@
     :version:   0.0.1
     :brief:     Class to create the content view of the window.  
 """
+import os
+
 from Qt import QtWidgets, QtCore
 
 from ..core.category        import Category
@@ -22,6 +24,8 @@ class ContentView(QtWidgets.QWidget):
         super(ContentView, self).__init__(parent=parent)
         self.__manager  = manager
         self.__project  = self.__manager.projects[self.__manager.currentProject]
+        
+        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
         self.__category = Category(name="Empty", type="Assets")
         if(len(self.__project.categories) > 0):
@@ -41,8 +45,6 @@ class ContentView(QtWidgets.QWidget):
         self.mainLayout = QtWidgets.QHBoxLayout()
 
         self.scrollArea = QtWidgets.QScrollArea()
-        self.scrollArea.setVerticalScrollBarPolicy(False)
-        self.scrollArea.setHorizontalScrollBarPolicy(False)
 
         self.grid = QtWidgets.QGridLayout()
         self.grid.setContentsMargins(0, 0, 0, 0)
@@ -77,7 +79,7 @@ class ContentView(QtWidgets.QWidget):
 
                         icon = self.__entities[count].icon
                         if(icon == ""):
-                            icon = "./ui/icons/card-image.svg"
+                            icon = self.__rootPath + "/icons/card-image.svg"
                         
                         versions = self.__entities[count].versions
                         

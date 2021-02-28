@@ -5,6 +5,8 @@
     :version:   0.0.1
     :brief:     Class to create the login window based on QtWidgets.  
 """
+import os
+
 from Qt import QtWidgets, QtCore
 
 from .ui.widgets.lineEdit   import LineEdit
@@ -22,14 +24,11 @@ class LoginWindow(QtWidgets.QWidget):
     """
     def __init__(self, manager, mainWindow, service, winW = 240, winH = 320, parent=None):
         super(LoginWindow, self).__init__(parent=parent)
-
         self.__manager      = manager
         self.__mainWindow   = mainWindow
         self.__service      = service
 
-        # Set window preferences.
-        self.__windowWidth  = winW
-        self.__windowHeight = winH
+        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
         self.__connection = None
 
@@ -51,9 +50,6 @@ class LoginWindow(QtWidgets.QWidget):
         # Set the window title.
         self.setWindowTitle("Hestia - Login to %s" % self.__service)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowCloseButtonHint)
-        
-        # Set the window size.
-        #self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
@@ -80,7 +76,7 @@ class LoginWindow(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.errorLabel, 3, 0)
 
         # Create the login button.
-        self.loginButton = IconButton(name="Login", description="Login", iconPath="./ui/icons/check-square-fill.svg", iconScale=64, status=1, functionToInvoke=self.login)
+        self.loginButton = IconButton(name="Login", description="Login", iconPath=self.__rootPath + "/ui/icons/check-square-fill.svg", iconScale=64, status=1, functionToInvoke=self.login)
         self.mainLayout.addWidget(self.loginButton, 4, 0)
 
         # Set main layout to the window.

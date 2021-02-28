@@ -47,8 +47,6 @@ class FolderTreeView(QtWidgets.QWidget):
 
         # Creating the base of the TreeView (ScrollArea).
         self.scrollArea = QtWidgets.QScrollArea()
-        self.scrollArea.setVerticalScrollBarPolicy(False)
-        self.scrollArea.setHorizontalScrollBarPolicy(False)
 
         self.categoriesLayout = QtWidgets.QVBoxLayout()
         #self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
