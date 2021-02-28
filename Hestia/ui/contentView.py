@@ -37,6 +37,15 @@ class ContentView(QtWidgets.QWidget):
 
         self.initUI()
     
+    def resizeEvent(self, event):
+        """Resize the widget when window is resized by user.
+
+        Args:
+            event (class: "QtEvent"): Event.
+        """
+        QtWidgets.QWidget.resizeEvent(self, event)
+        self.refresh()
+    
     def initUI(self):
         """Generate the window.
         """
