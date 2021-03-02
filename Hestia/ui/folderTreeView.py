@@ -23,8 +23,10 @@ class FolderTreeView(QtWidgets.QWidget):
         self.__manager      = manager
         self.__mainWindow   = mainWindow
 
+        self.__project      = self.__manager.projects[self.__manager.currentProject]
+
         self.__availableTypes = ["Assets", "Shots"]
-        self.__categoriesListLength = len([category for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[0]])
+        self.__categories = [category for category in self.__project.categories if category.type == self.__availableTypes[0]]
         
         self.initUI()
     
@@ -51,7 +53,7 @@ class FolderTreeView(QtWidgets.QWidget):
                                 description="The type of category",
                                 datas=self.__availableTypes,
                                 defaultValue=0,
-                                functionToInvoke=self.refresh)
+                                functionToInvoke=self.changeCurrentCategoryType)
         self.mainLayout.addWidget(self.type)
 
         # Creating the base of the TreeView (ScrollArea).
@@ -74,9 +76,9 @@ class FolderTreeView(QtWidgets.QWidget):
     def buildTree(self):
         """Build the category tree.
         """
-        if(self.__categoriesListLength > 0):
-            for id in range(self.__categoriesListLength):
-                categoryButton = CategoryWidget(manager=self.__manager, mainWindow=self.__mainWindow, categoryID=id, parentWidget=self)
+        if(len(self.__categories) > 0):
+            for category in self.__categories:
+                categoryButton = CategoryWidget(manager=self.__manager, mainWindow=self.__mainWindow, category=category, parentWidget=self)
                 self.categoriesLayout.addWidget(categoryButton)
             
             try:
@@ -101,12 +103,24 @@ class FolderTreeView(QtWidgets.QWidget):
         
         self.update()
     
+    def changeCurrentCategoryType(self):
+        """Updating the current selected category when type change.
+        """
+        category = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]][0]
+        
+        if category != None:
+            self.__project.currentCategory = self.__project.categories.index(category)
+        
+        self.__mainWindow.refreshCategory()
+        self.refresh()
+    
     def refresh(self):
         """Force refresh of the widget.
         """
         self.cleanTree()
         
-        self.__categoriesListLength = len([category for category in self.__manager.projects[self.__manager.currentProject].categories if category.type == self.__availableTypes[self.type.currentValue]])
+        self.__project    = self.__manager.projects[self.__manager.currentProject]
+        self.__categories = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]]
 
         self.buildTree()
 

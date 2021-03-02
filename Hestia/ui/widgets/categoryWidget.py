@@ -14,23 +14,27 @@ class CategoryWidget(QtWidgets.QWidget):
 
         Args:
             manager(class: "Manager"): The Hestia manager.
-            categoryID(int): The id of the category.
+            category(class: "Category"): The category to display.
             parentWidget(class: "FolderTreeView"): Parent of the widget.
             parent (class: "QtWidget", optional): Parent. Defaults to None.
     """
-    def __init__(self, manager, mainWindow, categoryID, parentWidget, parent=None):
+    def __init__(self, manager, mainWindow, category, parentWidget, parent=None):
         super(CategoryWidget, self).__init__(parent=parent)
 
         self.__manager      = manager
         self.__mainWindow   = mainWindow
         self.__parent       = parentWidget
-        self.__categoryID   = categoryID
 
-        self.__currentCategory = self.__manager.projects[self.__manager.currentProject].currentCategory
-        self.__category = self.__manager.projects[self.__manager.currentProject].categories[categoryID]
+        self.__project      = self.__manager.projects[self.__manager.currentProject]
+
+        self.__category     = category
+        self.__categoryID   = self.__project.categories.index(self.__category)
+
+        self.__currentCategoryID = self.__project.currentCategory
+        self.__currentCategory = self.__project.categories[self.__currentCategoryID]
 
         self.active = 1
-        if(self.__currentCategory == self.__categoryID):
+        if(self.__currentCategory == self.__category):
             self.active = 0
 
         self.initUI()
