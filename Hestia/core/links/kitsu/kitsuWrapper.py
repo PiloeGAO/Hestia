@@ -5,7 +5,6 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-
 import gazu
 
 from ..defaultWrapper   import DefaultWrapper
@@ -72,7 +71,7 @@ class KitsuWrapper(DefaultWrapper):
             newCategory = Category(name=category["name"], description="", type="Assets")
             newProject.addCategory(newCategory)
         
-        # Get, create ad add assets to categories.
+        # Get, create and add assets to categories.
         assets = gazu.asset.all_assets_for_project(project)
 
         for asset in assets:
@@ -93,6 +92,29 @@ class KitsuWrapper(DefaultWrapper):
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
             assetCategory.addEntity(newAsset)
         
-        # TODO: Import Shots.
+        # Get, create and add sequences to project.
+        sequences = gazu.shot.all_sequences_for_project(project)
+
+        for sequence in sequences:
+            newCategory = Category(name=sequence["name"],
+                                    description=sequence["description"],
+                                    type="Shots")
+            
+            newProject.addCategory(newCategory)
+        
+        # Get, create and add shots to sequences.
+        shots = gazu.shot.all_shots_for_project(project)
+
+        for shot in shots:
+            shotData = gazu.shot.get_shot(shot["id"])
+
+            newShot = Entity(name=shot["name"],
+                                description=shot["description"],
+                                path="",
+                                icon="",
+                                versions=[])
+
+            shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
+            shotSequence.addEntity(newShot)
 
         return newProject
