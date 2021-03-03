@@ -73,11 +73,13 @@ class ContentView(QtWidgets.QWidget):
     def buildEntitiesGrid(self):
         """Build the entities grid.
         """
-        # TODO: CHECK WITH OTHER PROJECTS TO ENSURE GRID GENERATION IS WORKING PROPERLY.
         entitiesCount = len(self.__entities)
+
+        contentWidgetSizeX = self.scrollArea.size().width() - 20
+        contentWidgetSizeY = self.scrollArea.size().height() - 20
         
         if(entitiesCount > 0):
-            ySize = entitiesCount % self.xSize + self.xSize + 1
+            ySize = entitiesCount / self.xSize + entitiesCount % self.xSize
 
             for y in range(ySize):
                 for x in range(self.xSize):
@@ -105,13 +107,15 @@ class ContentView(QtWidgets.QWidget):
                         self.grid.addWidget(entity, y, x)
             
                     # Reset the size of the grid properly.
-                    self.grid.setColumnMinimumWidth(x, (self.scrollArea.size().width() - 20)/4)
-                    self.grid.setRowMinimumHeight(y, (self.scrollArea.size().height() - 20)/4)
+                    self.grid.setColumnMinimumWidth(x, contentWidgetSizeX/self.xSize)
+                    self.grid.setRowMinimumHeight(y, contentWidgetSizeY/self.xSize)
             
             try:
                 # Reset the size of the widget.
-                self.widget.setFixedWidth(self.scrollArea.size().width() - 20)
-                self.widget.setFixedHeight(self.scrollArea.size().height() - 20)
+                self.widget.setFixedWidth(contentWidgetSizeX)
+                if(ySize < self.xSize):
+                    ySize = self.xSize
+                self.widget.setFixedHeight(contentWidgetSizeY/self.xSize * ySize)
             except AttributeError:
                 pass
             
