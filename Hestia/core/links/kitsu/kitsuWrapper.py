@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import gazu
+import gazu, json
 
 from ..defaultWrapper   import DefaultWrapper
 from ....core.project   import Project
@@ -83,11 +83,19 @@ class KitsuWrapper(DefaultWrapper):
             # path = "/datas/" + assetData["preview_file_id"] + ".png"
             # gazu.files.download_preview_file_thumbnail(assetData["preview_file_id"], path)
 
+            # TODO: Get tasks and versions to build local versioning system.
+            versions = []
+            outputs = gazu.files.all_output_files_for_entity(assetData)
+
+            for output in outputs:
+                task_type = gazu.task.get_task_type(output["task_type_id"])
+                versions.append("%s: Revision %s" % (task_type["name"], output["revision"]))
+
             newAsset = Entity(name=asset["name"],
                                 description=asset["description"],
                                 path="",
                                 icon="",
-                                versions=[])
+                                versions=versions)
             
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
             assetCategory.addEntity(newAsset)
