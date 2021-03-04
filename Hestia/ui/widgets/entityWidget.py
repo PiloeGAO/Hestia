@@ -34,7 +34,7 @@ class EntityWidget(QtWidgets.QWidget):
         self.icon           = iconPath if path.exists(iconPath) else self.__defaultIcon
         self.iconSize       = iconSize
         self.status         = status
-        self.versions       = versionList if len(versionList)>0 else ["NO VERSION"]
+        self.versions       = versionList
 
         self.initUI()
     
@@ -54,7 +54,7 @@ class EntityWidget(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.iconButton)
 
         # Version.
-        self.versionDropDown = DropDown("Version", "Current version of the asset", self.versions, 1)
+        self.versionDropDown = DropDown("Version", "Current version of the asset", self.getVersionsNames(), 1)
         self.verticalLayout.addWidget(self.versionDropDown)
 
         self.verticalLayout.addStretch(1)
@@ -68,3 +68,18 @@ class EntityWidget(QtWidgets.QWidget):
         """Function that invoke the import in core.
         """
         print("Import %s" % self.name)
+    
+    def getVersionsNames(self):
+        """Getting versions names from version class.
+
+        Returns:
+            list:str: Names.
+        """
+        versionsNames = []
+        for version in self.versions:
+            versionsNames.append(version.name)
+        
+        if(len(versionsNames) == 0):
+            return ["No versions available."]
+
+        return versionsNames

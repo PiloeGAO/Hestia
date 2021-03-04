@@ -106,7 +106,6 @@ class KitsuWrapper(DefaultWrapper):
             newAsset = Entity(id=asset["id"],
                                 name=asset["name"],
                                 description=asset["description"],
-                                path="",
                                 icon="",
                                 versions=versions)
             
@@ -133,7 +132,6 @@ class KitsuWrapper(DefaultWrapper):
             newShot = Entity(id=shot["id"],
                                 name=shot["name"],
                                 description=shot["description"],
-                                path="",
                                 icon="",
                                 versions=[])
 
