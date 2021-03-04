@@ -16,13 +16,23 @@ class Entity():
         icon (str, optional): Entity's icon. Defaults to "".
         versions (list): Entity's version. Defaults to [].
     """
-    def __init__(self, name = "", description = "", path = "", icon = "", versions=[]):
+    def __init__(self, id = "", name = "", description = "", path = "", icon = "", versions=[]):
+        self.__id           = id
         self.__name         = name
         self.__description  = description
 
         self.__path         = path
         self.__icon         = icon
         self.__versions     = versions
+        
+    @property
+    def id(self):
+        """Get the id of the entity.
+
+        Returns:
+            str: Entity's ID.
+        """
+        return self.__id
     
     @property
     def name(self):

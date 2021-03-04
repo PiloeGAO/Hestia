@@ -62,13 +62,13 @@ class KitsuWrapper(DefaultWrapper):
             class: "Project": Project generated from kitsu.
         """
         # Get and create a new project.
-        newProject = Project(project["name"], project["description"])
+        newProject = Project(id=project["id"], name=project["name"], description=project["description"])
 
         # Get, create and add categories to project.
         categories = gazu.asset.all_asset_types_for_project(project)
 
         for category in categories:
-            newCategory = Category(name=category["name"], description="", type="Assets")
+            newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets")
             newProject.addCategory(newCategory)
         
         # Get, create and add assets to categories.
@@ -91,7 +91,8 @@ class KitsuWrapper(DefaultWrapper):
                 task_type = gazu.task.get_task_type(output["task_type_id"])
                 versions.append("%s: Revision %s" % (task_type["name"], output["revision"]))
 
-            newAsset = Entity(name=asset["name"],
+            newAsset = Entity(id=asset["id"],
+                                name=asset["name"],
                                 description=asset["description"],
                                 path="",
                                 icon="",
@@ -104,7 +105,8 @@ class KitsuWrapper(DefaultWrapper):
         sequences = gazu.shot.all_sequences_for_project(project)
 
         for sequence in sequences:
-            newCategory = Category(name=sequence["name"],
+            newCategory = Category(id=sequence["id"],
+                                    name=sequence["name"],
                                     description=sequence["description"],
                                     type="Shots")
             
@@ -116,7 +118,8 @@ class KitsuWrapper(DefaultWrapper):
         for shot in shots:
             shotData = gazu.shot.get_shot(shot["id"])
 
-            newShot = Entity(name=shot["name"],
+            newShot = Entity(id=shot["id"],
+                                name=shot["name"],
                                 description=shot["description"],
                                 path="",
                                 icon="",

@@ -7,13 +7,23 @@
 """
 
 class Project():
-    def __init__(self, name="", description=""):
+    def __init__(self, id="", name="", description=""):
+        self.__id           = id
         self.__name         = name
         self.__description  = description
 
         self.__categories   = []
         self.__currentCategory = 0
     
+    @property
+    def id(self):
+        """Get the id of the project.
+
+        Returns:
+            str: Project's ID.
+        """
+        return self.__id
+
     @property
     def name(self):
         """Get the name of the project.

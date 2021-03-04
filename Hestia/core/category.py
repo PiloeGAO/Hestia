@@ -7,12 +7,22 @@
 """
 
 class Category():
-    def __init__(self, name="", description="", type=""):
+    def __init__(self, id="", name="", description="", type=""):
+        self.__id               = id
         self.__name             = name
         self.__description      = description
         self.__type             = type
 
         self.__entities         = []
+
+    @property
+    def id(self):
+        """Get the id of the category.
+
+        Returns:
+            str: Category's ID.
+        """
+        return self.__id
 
     @property
     def name(self):
