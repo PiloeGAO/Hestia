@@ -29,12 +29,12 @@ class EntityWidget(QtWidgets.QWidget):
 
         self.__defaultIcon = "./ui/icons/receipt.svg"
 
-        self.name           = name
-        self.description    = description
-        self.icon           = iconPath if path.exists(iconPath) else self.__defaultIcon
-        self.iconSize       = iconSize
-        self.status         = status
-        self.versions       = versionList
+        self.__name           = name
+        self.__description    = description
+        self.__icon           = iconPath if path.exists(iconPath) else self.__defaultIcon
+        self.__iconSize       = iconSize
+        self.__status         = 0 if len(versionList) == 0 else 1
+        self.__versions       = versionList
 
         self.initUI()
     
@@ -43,18 +43,18 @@ class EntityWidget(QtWidgets.QWidget):
         """
         # Setting the main layout as Vertical.
         self.mainLayout = QtWidgets.QVBoxLayout()
-        self.groupBox = QtWidgets.QGroupBox(self.name)
+        self.groupBox = QtWidgets.QGroupBox(self.__name)
         
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
-        self.iconButton = IconButton(self.name, self.description, self.icon, self.iconSize, self.status, self.importAsset)
+        self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
         # Version.
-        self.versionDropDown = DropDown("Version", "Current version of the asset", self.getVersionsNames(), 1)
+        self.versionDropDown = DropDown("Version", "Current version of the asset", self.getVersionsNames(), 0)
         self.verticalLayout.addWidget(self.versionDropDown)
 
         self.verticalLayout.addStretch(1)
@@ -67,7 +67,7 @@ class EntityWidget(QtWidgets.QWidget):
     def importAsset(self):
         """Function that invoke the import in core.
         """
-        print("Import %s" % self.name)
+        print("Import %s" % self.__name)
     
     def getVersionsNames(self):
         """Getting versions names from version class.
@@ -76,7 +76,7 @@ class EntityWidget(QtWidgets.QWidget):
             list:str: Names.
         """
         versionsNames = []
-        for version in self.versions:
+        for version in self.__versions:
             versionsNames.append(version.name)
         
         if(len(versionsNames) == 0):
