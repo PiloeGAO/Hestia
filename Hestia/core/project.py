@@ -7,6 +7,13 @@
 """
 
 class Project():
+    """Project class.
+
+    Args:
+        id (str, optional): Project's ID. Defaults to "".
+        name (str, optional): Project's name. Defaults to "".
+        description (str, optional): Project's description. Defaults to "".
+    """
     def __init__(self, id="", name="", description=""):
         self.__id           = id
         self.__name         = name

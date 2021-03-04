@@ -15,7 +15,6 @@ class Manager():
     """Manager class.
 
     Args:
-        currentManager (str): Manager name. Defaults to "kitsu".
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
     def __init__(self, projects = [Project(name="local", description="Local file system.")], **kwargs):

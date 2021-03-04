@@ -11,8 +11,14 @@ from ..defaultWrapper   import DefaultWrapper
 from ....core.project   import Project
 from ....core.category  import Category
 from ....core.entity    import Entity
+from ....core.version   import Version
 
 class KitsuWrapper(DefaultWrapper):
+    """Kitsu wrapper class.
+
+    Args:
+        api (str): Kitsu api address. Defaults to "".
+    """
     def __init__(self, api=""):
         super(KitsuWrapper, self).__init__()
         self.__api      = api
@@ -83,13 +89,19 @@ class KitsuWrapper(DefaultWrapper):
             # path = "/datas/" + assetData["preview_file_id"] + ".png"
             # gazu.files.download_preview_file_thumbnail(assetData["preview_file_id"], path)
 
-            # TODO: Get tasks and versions to build local versioning system.
             versions = []
             outputs = gazu.files.all_output_files_for_entity(assetData)
 
             for output in outputs:
                 task_type = gazu.task.get_task_type(output["task_type_id"])
-                versions.append("%s: Revision %s" % (task_type["name"], output["revision"]))
+
+                newVersion = Version(id=output["id"],
+                                        name="%s: Revision %s" % (task_type["name"], output["revision"]),
+                                        description="",
+                                        workingPath=output["source_file"]["path"],
+                                        outputPath=output["path"])
+
+                versions.append(newVersion)
 
             newAsset = Entity(id=asset["id"],
                                 name=asset["name"],

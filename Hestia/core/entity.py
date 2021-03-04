@@ -10,18 +10,17 @@ class Entity():
     """Entity class.
 
     Args:
+        id (str): Entity's ID. Defaults to "".
         name (str, optional): Entity's name. Defaults to "".
         description (str, optional): Entity's description. Defaults to "".
-        path (str, optional): Entity's path. Defaults to "".
         icon (str, optional): Entity's icon. Defaults to "".
-        versions (list): Entity's version. Defaults to [].
+        versions (list: class: "Version"): Entity's version. Defaults to [].
     """
-    def __init__(self, id = "", name = "", description = "", path = "", icon = "", versions=[]):
+    def __init__(self, id = "", name = "", description = "", icon = "", versions=[]):
         self.__id           = id
         self.__name         = name
         self.__description  = description
 
-        self.__path         = path
         self.__icon         = icon
         self.__versions     = versions
         
@@ -69,25 +68,7 @@ class Entity():
             description (str): The description of the entity
         """
         self.__description = description
-    
-    @property
-    def path(self):
-        """Get the path of the entity.
-
-        Returns:
-            str : The path of the entity.
-        """
-        return self.__path
-    
-    @path.setter
-    def path(self, path):
-        """Set the path of the entity.
-
-        Args:
-            path (str): The path of the entity
-        """
-        self.__path = path
-    
+        
     @property
     def icon(self):
         """Get the icon of the entity.

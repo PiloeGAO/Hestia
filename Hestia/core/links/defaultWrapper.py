@@ -12,11 +12,11 @@ from ..category  import Category
 from ..entity    import Entity
 
 class DefaultWrapper(object):
+    """Default wrapper class.
+    """
     def __init__(self):
         self._username  = getpass.getuser() + "(Local Mode)"
         self.__active   = False
-    
-    
     
     @property
     def connected(self):
