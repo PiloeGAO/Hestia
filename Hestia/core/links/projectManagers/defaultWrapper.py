@@ -7,10 +7,6 @@
 """
 import getpass
 
-from ..project   import Project
-from ..category  import Category
-from ..entity    import Entity
-
 class DefaultWrapper(object):
     """Default wrapper class.
     """

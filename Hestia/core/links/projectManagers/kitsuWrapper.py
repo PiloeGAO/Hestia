@@ -8,7 +8,7 @@
 import os, tempfile
 import gazu
 
-from ..defaultWrapper   import DefaultWrapper
+from .defaultWrapper   import DefaultWrapper
 from ....core.project   import Project
 from ....core.category  import Category
 from ....core.entity    import Entity

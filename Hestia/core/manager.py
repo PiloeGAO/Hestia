@@ -8,8 +8,8 @@
 import shutil
 import tempfile, atexit
 
-from .links.defaultWrapper      import DefaultWrapper
-from .links.kitsu.kitsuWrapper  import KitsuWrapper
+from .links.projectManagers.defaultWrapper      import DefaultWrapper
+from .links.projectManagers.kitsuWrapper  import KitsuWrapper
 
 from .project                   import Project
 
