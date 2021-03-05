@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import logging
+import logging, os
 
 try:
     from maya import cmds
@@ -57,3 +57,16 @@ class MayaIntegration(DefaultIntegration):
             pluginActive = False
 
         return pluginActive
+    
+    def loadAsset(self, assetPath=""):
+        """Load the selected asset inside of the scene.
+
+        Returns:
+            bool: Status of the import.
+        """
+        if(not os.path.exists(assetPath)):
+            return False
+        
+        cmds.file(assetPath, i=True)
+        
+        return True

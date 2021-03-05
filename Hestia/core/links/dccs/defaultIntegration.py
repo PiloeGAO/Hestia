@@ -38,3 +38,11 @@ class DefaultIntegration(object):
             bool: Status of the loading.
         """
         return NotImplemented
+    
+    def loadAsset(self, assetPath=""):
+        """Load the selected asset inside of the scene.
+
+        Returns:
+            bool: Status of the import.
+        """
+        return NotImplemented

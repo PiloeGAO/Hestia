@@ -6,6 +6,7 @@
     :version:   0.0.1
 """
 from os import path
+import logging
 
 from Qt import QtWidgets
 
@@ -79,7 +80,8 @@ class EntityWidget(QtWidgets.QWidget):
     def importAsset(self):
         """Function that invoke the import in core.
         """
-        print("Import %s" % self.__name)
+        logging.info("Import %s" % self.__name)
+        self.__manager.integration.loadAsset(assetPath = self.__currentVersion.outputPath)
     
     def getVersionsNames(self):
         """Getting versions names from version class.
