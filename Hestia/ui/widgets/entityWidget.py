@@ -77,7 +77,7 @@ class EntityWidget(QtWidgets.QWidget):
         """
         versionsNames = []
         for version in self.__versions:
-            versionsNames.append(version.name)
+            versionsNames.append("%s (%s)" % (version.name, version.type))
         
         if(len(versionsNames) == 0):
             return ["No versions available."]
