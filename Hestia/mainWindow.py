@@ -26,7 +26,7 @@ class MainWindow(QtWidgets.QWidget):
         winH (int, optional): Window height. Defaults to 480.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager=Manager(), mode="local", winW = 640, winH = 480, parent=None):
+    def __init__(self, manager=Manager(integration="standalone"), mode="local", winW = 640, winH = 480, parent=None):
         super(MainWindow, self).__init__(parent=parent)
         self.__manager = manager
 

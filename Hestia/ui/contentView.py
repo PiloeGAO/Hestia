@@ -96,7 +96,8 @@ class ContentView(QtWidgets.QWidget):
                         
                         # Create the widget.
                         # TODO: Set the icon scale to it's max scale.
-                        entity = EntityWidget(name=name,
+                        entity = EntityWidget(manager=self.__manager,
+                                            name=name,
                                             description=description,
                                             iconPath=icon,
                                             iconSize=100,

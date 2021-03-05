@@ -24,17 +24,25 @@ class EntityWidget(QtWidgets.QWidget):
             versionList (list, optional): [description]. Defaults to [].
             parent ([type], optional): [description]. Defaults to None.
     """
-    def __init__(self, name="", description="", iconPath="", iconSize=64, status=1, versionList=[], parent=None):
+    def __init__(self, manager=None, name="", description="", iconPath="", iconSize=64, status=1, versionList=[], parent=None):
         super(EntityWidget, self).__init__(parent=parent)
+        self.__manager = manager
+        
+        self.__rootPath = path.dirname(path.abspath(__file__))
 
-        self.__defaultIcon = "./ui/icons/card-image.svg"
+        self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
 
         self.__name           = name
         self.__description    = description
         self.__icon           = iconPath if path.exists(iconPath) else self.__defaultIcon
         self.__iconSize       = iconSize
-        self.__status         = 0 if len(versionList) == 0 else 1
         self.__versions       = versionList
+        self.__currentVersion = self.__versions[0] if len(self.__versions) > 0 else None
+
+        if(len(self.__versions) > 0):
+            self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
+        else:
+            self.__status = 0
 
         self.initUI()
     
@@ -54,7 +62,11 @@ class EntityWidget(QtWidgets.QWidget):
         self.verticalLayout.addWidget(self.iconButton)
 
         # Version.
-        self.versionDropDown = DropDown("Version", "Current version of the asset", self.getVersionsNames(), 0)
+        self.versionDropDown = DropDown(name="Version",
+                                        description="Current version of the asset",
+                                        datas=self.getVersionsNames(),
+                                        defaultValue=0,
+                                        functionToInvoke=self.updateEntity())
         self.verticalLayout.addWidget(self.versionDropDown)
 
         self.verticalLayout.addStretch(1)
@@ -83,3 +95,23 @@ class EntityWidget(QtWidgets.QWidget):
             return ["No versions available."]
 
         return versionsNames
+    
+    def getDropDownValue(self):
+        """Get the dropdown value (workaround to avoid Attribute Error).
+
+        Returns:
+            int: DropDown Value
+        """
+        try:
+            return self.versionDropDown.currentValue
+        except AttributeError:
+            return 0
+
+    def updateEntity(self):
+        """Update the entity widget with the new selected version.
+        """
+        if(len(self.__versions) > 0):
+            self.__currentVersion = self.__versions[self.getDropDownValue()]
+
+            self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
+            self.iconButton.changeButtonStatus(self.__status)

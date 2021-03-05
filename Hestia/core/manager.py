@@ -5,10 +5,9 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import shutil
+import os, shutil
 import tempfile, atexit
 
-from .links.dccs.mayaIntegration            import MayaIntegration
 from .links.dccs.defaultIntegration         import DefaultIntegration
 
 from .links.projectManagers.defaultWrapper  import DefaultWrapper
@@ -26,6 +25,7 @@ class Manager():
         self.__version = "0.0.1"
 
         if(integration == "Maya"):
+            from .links.dccs.mayaIntegration import MayaIntegration
             self.__integration = MayaIntegration()
         else:
             self.__integration = DefaultIntegration()

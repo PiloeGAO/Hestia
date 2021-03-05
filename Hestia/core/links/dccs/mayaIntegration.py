@@ -9,7 +9,7 @@ import logging
 
 try:
     from maya import cmds
-except ModuleNotFoundError:
+except:
     logging.error("Maya Libraries not found!")
 else:
     global integrationActive
