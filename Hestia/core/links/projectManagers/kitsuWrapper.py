@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import os, tempfile
+import os, logging
 import gazu
 
 from .defaultWrapper   import DefaultWrapper
@@ -95,12 +95,14 @@ class KitsuWrapper(DefaultWrapper):
             try:
                 preview_file = gazu.files.get_preview_file(assetData["preview_file_id"])
             except gazu.exception.NotAllowedException:
-                print("%s : Acces refused to preview." % assetData["name"])
+                logging.debug("%s : Acces refused to preview." % assetData["name"])
             else:
                 if(preview_file["is_movie"]):
-                    print("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
+                    logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
+                    icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
+                    gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
                 else:
-                    print("%s : Loading preview." % assetData["name"])
+                    logging.debug("%s : Loading preview." % assetData["name"])
                     icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
                     gazu.files.download_preview_file(preview_file, icon_path)
 
