@@ -30,6 +30,7 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             list: str: File formats enables.
         """
+        logging.info("Initialize File Formats.")
         self._availableFormats = [".ma", ".mb"]
 
         pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll"]}
