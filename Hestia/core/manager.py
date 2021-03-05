@@ -8,10 +8,13 @@
 import shutil
 import tempfile, atexit
 
-from .links.projectManagers.defaultWrapper      import DefaultWrapper
-from .links.projectManagers.kitsuWrapper  import KitsuWrapper
+from .links.dccs.mayaIntegration            import MayaIntegration
+from .links.dccs.defaultIntegration         import DefaultIntegration
 
-from .project                   import Project
+from .links.projectManagers.defaultWrapper  import DefaultWrapper
+from .links.projectManagers.kitsuWrapper    import KitsuWrapper
+
+from .project                               import Project
 
 class Manager():
     """Manager class.
@@ -19,8 +22,13 @@ class Manager():
     Args:
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, projects = [Project(name="local", description="Local file system.")], **kwargs):
+    def __init__(self, integration = "standalone", projects = [Project(name="local", description="Local file system.")], **kwargs):
         self.__version = "0.0.1"
+
+        if(integration == "Maya"):
+            self.__integration = MayaIntegration()
+        else:
+            self.__integration = DefaultIntegration()
 
         self.__tempFolder = tempfile.mkdtemp()
         atexit.register(shutil.rmtree, self.__tempFolder)
@@ -30,6 +38,15 @@ class Manager():
         self.__projects = projects
         self.__currentProject = 0
     
+    @property
+    def integration(self):
+        """Get the current integration used.
+
+        Returns:
+            class: "DefaultIntegration" : Get the integration class to communicate with the DCC.
+        """
+        return self.__integration
+
     @property
     def tempFolder(self):
         """Get the temporary folder of this instance.

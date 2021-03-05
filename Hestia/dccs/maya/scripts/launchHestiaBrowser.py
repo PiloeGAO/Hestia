@@ -19,7 +19,7 @@ def launchBrowser():
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
     mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
 
-    hestiaManager = Manager()
+    hestiaManager = Manager(integration="Maya")
 
     browser = MainWindow(manager=hestiaManager, mode="kitsu")
     browser.show()
