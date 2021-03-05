@@ -5,6 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
+import shutil
+import tempfile, atexit
 
 from .links.defaultWrapper      import DefaultWrapper
 from .links.kitsu.kitsuWrapper  import KitsuWrapper
@@ -20,10 +22,22 @@ class Manager():
     def __init__(self, projects = [Project(name="local", description="Local file system.")], **kwargs):
         self.__version = "0.0.1"
 
+        self.__tempFolder = tempfile.mkdtemp()
+        atexit.register(shutil.rmtree, self.__tempFolder)
+        
         self.__link = DefaultWrapper()
 
         self.__projects = projects
         self.__currentProject = 0
+    
+    @property
+    def tempFolder(self):
+        """Get the temporary folder of this instance.
+
+        Returns:
+            str: Folder Path.
+        """
+        return self.__tempFolder
 
     @property
     def projects(self):
@@ -117,7 +131,7 @@ class Manager():
             and kwargs["api"] != ""
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
-            self.__link = KitsuWrapper(api=kwargs["api"])
+            self.__link = KitsuWrapper(manager=self, api=kwargs["api"])
             isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
 
             if(isUserLoged):

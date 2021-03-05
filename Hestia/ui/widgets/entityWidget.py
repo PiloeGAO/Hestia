@@ -27,7 +27,7 @@ class EntityWidget(QtWidgets.QWidget):
     def __init__(self, name="", description="", iconPath="", iconSize=64, status=1, versionList=[], parent=None):
         super(EntityWidget, self).__init__(parent=parent)
 
-        self.__defaultIcon = "./ui/icons/receipt.svg"
+        self.__defaultIcon = "./ui/icons/card-image.svg"
 
         self.__name           = name
         self.__description    = description

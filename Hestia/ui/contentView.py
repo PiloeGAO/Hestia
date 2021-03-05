@@ -91,8 +91,6 @@ class ContentView(QtWidgets.QWidget):
                         description = self.__entities[count].description
 
                         icon = self.__entities[count].icon
-                        if(icon == ""):
-                            icon = self.__rootPath + "/icons/card-image.svg"
                         
                         versions = self.__entities[count].versions
                         

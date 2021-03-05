@@ -5,7 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import gazu, json
+import os, tempfile
+import gazu
 
 from ..defaultWrapper   import DefaultWrapper
 from ....core.project   import Project
@@ -17,10 +18,12 @@ class KitsuWrapper(DefaultWrapper):
     """Kitsu wrapper class.
 
     Args:
+        manager (class: "Manager"): The Hestia Manager.
         api (str): Kitsu api address. Defaults to "".
     """
-    def __init__(self, api=""):
+    def __init__(self, manager, api=""):
         super(KitsuWrapper, self).__init__()
+        self.__manager = manager
         self.__api      = api
         self.__active   = False
         self._username = ""
@@ -67,6 +70,9 @@ class KitsuWrapper(DefaultWrapper):
         Returns:
             class: "Project": Project generated from kitsu.
         """
+        # Setting a temporary folder to save previews.
+        tempPath = self.__manager.tempFolder
+
         # Get and create a new project.
         newProject = Project(id=project["id"], name=project["name"], description=project["description"])
 
@@ -84,11 +90,21 @@ class KitsuWrapper(DefaultWrapper):
             # Get all datas for asset.
             assetData = gazu.asset.get_asset(asset["id"])
 
-            # TODO: Make a proper implementation of thumbnail download.
-            # Download the preview picture.
-            # path = "/datas/" + assetData["preview_file_id"] + ".png"
-            # gazu.files.download_preview_file_thumbnail(assetData["preview_file_id"], path)
+            # Getting the preview picture.
+            icon_path = ""
+            try:
+                preview_file = gazu.files.get_preview_file(assetData["preview_file_id"])
+            except gazu.exception.NotAllowedException:
+                print("%s : Acces refused to preview." % assetData["name"])
+            else:
+                if(preview_file["is_movie"]):
+                    print("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
+                else:
+                    print("%s : Loading preview." % assetData["name"])
+                    icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
+                    gazu.files.download_preview_file(preview_file, icon_path)
 
+            # Output versionning.
             versions = []
             outputs = gazu.files.all_output_files_for_entity(assetData)
 
@@ -103,10 +119,11 @@ class KitsuWrapper(DefaultWrapper):
 
                 versions.append(newVersion)
 
+            # Buildint the Entity with all datas.
             newAsset = Entity(id=asset["id"],
                                 name=asset["name"],
                                 description=asset["description"],
-                                icon="",
+                                icon=icon_path,
                                 versions=versions)
             
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]

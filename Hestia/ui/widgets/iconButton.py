@@ -64,14 +64,15 @@ class IconButton(QtWidgets.QWidget):
         # Create a button.
         self.button = QtWidgets.QPushButton()
 
-        if(not os.path.isfile(self._iconPath)):
-            logging.info("No icon found, use text instead.")
-            # Add text to button.
-            self.button.setText(self._name)
-        else:
+        # Add Icon to button.
+        if(os.path.isfile(self._iconPath)):
             # Add Icon to button.
             self.button.setIcon(QtGui.QIcon(self._iconPath))
             self.button.setIconSize(QtCore.QSize(self._iconScale, self._iconScale))
+        else:
+            logging.info("No icon found, use text instead.")
+            # Add text to button.
+            self.button.setText(self._name)
         
         # Add description as tooltip.
         self.button.setToolTip(self._description)
