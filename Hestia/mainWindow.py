@@ -5,7 +5,7 @@
     :version:   0.0.1
     :brief:     Class to create the main window based on QtWidgets.  
 """
-from Qt import QtWidgets
+from Qt import QtWidgets, QtCore
 
 from .core.manager    import Manager
 
@@ -45,7 +45,7 @@ class MainWindow(QtWidgets.QWidget):
         """
 
         # Set the window title.
-        self.setWindowTitle("Hestia")
+        self.setWindowTitle("Hestia Browser")
         
         # Set the window size.
         self.resize(self.__windowWidth, self.__windowHeight)

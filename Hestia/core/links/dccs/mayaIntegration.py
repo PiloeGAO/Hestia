@@ -65,8 +65,21 @@ class MayaIntegration(DefaultIntegration):
             bool: Status of the import.
         """
         if(not os.path.exists(assetPath)):
+            logging.error("File not found.")
             return False
         
         cmds.file(assetPath, i=True)
         
         return True
+    
+    def loadShot(self, shotPath=""):
+        """Load the selected shot inside of the scene.
+
+        Returns:
+            bool: Status of the import.
+        """
+        if(not os.path.exists(shotPath)):
+            logging.error("File not found.")
+            return False
+        
+        return NotImplemented

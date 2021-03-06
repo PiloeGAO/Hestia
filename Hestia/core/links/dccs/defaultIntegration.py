@@ -46,3 +46,11 @@ class DefaultIntegration(object):
             bool: Status of the import.
         """
         return NotImplemented
+    
+    def loadShot(self, shotPath=""):
+        """Load the selected shot inside of the scene.
+
+        Returns:
+            bool: Status of the import.
+        """
+        return NotImplemented

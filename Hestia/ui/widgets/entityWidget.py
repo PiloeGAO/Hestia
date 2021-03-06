@@ -81,7 +81,15 @@ class EntityWidget(QtWidgets.QWidget):
         """Function that invoke the import in core.
         """
         logging.info("Import %s" % self.__name)
-        self.__manager.integration.loadAsset(assetPath = self.__currentVersion.outputPath)
+        
+        currentProject = self.__manager.projects[self.__manager.currentProject]
+
+        if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
+            self.__manager.integration.loadAsset(assetPath = self.__currentVersion.outputPath)
+        elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+            self.__manager.integration.loadShot(shotPath = self.__currentVersion.outputPath)
+        else:
+            logging.error("Load failed: not supported type.")
     
     def getVersionsNames(self):
         """Getting versions names from version class.
