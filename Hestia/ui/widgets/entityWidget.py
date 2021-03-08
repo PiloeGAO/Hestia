@@ -25,19 +25,20 @@ class EntityWidget(QtWidgets.QWidget):
             versionList (list, optional): [description]. Defaults to [].
             parent ([type], optional): [description]. Defaults to None.
     """
-    def __init__(self, manager=None, name="", description="", iconPath="", iconSize=64, status=1, versionList=[], parent=None):
+    def __init__(self, manager=None, asset=None, iconSize=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)
-        self.__manager = manager
+        self.__manager  = manager
+        self.__asset    = asset
         
         self.__rootPath = path.dirname(path.abspath(__file__))
 
         self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
 
-        self.__name           = name
-        self.__description    = description
-        self.__icon           = iconPath if path.exists(iconPath) else self.__defaultIcon
+        self.__name           = asset.name
+        self.__description    = asset.description
+        self.__icon           = asset.icon if path.exists(asset.icon) else self.__defaultIcon
         self.__iconSize       = iconSize
-        self.__versions       = versionList
+        self.__versions       = asset.versions
         self.__currentVersion = self.__versions[0] if len(self.__versions) > 0 else None
 
         if(len(self.__versions) > 0):
@@ -85,9 +86,12 @@ class EntityWidget(QtWidgets.QWidget):
         currentProject = self.__manager.projects[self.__manager.currentProject]
 
         if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
-            self.__manager.integration.loadAsset(assetPath = self.__currentVersion.outputPath)
+            self.__manager.integration.loadAsset(asset = self.__asset,
+                                                version = self.__currentVersion)
+
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             self.__manager.integration.loadShot(shotPath = self.__currentVersion.outputPath)
+
         else:
             logging.error("Load failed: not supported type.")
     

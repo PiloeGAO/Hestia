@@ -86,23 +86,12 @@ class ContentView(QtWidgets.QWidget):
                     count = x + y * self.xSize
 
                     if(count < entitiesCount):
-                        # Getting entity datas.
-                        name = self.__entities[count].name
-                        description = self.__entities[count].description
-
-                        icon = self.__entities[count].icon
-                        
-                        versions = self.__entities[count].versions
-                        
                         # Create the widget.
                         # TODO: Set the icon scale to it's max scale.
                         entity = EntityWidget(manager=self.__manager,
-                                            name=name,
-                                            description=description,
-                                            iconPath=icon,
+                                            asset=self.__entities[count],
                                             iconSize=100,
-                                            status=1,
-                                            versionList=versions)
+                                            status=1)
                         
                         self.grid.addWidget(entity, y, x)
             

@@ -58,17 +58,39 @@ class MayaIntegration(DefaultIntegration):
 
         return pluginActive
     
-    def loadAsset(self, assetPath=""):
+    def loadAsset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
         Returns:
             bool: Status of the import.
         """
-        if(not os.path.exists(assetPath)):
+        if(not os.path.exists(version.outputPath)):
             logging.error("File not found.")
             return False
+
+        # Importing the asset and getting the transform node.
+        before = set(cmds.ls(type="transform"))
+        cmds.file(version.outputPath, i=True)
+        after = set(cmds.ls(type="transform"))
+        imported = after - before
+
+        #cmds.select(clear=True)
+        cmds.select(imported, r=True)
         
-        cmds.file(assetPath, i=True)
+        # Setting needed attributes for shot assembly.
+        cmds.addAttr(attributeType="bool", hidden=1,
+                    longName="isHestiaAsset", shortName="isHstAsst")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".isHestiaAsset", 1)
+
+        cmds.addAttr(dataType="string", hidden=1,
+                    longName="hestiaAssetID", shortName="hestiaAsstID")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".assetID", str(asset.id), type="string")
+        
+        cmds.addAttr(dataType="string", hidden=1,
+                    longName="hestiaVersionID", shortName="hestiaVrsID")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".versionID", str(version.id), type="string")
+
+        
         
         return True
     
