@@ -22,11 +22,15 @@ class LoginWindow(QtWidgets.QWidget):
         winH (int, optional): Window height. Defaults to 320.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, mainWindow, service, winW = 240, winH = 320, parent=None):
+    def __init__(self, manager, mainWindow, service, winW = 330, winH = 240, parent=None):
         super(LoginWindow, self).__init__(parent=parent)
         self.__manager      = manager
         self.__mainWindow   = mainWindow
         self.__service      = service
+
+        # Set window preferences.
+        self.__windowWidth = winW
+        self.__windowHeight = winH
 
         self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
@@ -50,6 +54,8 @@ class LoginWindow(QtWidgets.QWidget):
         # Set the window title.
         self.setWindowTitle("Hestia - Login to %s" % self.__service)
         self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowCloseButtonHint)
+        
+        self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
         self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
@@ -70,7 +76,7 @@ class LoginWindow(QtWidgets.QWidget):
         self.password = LineEdit(name="Password", description="Password", defaultValue="", isPassword=True)
         self.mainLayout.addWidget(self.password, 2, 0)
 
-        # Create the erro window label.
+        # Create the error window label.
         self.errorLabel = QtWidgets.QLabel("Login failed, please verify your login informations.")
         self.errorLabel.hide()
         self.mainLayout.addWidget(self.errorLabel, 3, 0)
