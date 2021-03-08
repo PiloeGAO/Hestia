@@ -5,6 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
+from genericpath import exists
 import logging, os
 
 try:
@@ -68,14 +69,27 @@ class MayaIntegration(DefaultIntegration):
             logging.error("File not found.")
             return False
 
+        objMatrix = []
+        
+        if(cmds.attributeQuery("isHestiaAsset", node=cmds.ls(type="transform")[0], exists=True)):
+            if(cmds.getAttr(cmds.ls(type="transform")[0] + ".hestiaAssetID") == str(asset.id)
+                and cmds.getAttr(cmds.ls(type="transform")[0] + ".hestiaVersionID") == str(version.id)):
+                # Saving the previous version matrix.
+                objMatrix = cmds.getAttr(cmds.ls(type="transform")[0] + ".matrix")
+                # Deleting the previous version.
+                cmds.delete(cmds.ls(type="transform")[0])
+        
         # Importing the asset and getting the transform node.
         before = set(cmds.ls(type="transform"))
         cmds.file(version.outputPath, i=True)
         after = set(cmds.ls(type="transform"))
         imported = after - before
 
-        #cmds.select(clear=True)
         cmds.select(imported, r=True)
+
+        # In case of version change, set the new object matrix from the previous one.
+        if(objMatrix != []):
+            cmds.setAttr(cmds.ls(type="transform")[0] + ".matrix", objMatrix)
         
         # Setting needed attributes for shot assembly.
         cmds.addAttr(attributeType="bool", hidden=1,
@@ -84,14 +98,12 @@ class MayaIntegration(DefaultIntegration):
 
         cmds.addAttr(dataType="string", hidden=1,
                     longName="hestiaAssetID", shortName="hestiaAsstID")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".assetID", str(asset.id), type="string")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaAssetID", str(asset.id), type="string")
         
         cmds.addAttr(dataType="string", hidden=1,
                     longName="hestiaVersionID", shortName="hestiaVrsID")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".versionID", str(version.id), type="string")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaVersionID", str(version.id), type="string")
 
-        
-        
         return True
     
     def loadShot(self, shotPath=""):
