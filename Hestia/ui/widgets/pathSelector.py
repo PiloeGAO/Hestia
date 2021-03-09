@@ -5,9 +5,6 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-
-import logging
-
 from Qt             import QtWidgets
 
 class PathSelector(QtWidgets.QWidget):
@@ -80,8 +77,6 @@ class PathSelector(QtWidgets.QWidget):
         """
         self._path = self.pathDisplay.text()
 
-        logging.info("%s edited manually to %s", self._name, self._path)
-
     def browseFunction(self):
         """Open popup to select the targeted directory.
         """
@@ -100,5 +95,3 @@ class PathSelector(QtWidgets.QWidget):
 
         # Set text in QLineEdit.
         self.pathDisplay.setText(path)
-
-        logging.info("%s changed path to %s", self._name, path)

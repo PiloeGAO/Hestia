@@ -6,7 +6,6 @@
     :version:   0.0.1
 """
 from os import path
-import logging
 
 from Qt import QtWidgets
 
@@ -81,7 +80,7 @@ class EntityWidget(QtWidgets.QWidget):
     def importAsset(self):
         """Function that invoke the import in core.
         """
-        logging.info("Import %s" % self.__name)
+        self.__manager.logging.info("Import %s" % self.__name)
         
         currentProject = self.__manager.projects[self.__manager.currentProject]
 
@@ -93,7 +92,7 @@ class EntityWidget(QtWidgets.QWidget):
             self.__manager.integration.loadShot(shotPath = self.__currentVersion.outputPath)
 
         else:
-            logging.error("Load failed: not supported type.")
+            self.__manager.logging.error("Load failed: not supported type.")
     
     def getVersionsNames(self):
         """Getting versions names from version class.

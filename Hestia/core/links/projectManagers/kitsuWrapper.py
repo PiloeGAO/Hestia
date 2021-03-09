@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import os, logging
+import os
 import gazu
 
 from .defaultWrapper   import DefaultWrapper
@@ -38,7 +38,7 @@ class KitsuWrapper(DefaultWrapper):
         try:
             gazu.client.set_host(self.__api)
         except gazu.exception.HostException:
-            logging.error("API address is incorrect.")
+            self.__manager.logging.error("API address is incorrect.")
             return False
         else:
             self.__active = True
@@ -46,7 +46,7 @@ class KitsuWrapper(DefaultWrapper):
         try:
             gazu.log_in(username, password)
         except gazu.exception.AuthFailedException:
-            logging.info("Failed to login.")
+            self.__manager.logging.info("Failed to login.")
             return False
         else:
             self._username = username + " (Online Mode: Kitsu)"
@@ -58,7 +58,7 @@ class KitsuWrapper(DefaultWrapper):
         Returns:
             list: Projects datas.
         """
-        logging.info("Getting users open projects.")
+        self.__manager.logging.info("Getting users open projects.")
         if(self.__active == False):
             return ConnectionError
         
@@ -73,7 +73,7 @@ class KitsuWrapper(DefaultWrapper):
         Returns:
             class: "Project": Project generated from kitsu.
         """
-        logging.info("Getting datas for: %s" % project["name"])
+        self.__manager.logging.info("Getting datas for: %s" % project["name"])
         # Setting a temporary folder to save previews.
         tempPath = self.__manager.tempFolder
 
@@ -87,7 +87,7 @@ class KitsuWrapper(DefaultWrapper):
             newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets")
             newProject.addCategory(newCategory)
         
-        logging.info("Categories loaded.")
+        self.__manager.logging.info("Categories loaded.")
 
         # Get, create and add assets to categories.
         assets = gazu.asset.all_assets_for_project(project)
@@ -101,14 +101,14 @@ class KitsuWrapper(DefaultWrapper):
             try:
                 preview_file = gazu.files.get_preview_file(assetData["preview_file_id"])
             except gazu.exception.NotAllowedException:
-                logging.debug("%s : Acces refused to preview." % assetData["name"])
+                self.__manager.logging.debug("%s : Acces refused to preview." % assetData["name"])
             else:
                 if(preview_file["is_movie"]):
-                    logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
+                    self.__manager.logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
                     icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
                     gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
                 else:
-                    logging.debug("%s : Loading preview." % assetData["name"])
+                    self.__manager.logging.debug("%s : Loading preview." % assetData["name"])
                     icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
                     gazu.files.download_preview_file(preview_file, icon_path)
 
@@ -138,7 +138,7 @@ class KitsuWrapper(DefaultWrapper):
             assetCategory.addEntity(newAsset)
         
         
-        logging.info("Assets loaded.")
+        self.__manager.logging.info("Assets loaded.")
 
         # Get, create and add sequences to project.
         sequences = gazu.shot.all_sequences_for_project(project)
@@ -152,7 +152,7 @@ class KitsuWrapper(DefaultWrapper):
             newProject.addCategory(newCategory)
         
         
-        logging.info("Sequences loaded.")
+        self.__manager.logging.info("Sequences loaded.")
 
         # Get, create and add shots to sequences.
         shots = gazu.shot.all_shots_for_project(project)
@@ -170,6 +170,6 @@ class KitsuWrapper(DefaultWrapper):
             shotSequence.addEntity(newShot)
 
         
-        logging.info("Shots loaded.")
+        self.__manager.logging.info("Shots loaded.")
 
         return newProject

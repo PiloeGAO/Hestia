@@ -28,6 +28,7 @@ class MainWindow(QtWidgets.QWidget):
     """
     def __init__(self, manager=Manager(integration="standalone"), mode="local", winW = 640, winH = 480, parent=None):
         super(MainWindow, self).__init__(parent=parent)
+        # Defining the Manager.
         self.__manager = manager
 
         # Set window preferences.

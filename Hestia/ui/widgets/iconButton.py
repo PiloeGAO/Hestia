@@ -5,8 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-
-import os, logging
+import os
 
 from Qt import QtWidgets, QtGui, QtCore
 
@@ -70,7 +69,6 @@ class IconButton(QtWidgets.QWidget):
             self.button.setIcon(QtGui.QIcon(self._iconPath))
             self.button.setIconSize(QtCore.QSize(self._iconScale, self._iconScale))
         else:
-            logging.debug("No icon found, use text instead.")
             # Add text to button.
             self.button.setText(self._name)
         

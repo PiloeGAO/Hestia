@@ -5,15 +5,15 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-from genericpath import exists
-import logging, os
+import os
+
+global integrationActive
 
 try:
     from maya import cmds
 except:
-    logging.error("Maya Libraries not found!")
+    integrationActive = False
 else:
-    global integrationActive
     integrationActive = True
 
 from .defaultIntegration import DefaultIntegration
@@ -21,7 +21,12 @@ from .defaultIntegration import DefaultIntegration
 class MayaIntegration(DefaultIntegration):
     """Default integration class.
     """
-    def __init__(self):
+    def __init__(self, manager=None):
+        self.__manager = manager
+
+        if(not integrationActive):
+            self.__manager.logging.error("Maya Libraries not found!")
+
         self._active = integrationActive
         self.initializeFileFormats()
     
@@ -31,7 +36,7 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             list: str: File formats enables.
         """
-        logging.info("Initialize File Formats.")
+        self.__manager.logging.info("Initialize File Formats.")
         self._availableFormats = [".ma", ".mb"]
 
         pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll"]}
@@ -54,7 +59,7 @@ class MayaIntegration(DefaultIntegration):
             cmds.loadPlugin(pluginName)
             pluginActive = True
         except RuntimeError:
-            logging.error("Failed to load: " + pluginName)
+            self.__manager.logging.error("Failed to load: " + pluginName)
             pluginActive = False
 
         return pluginActive
@@ -66,7 +71,7 @@ class MayaIntegration(DefaultIntegration):
             bool: Status of the import.
         """
         if(not os.path.exists(version.outputPath)):
-            logging.error("File not found.")
+            self.__manager.logging.error("File not found.")
             return False
 
         objMatrix = []
@@ -113,7 +118,7 @@ class MayaIntegration(DefaultIntegration):
             bool: Status of the import.
         """
         if(not os.path.exists(shotPath)):
-            logging.error("File not found.")
+            self.__manager.logging.error("File not found.")
             return False
         
         return NotImplemented
