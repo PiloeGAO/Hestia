@@ -109,6 +109,10 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+venv27_win64/
+venv27_osx64
+venv38_win64/
+venv38_osx64
 
 # Spyder project settings
 .spyderproject
@@ -127,3 +131,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VSCode files
+.vscode/
