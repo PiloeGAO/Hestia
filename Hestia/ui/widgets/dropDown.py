@@ -98,7 +98,8 @@ class DropDown(QtWidgets.QWidget):
     def changeCurrentValue(self):
         """Set current value from drop down.
         """
-        self.__currentValue = self.dropDown.currentIndex()
+        if(self.dropDown.currentIndex() >= 0):
+            self.__currentValue = self.dropDown.currentIndex()
 
-        if(self.__functionToInvoke != None):
-            self.__functionToInvoke()
+            if(self.__functionToInvoke != None):
+                self.__functionToInvoke()

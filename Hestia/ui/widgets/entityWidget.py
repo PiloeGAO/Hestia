@@ -62,12 +62,12 @@ class EntityWidget(QtWidgets.QWidget):
         self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
-        # Version.
+        # Version. > Refresh bug here.
         self.versionDropDown = DropDown(name="Version",
                                         description="Current version of the asset",
                                         datas=self.getVersionsNames(),
                                         defaultValue=0,
-                                        functionToInvoke=self.updateEntity())
+                                        functionToInvoke=self.updateEntity)
         self.verticalLayout.addWidget(self.versionDropDown)
 
         self.verticalLayout.addStretch(1)
@@ -115,10 +115,7 @@ class EntityWidget(QtWidgets.QWidget):
         Returns:
             int: DropDown Value
         """
-        try:
-            return self.versionDropDown.currentValue
-        except AttributeError:
-            return 0
+        return self.versionDropDown.currentValue
 
     def updateEntity(self):
         """Update the entity widget with the new selected version.
