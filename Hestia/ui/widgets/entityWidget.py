@@ -108,20 +108,12 @@ class EntityWidget(QtWidgets.QWidget):
             return ["No versions available."]
 
         return versionsNames
-    
-    def getDropDownValue(self):
-        """Get the dropdown value (workaround to avoid Attribute Error).
-
-        Returns:
-            int: DropDown Value
-        """
-        return self.versionDropDown.currentValue
 
     def updateEntity(self):
         """Update the entity widget with the new selected version.
         """
         if(len(self.__versions) > 0):
-            self.__currentVersion = self.__versions[self.getDropDownValue()]
+            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
 
             self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
             self.iconButton.changeButtonStatus(self.__status)

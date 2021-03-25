@@ -29,6 +29,10 @@ class MayaIntegration(DefaultIntegration):
 
         self._active = integrationActive
         self.initializeFileFormats()
+
+        # Autodesk Maya support instance by using "References". 
+        self._supportInstances  = True
+        self._instances         = True
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -86,7 +90,9 @@ class MayaIntegration(DefaultIntegration):
         
         # Importing the asset and getting the transform node.
         before = set(cmds.ls(type="transform"))
-        cmds.file(version.outputPath, i=True)
+
+        self.importAsset(version=version)
+
         after = set(cmds.ls(type="transform"))
         imported = after - before
 
@@ -122,3 +128,14 @@ class MayaIntegration(DefaultIntegration):
             return False
         
         return NotImplemented
+    
+    def importAsset(self, version=None):
+        """Import the asset inside of Maya.
+
+        Args:
+            path (str, optional): Path of the asset. Defaults to "".
+        """
+        if(self._instances == True and (version.type == ".ma" or version.type == ".mb")):
+            cmds.file(version.outputPath, reference=True)
+        else:
+            cmds.file(version.outputPath, i=True)
