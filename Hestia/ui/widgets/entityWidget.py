@@ -7,7 +7,7 @@
 """
 from os import path
 
-from Qt import QtWidgets
+from Qt import QtWidgets, QtCore
 
 from .iconButton    import IconButton
 from .dropDown      import DropDown
@@ -76,6 +76,13 @@ class EntityWidget(QtWidgets.QWidget):
         self.groupBox.setLayout(self.verticalLayout)
         self.mainLayout.addWidget(self.groupBox)
         self.setLayout(self.mainLayout)
+
+    def mousePressEvent(self, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.RightButton:
+                currentProject = self.__manager.projects[self.__manager.currentProject]
+                print("Right button clicked on %s [%s] !" % (self.__name, currentProject.categories[currentProject.currentCategory].type))
+
     
     def importAsset(self):
         """Function that invoke the import in core.
