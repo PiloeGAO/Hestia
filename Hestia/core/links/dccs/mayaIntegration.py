@@ -29,6 +29,10 @@ class MayaIntegration(DefaultIntegration):
 
         self._active = integrationActive
         self.initializeFileFormats()
+
+        # Autodesk Maya support instance by using "References". 
+        self._supportInstances  = True
+        self._instances         = True
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -73,28 +77,20 @@ class MayaIntegration(DefaultIntegration):
         if(not os.path.exists(version.outputPath)):
             self.__manager.logging.error("File not found.")
             return False
-
-        objMatrix = []
-        
-        if(cmds.attributeQuery("isHestiaAsset", node=cmds.ls(type="transform")[0], exists=True)):
-            if(cmds.getAttr(cmds.ls(type="transform")[0] + ".hestiaAssetID") == str(asset.id)
-                and cmds.getAttr(cmds.ls(type="transform")[0] + ".hestiaVersionID") == str(version.id)):
-                # Saving the previous version matrix.
-                objMatrix = cmds.getAttr(cmds.ls(type="transform")[0] + ".matrix")
-                # Deleting the previous version.
-                cmds.delete(cmds.ls(type="transform")[0])
         
         # Importing the asset and getting the transform node.
         before = set(cmds.ls(type="transform"))
-        cmds.file(version.outputPath, i=True)
+
+        self.importAsset(version=version)
+
         after = set(cmds.ls(type="transform"))
         imported = after - before
 
-        cmds.select(imported, r=True)
-
-        # In case of version change, set the new object matrix from the previous one.
-        if(objMatrix != []):
-            cmds.setAttr(cmds.ls(type="transform")[0] + ".matrix", objMatrix)
+        # Create a group that will contain asset except for instances.
+        if(not self.isInstanceImport(version=version)):
+            cmds.group(imported, n=asset.name)
+        else:
+            cmds.select(imported, r=True)
         
         # Setting needed attributes for shot assembly.
         cmds.addAttr(attributeType="bool", hidden=1,
@@ -108,7 +104,7 @@ class MayaIntegration(DefaultIntegration):
         cmds.addAttr(dataType="string", hidden=1,
                     longName="hestiaVersionID", shortName="hestiaVrsID")
         cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaVersionID", str(version.id), type="string")
-
+        
         return True
     
     def loadShot(self, shotPath=""):
@@ -122,3 +118,25 @@ class MayaIntegration(DefaultIntegration):
             return False
         
         return NotImplemented
+    
+    def importAsset(self, version=None):
+        """Import the asset inside of Maya.
+
+        Args:
+            path (str, optional): Path of the asset. Defaults to "".
+        """
+        if(self.isInstanceImport(version=version)):
+            cmds.file(version.outputPath, reference=True)
+        else:
+            cmds.file(version.outputPath, i=True)
+    
+    def isInstanceImport(self, version=None):
+        """Return the status for instance import.
+
+        Returns:
+            bool: Instance status.
+        """
+        if(self._instances == True and (version.type == ".ma" or version.type == ".mb")):
+            return True
+        else:
+            return False

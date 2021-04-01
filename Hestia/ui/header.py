@@ -41,6 +41,11 @@ class Header(QtWidgets.QWidget):
         self.importAsInstance.stateChanged.connect(self.changeImportAsInstanceState)
         self.mainLayout.addWidget(self.importAsInstance)
 
+        if(self.__manager.integration.supportInstances):
+            self.importAsInstance.show()
+        else:
+            self.importAsInstance.hide()
+
         # Add spacer to header.
         self.mainLayout.addStretch()
 
@@ -60,6 +65,7 @@ class Header(QtWidgets.QWidget):
         """Change the state of the importAsInstance checkbox.
         """
         self.importAsInstanceState = self.importAsInstance.checkState()
+        self.__manager.integration.instances = self.importAsInstance.isChecked()
     
     def changeProject(self):
         """Change the project on the manager and update the mainWindow.
@@ -72,4 +78,5 @@ class Header(QtWidgets.QWidget):
         """
         projectsName = [project.name for project in self.__manager.projects]
         self.projectSelector.datas = projectsName
+
         self.update()

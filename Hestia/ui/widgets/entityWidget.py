@@ -7,7 +7,7 @@
 """
 from os import path
 
-from Qt import QtWidgets
+from Qt import QtWidgets, QtCore
 
 from .iconButton    import IconButton
 from .dropDown      import DropDown
@@ -62,12 +62,12 @@ class EntityWidget(QtWidgets.QWidget):
         self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
-        # Version.
+        # Version. > Refresh bug here.
         self.versionDropDown = DropDown(name="Version",
                                         description="Current version of the asset",
                                         datas=self.getVersionsNames(),
                                         defaultValue=0,
-                                        functionToInvoke=self.updateEntity())
+                                        functionToInvoke=self.updateEntity)
         self.verticalLayout.addWidget(self.versionDropDown)
 
         self.verticalLayout.addStretch(1)
@@ -76,6 +76,14 @@ class EntityWidget(QtWidgets.QWidget):
         self.groupBox.setLayout(self.verticalLayout)
         self.mainLayout.addWidget(self.groupBox)
         self.setLayout(self.mainLayout)
+
+    def mousePressEvent(self, event):
+        if event.type() == QtCore.QEvent.MouseButtonPress:
+            if event.button() == QtCore.Qt.RightButton:
+                currentProject = self.__manager.projects[self.__manager.currentProject]
+                print("Right button clicked on %s [%s] ! @ %s" % (self.__name, currentProject.categories[currentProject.currentCategory].type, event.globalPos()))
+                # TODO: Create a floating widget at the global position with additional features.
+
     
     def importAsset(self):
         """Function that invoke the import in core.
@@ -108,23 +116,12 @@ class EntityWidget(QtWidgets.QWidget):
             return ["No versions available."]
 
         return versionsNames
-    
-    def getDropDownValue(self):
-        """Get the dropdown value (workaround to avoid Attribute Error).
-
-        Returns:
-            int: DropDown Value
-        """
-        try:
-            return self.versionDropDown.currentValue
-        except AttributeError:
-            return 0
 
     def updateEntity(self):
         """Update the entity widget with the new selected version.
         """
         if(len(self.__versions) > 0):
-            self.__currentVersion = self.__versions[self.getDropDownValue()]
+            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
 
             self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
             self.iconButton.changeButtonStatus(self.__status)
