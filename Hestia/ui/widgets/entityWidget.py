@@ -81,7 +81,8 @@ class EntityWidget(QtWidgets.QWidget):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.RightButton:
                 currentProject = self.__manager.projects[self.__manager.currentProject]
-                print("Right button clicked on %s [%s] !" % (self.__name, currentProject.categories[currentProject.currentCategory].type))
+                print("Right button clicked on %s [%s] ! @ %s" % (self.__name, currentProject.categories[currentProject.currentCategory].type, event.globalPos()))
+                # TODO: Create a floating widget at the global position with additional features.
 
     
     def importAsset(self):
