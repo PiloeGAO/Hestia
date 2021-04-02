@@ -92,8 +92,13 @@ class MayaIntegration(DefaultIntegration):
 
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
-            cmds.group(imported, n=asset.name)
-            cmds.select(asset.name, r=True)
+            groupName = asset.name
+
+            if(cmds.objExists(groupName)):
+                groupName = groupName + "_bis"
+
+            cmds.group(imported, n=groupName)
+            cmds.select(groupName, r=True)
         else:
             cmds.select(imported, r=True)
         
@@ -116,6 +121,9 @@ class MayaIntegration(DefaultIntegration):
                     longName="hestiaVersionID", shortName="hestiaVrsID")
         cmds.setAttr(currentAsset + ".hestiaVersionID", str(version.id), type="string")
         
+        # Clear selection.
+        cmds.select( clear=True )
+
         return True
     
     def loadShot(self, asset=None, version=None):
@@ -190,6 +198,9 @@ class MayaIntegration(DefaultIntegration):
         sceneTransforms = cmds.ls(type="transform")
 
         for t in sceneTransforms:
-            print(t)
+            if(cmds.attributeQuery("isHestiaAsset", node=t, exists=True)):
+                # Getting data for Hestia assets.
+                print("%s : " % t)
+                print(cmds.xform(t, query=True, matrix=True, worldSpace=True))
 
         return False
