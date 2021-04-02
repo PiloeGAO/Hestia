@@ -83,6 +83,7 @@ class EntityWidget(QtWidgets.QWidget):
                 currentProject = self.__manager.projects[self.__manager.currentProject]
                 print("Right button clicked on %s [%s] ! @ %s" % (self.__name, currentProject.categories[currentProject.currentCategory].type, event.globalPos()))
                 # TODO: Create a floating widget at the global position with additional features.
+                self.__manager.integration.extractAssets()
 
     
     def importAsset(self):

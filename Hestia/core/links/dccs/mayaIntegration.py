@@ -93,25 +93,28 @@ class MayaIntegration(DefaultIntegration):
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
             cmds.group(imported, n=asset.name)
+            cmds.select(asset.name, r=True)
         else:
             cmds.select(imported, r=True)
         
+        currentAsset = cmds.ls(sl=True)[0]
+
         # Setting needed attributes for shot assembly.
-        cmds.addAttr(attributeType="bool", hidden=1,
+        cmds.addAttr(attributeType="bool", hidden=0,
                     longName="isHestiaAsset", shortName="isHstAsst")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".isHestiaAsset", 1)
+        cmds.setAttr(currentAsset + ".isHestiaAsset", 1)
 
-        cmds.addAttr(dataType="string", hidden=1,
+        cmds.addAttr(dataType="string", hidden=0,
                     longName="hestiaAssetID", shortName="hestiaAsstID")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaAssetID", str(asset.id), type="string")
+        cmds.setAttr(currentAsset + ".hestiaAssetID", str(asset.id), type="string")
 
-        cmds.addAttr(dataType="string", hidden=1,
+        cmds.addAttr(dataType="string", hidden=0,
                     longName="hestiaShaderID", shortName="hestiaShdrID")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaShaderID", str(""), type="string")
+        cmds.setAttr(currentAsset + ".hestiaShaderID", str(""), type="string")
         
-        cmds.addAttr(dataType="string", hidden=1,
+        cmds.addAttr(dataType="string", hidden=0,
                     longName="hestiaVersionID", shortName="hestiaVrsID")
-        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaVersionID", str(version.id), type="string")
+        cmds.setAttr(currentAsset + ".hestiaVersionID", str(version.id), type="string")
         
         return True
     
@@ -184,5 +187,9 @@ class MayaIntegration(DefaultIntegration):
     def extractAssets(self):
         """Extracts assets for shot building file.
         """
+        sceneTransforms = cmds.ls(type="transform")
+
+        for t in sceneTransforms:
+            print(t)
 
         return False
