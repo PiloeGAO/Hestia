@@ -104,6 +104,10 @@ class MayaIntegration(DefaultIntegration):
         cmds.addAttr(dataType="string", hidden=1,
                     longName="hestiaAssetID", shortName="hestiaAsstID")
         cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaAssetID", str(asset.id), type="string")
+
+        cmds.addAttr(dataType="string", hidden=1,
+                    longName="hestiaShaderID", shortName="hestiaShdrID")
+        cmds.setAttr(cmds.ls(type="transform")[0] + ".hestiaShaderID", str(""), type="string")
         
         cmds.addAttr(dataType="string", hidden=1,
                     longName="hestiaVersionID", shortName="hestiaVrsID")

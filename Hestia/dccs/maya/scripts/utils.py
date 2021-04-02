@@ -15,4 +15,5 @@ def deleteHestiaAttributes():
         if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
             cmds.deleteAttr(currentSelection, at="isHestiaAsset")
             cmds.deleteAttr(currentSelection, at="hestiaAssetID")
+            cmds.deleteAttr(currentSelection, at="hestiaShaderID")
             cmds.deleteAttr(currentSelection, at="hestiaVersionID")
