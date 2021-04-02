@@ -24,8 +24,8 @@ class KitsuWrapper(DefaultWrapper):
     def __init__(self, manager, api=""):
         super(KitsuWrapper, self).__init__()
         self.__manager = manager
-        self.__api      = api
-        self.__active   = False
+        self.__api     = api
+        self.__active  = False
         self._username = ""
 
     def login(self, username="", password=""):
@@ -50,6 +50,10 @@ class KitsuWrapper(DefaultWrapper):
             return False
         else:
             self._username = username + " (Online Mode: Kitsu)"
+
+            # Enable caching for faster download from online.
+            gazu.cache.enable()
+
             return True
     
     def getOpenProjects(self):
@@ -74,8 +78,6 @@ class KitsuWrapper(DefaultWrapper):
             class: "Project": Project generated from kitsu.
         """
         self.__manager.logging.info("Getting datas for: %s" % project["name"])
-        # Setting a temporary folder to save previews.
-        tempPath = self.__manager.tempFolder
 
         # Get and create a new project.
         newProject = Project(id=project["id"], name=project["name"], description=project["description"])
@@ -97,35 +99,10 @@ class KitsuWrapper(DefaultWrapper):
             assetData = gazu.asset.get_asset(asset["id"])
 
             # Getting the preview picture.
-            icon_path = ""
-            try:
-                preview_file = gazu.files.get_preview_file(assetData["preview_file_id"])
-            except gazu.exception.NotAllowedException:
-                self.__manager.logging.debug("%s : Acces refused to preview." % assetData["name"])
-            else:
-                if(preview_file["is_movie"]):
-                    self.__manager.logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % assetData["name"])
-                    icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
-                    gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
-                else:
-                    self.__manager.logging.debug("%s : Loading preview." % assetData["name"])
-                    icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
-                    gazu.files.download_preview_file(preview_file, icon_path)
+            icon_path = self.downloadPreview(entityData=assetData)
 
             # Output versionning.
-            versions = []
-            outputs = gazu.files.all_output_files_for_entity(assetData)
-
-            for output in outputs:
-                task_type = gazu.task.get_task_type(output["task_type_id"])
-
-                newVersion = Version(id=output["id"],
-                                        name="%s: Revision %s" % (task_type["name"], output["revision"]),
-                                        description="",
-                                        workingPath=output["source_file"]["path"],
-                                        outputPath=output["path"])
-
-                versions.append(newVersion)
+            versions = self.getVersions(assetData)
 
             # Buildint the Entity with all datas.
             newAsset = Entity(id=asset["id"],
@@ -160,11 +137,16 @@ class KitsuWrapper(DefaultWrapper):
         for shot in shots:
             shotData = gazu.shot.get_shot(shot["id"])
 
+            icon_path = "" #self.downloadPreview(entityData=shotData)
+
+            # Output versionning.
+            versions = self.getVersions(shotData)
+
             newShot = Entity(id=shot["id"],
                                 name=shot["name"],
                                 description=shot["description"],
-                                icon="",
-                                versions=[])
+                                icon=icon_path,
+                                versions=versions)
 
             shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
             shotSequence.addEntity(newShot)
@@ -173,3 +155,57 @@ class KitsuWrapper(DefaultWrapper):
         self.__manager.logging.info("Shots loaded.")
 
         return newProject
+    
+    def downloadPreview(self, entityData=None):
+        """Download the preview from Kitsu.
+
+        Args:
+            entityData (class:"gazu.entity"): Entity datas. Defaults to None.
+
+        Returns:
+            str: Path of the icon.
+        """
+        # Getting the preview picture.
+        icon_path = ""
+        tempPath = self.__manager.tempFolder
+
+        try:
+            preview_file = gazu.files.get_preview_file(entityData["preview_file_id"])
+        except gazu.exception.NotAllowedException:
+            self.__manager.logging.debug("%s : Acces refused to preview." % entityData["name"])
+        else:
+            if(preview_file["is_movie"]):
+                self.__manager.logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % entityData["name"])
+                icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
+                gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
+            else:
+                self.__manager.logging.debug("%s : Loading preview." % entityData["name"])
+                icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
+                gazu.files.download_preview_file(preview_file, icon_path)
+        
+        return icon_path
+    
+    def getVersions(self, entityData=None):
+        """Get versions for entity.
+
+        Args:
+            entityData (class:"gazu.entity", optional): Entity datas. Defaults to None.
+
+        Returns:
+            list:"Version": List of versions.
+        """
+        versions = []
+        outputs = gazu.files.all_output_files_for_entity(entityData)
+
+        for output in outputs:
+            task_type = gazu.task.get_task_type(output["task_type_id"])
+
+            newVersion = Version(id=output["id"],
+                                    name="%s: Revision %s" % (task_type["name"], output["revision"]),
+                                    description="",
+                                    workingPath=output["source_file"]["path"],
+                                    outputPath=output["path"])
+
+            versions.append(newVersion)
+        
+        return versions

@@ -71,8 +71,12 @@ class MayaIntegration(DefaultIntegration):
     def loadAsset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
+        Args:
+            asset (class:"Entity"): Asset datas. Defaults to None.
+            version (class:"Version"): Version datas. Defaults to None.
+
         Returns:
-            bool: Status of the import.
+            bool: load status.
         """
         if(not os.path.exists(version.outputPath)):
             self.__manager.logging.error("File not found.")
@@ -107,11 +111,44 @@ class MayaIntegration(DefaultIntegration):
         
         return True
     
-    def loadShot(self, shotPath=""):
+    def loadShot(self, asset=None, version=None):
         """Load the selected shot inside of the scene.
 
+        Args:
+            asset (class:"Entity"): Asset datas. Defaults to None.
+            version (class:"Version"): Version datas. Defaults to None.
+
         Returns:
-            bool: Status of the import.
+            bool: load status.
+        """
+        if(not os.path.exists(version.outputPath)):
+            self.__manager.logging.error("File not found.")
+            return False
+
+        if(version.type == ".ma" or version.type == ".mb"):
+            # Loading the file.
+            cmds.file(new=True, force=True)
+            cmds.file(version.outputPath, o=True)
+
+            return True
+
+        elif(version.type == ".hshot"):
+            # HSHOT format is a JSON file.
+            # Invoke build mechanic.
+            self.buildShot(shotPath=version.ouputPath)
+            return False
+        else:
+            return False
+
+    
+    def buildShot(self, shotPath = ""):
+        """Build the shot from shot assembly system.
+
+        Args:
+            shotPath (str): Shot path. Defaults to "".
+
+        Args:
+            shotPath (str, optional): [description]. Defaults to "".
         """
         if(not os.path.exists(shotPath)):
             self.__manager.logging.error("File not found.")

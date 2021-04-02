@@ -97,7 +97,8 @@ class EntityWidget(QtWidgets.QWidget):
                                                 version = self.__currentVersion)
 
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
-            self.__manager.integration.loadShot(shotPath = self.__currentVersion.outputPath)
+            self.__manager.integration.loadShot(asset = self.__asset,
+                                                version = self.__currentVersion)
 
         else:
             self.__manager.logging.error("Load failed: not supported type.")
