@@ -143,7 +143,6 @@ class MayaIntegration(DefaultIntegration):
             return False
         else:
             return False
-
     
     def buildShot(self, shotPath = ""):
         """Build the shot from shot assembly system.
@@ -181,3 +180,9 @@ class MayaIntegration(DefaultIntegration):
             return True
         else:
             return False
+    
+    def extractAssets(self):
+        """Extracts assets for shot building file.
+        """
+
+        return False
