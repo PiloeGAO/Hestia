@@ -137,6 +137,7 @@ class KitsuWrapper(DefaultWrapper):
         for shot in shots:
             shotData = gazu.shot.get_shot(shot["id"])
 
+            # Commented due to a bug from Gazu.
             icon_path = "" #self.downloadPreview(entityData=shotData)
 
             # Output versionning.
