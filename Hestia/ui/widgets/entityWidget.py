@@ -80,12 +80,8 @@ class EntityWidget(QtWidgets.QWidget):
     def mousePressEvent(self, event):
         if event.type() == QtCore.QEvent.MouseButtonPress:
             if event.button() == QtCore.Qt.RightButton:
-                currentProject = self.__manager.projects[self.__manager.currentProject]
-                print("Right button clicked on %s [%s] ! @ %s" % (self.__name, currentProject.categories[currentProject.currentCategory].type, event.globalPos()))
-                # TODO: Create a floating widget at the global position with additional features.
-                self.__manager.integration.extractAssets()
+                self.createRightClickMenu(event=event)
 
-    
     def importAsset(self):
         """Function that invoke the import in core.
         """
@@ -127,3 +123,36 @@ class EntityWidget(QtWidgets.QWidget):
 
             self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
             self.iconButton.changeButtonStatus(self.__status)
+    
+    def createRightClickMenu(self, event):
+        """This function invoke a floating menu at mouse position with advanced functionnalities.
+        """
+        menu = QtWidgets.QMenu()
+
+        currentProject = self.__manager.projects[self.__manager.currentProject]
+        if(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+            extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
+            extractAssets.triggered.connect(self.exportShotToHSHOT)
+
+            menu.exec_(event.globalPos())
+    
+    def exportShotToHSHOT(self):
+        """Function to export shot to hshot format.
+
+        Returns:
+            bool: Function status.
+        """
+        exportPathDialog = QtWidgets.QFileDialog()
+        exportPathDialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        exportPathDialog.setNameFilter("Hestia shot (*.hshot *.json)")
+        exportPathDialog.setViewMode(QtWidgets.QFileDialog.Detail)
+        exportPathDialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+
+        if exportPathDialog.exec_():
+            exportPath = exportPathDialog.selectedFiles()[0]
+        
+        print(exportPath)
+
+        self.__manager.integration.extractAssets()
+        
+        return True
