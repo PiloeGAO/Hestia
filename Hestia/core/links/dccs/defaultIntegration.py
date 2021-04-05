@@ -123,7 +123,18 @@ class DefaultIntegration(object):
             bool: Instance status.
         """
         return NotImplementedError
-    
+
+    def assignShaderToSelectedAsset(self, version):
+        """Assign a shader ID to an Hestia asset.
+
+        Args:
+            version (class:"Version"): Version datas. Defaults to None.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError
+
     def extractAssets(self):
         """Extracts assets for shot building file.
         """

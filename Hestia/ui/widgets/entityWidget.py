@@ -130,12 +130,29 @@ class EntityWidget(QtWidgets.QWidget):
         menu = QtWidgets.QMenu()
 
         currentProject = self.__manager.projects[self.__manager.currentProject]
-        if(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+        if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
+            assignShader = menu.addAction("Assign shader to current object")
+            assignShader.triggered.connect(self.assignShaderToSelectedAsset)
+        elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
 
-            menu.exec_(event.globalPos())
+        menu.exec_(event.globalPos())
     
+    def assignShaderToSelectedAsset(self):
+        """Fucntion to assign the shader ID to the selected asset.
+
+        Returns:
+            bool: Function status.
+        """
+
+        assignStatus = self.__manager.integration.assignShaderToSelectedAsset(version=self.__currentVersion)
+        if(assignStatus):
+            return True
+        else:
+            self.__manager.logging.error("Failed to assign shader to selection.")
+            return False
+
     def exportShotToHSHOT(self):
         """Function to export shot to hshot format.
 

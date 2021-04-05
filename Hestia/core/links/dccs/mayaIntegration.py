@@ -192,6 +192,24 @@ class MayaIntegration(DefaultIntegration):
         else:
             return False
     
+    def assignShaderToSelectedAsset(self, version):
+        """Assign a shader ID to an Hestia asset.
+
+        Args:
+            version (class:"Version"): Version datas. Defaults to None.
+
+        Returns:
+            bool: Function status.
+        """
+        currentAsset = cmds.ls(sl=True)[0]
+
+        if(cmds.attributeQuery("isHestiaAsset", node=currentAsset, exists=True)
+                and cmds.attributeQuery("hestiaShaderID", node=currentAsset, exists=True)):
+            cmds.setAttr(currentAsset + ".hestiaShaderID", str(version.id), type="string")
+            return True
+        else:
+            return False
+
     def extractAssets(self):
         """Extracts assets for shot building file.
         """
