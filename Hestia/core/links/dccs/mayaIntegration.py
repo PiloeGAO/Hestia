@@ -81,33 +81,57 @@ class MayaIntegration(DefaultIntegration):
         if(not os.path.exists(version.outputPath)):
             self.__manager.logging.error("File not found.")
             return False
-        
-        # Importing the asset and getting the transform node.
-        before = set(cmds.ls(type="transform"))
 
-        self.importAsset(version=version)
-
-        after = set(cmds.ls(type="transform"))
-        imported = after - before
-
+        currentAsset = None    
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
+            # Importing the asset and getting the transform node.
+            before = set(cmds.ls(type="transform"))
+
+            self.importAsset(asset=asset, version=version)
+
+            after = set(cmds.ls(type="transform"))
+            imported = after - before
+
+            staticAsset = 1
             groupName = asset.name
 
-            if(cmds.objExists(groupName)):
+            while(cmds.objExists(groupName)):
                 groupName = groupName + "_bis"
 
             cmds.group(imported, n=groupName)
+
             cmds.select(groupName, r=True)
+            currentAsset = cmds.ls(sl=True)[0]
         else:
+            # Importing the asset and getting the reference node.
+            before = set(cmds.ls(type="reference"))
+
+            self.importAsset(asset=asset, version=version)
+
+            after = set(cmds.ls(type="reference"))
+            imported = after - before
+
+            staticAsset = 0
+
             cmds.select(imported, r=True)
+            currentAsset = cmds.ls(sl=True)[0]
+
+            # I need to unlock the reference to add custom attributes
+            # Source: https://discourse.techart.online/t/adding-attributes-to-a-reference-node-in-maya/9274
+            cmds.getAttr(currentAsset + ".locked")
+            cmds.lockNode(currentAsset,q=1,lock=1)
+            cmds.lockNode(currentAsset,lock=0)
         
-        currentAsset = cmds.ls(sl=True)[0]
 
         # Setting needed attributes for shot assembly.
         cmds.addAttr(attributeType="bool", hidden=0,
                     longName="isHestiaAsset", shortName="isHstAsst")
         cmds.setAttr(currentAsset + ".isHestiaAsset", 1)
+        
+        cmds.addAttr(attributeType="bool", hidden=0,
+                    longName="hestiaStaticAsset", shortName="hestiaStcAsst")
+        cmds.setAttr(currentAsset + ".hestiaStaticAsset", staticAsset)
 
         cmds.addAttr(dataType="string", hidden=0,
                     longName="hestiaAssetID", shortName="hestiaAsstID")
@@ -170,14 +194,14 @@ class MayaIntegration(DefaultIntegration):
         
         return NotImplemented
     
-    def importAsset(self, version=None):
+    def importAsset(self, asset=None, version=None):
         """Import the asset inside of Maya.
 
         Args:
             path (str, optional): Path of the asset. Defaults to "".
         """
         if(self.isInstanceImport(version=version)):
-            cmds.file(version.outputPath, reference=True)
+            cmds.file(version.outputPath, reference=True, usingNamespaces=True, namespace=asset.name)
         else:
             cmds.file(version.outputPath, i=True)
     
