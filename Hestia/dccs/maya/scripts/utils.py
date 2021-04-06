@@ -25,4 +25,29 @@ def deleteHestiaAttributes():
         if(cmds.attributeQuery("hestiaVersionID", node=currentSelection, exists=True)):
             cmds.deleteAttr(currentSelection, at="hestiaVersionID")
     
-    print("Clearing finished for selection")
+    print("Clearing finished")
+
+
+def upgradeHestiaAttributes():
+    """This function clear custom attributes assigned at import.
+    """
+    print("Start upgrading assets.")
+    for currentSelection in cmds.ls(sl=True):
+        print("Upgrading %s" % currentSelection)
+        if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
+            if(not cmds.attributeQuery("hestiaStaticAsset", node=currentSelection, exists=True)):
+                cmds.addAttr(attributeType="bool", hidden=0,
+                            longName="hestiaStaticAsset", shortName="hestiaStcAsst")
+
+            if(not cmds.attributeQuery("hestiaAssetID", node=currentSelection, exists=True)):
+                cmds.addAttr(dataType="string", hidden=0,
+                            longName="hestiaAssetID", shortName="hestiaAsstID")
+
+            if(not cmds.attributeQuery("hestiaShaderID", node=currentSelection, exists=True)):
+                cmds.addAttr(dataType="string", hidden=0,
+                            longName="hestiaShaderID", shortName="hestiaShdrID")
+
+            if(not cmds.attributeQuery("hestiaVersionID", node=currentSelection, exists=True)):
+                cmds.addAttr(dataType="string", hidden=0,
+                            longName="hestiaVersionID", shortName="hestiaVrsID")
+    print("Upgrading finished")

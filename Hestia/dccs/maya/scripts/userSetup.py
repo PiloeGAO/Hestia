@@ -19,11 +19,14 @@ def initHestiaToolsMenu():
     cmds.menuItem("projectBrowser", label="Browser", command="from Hestia.dccs.maya.scripts.launchHestiaBrowser import launchBrowser; launchBrowser()", parent="hestiaToolsMenu")
 
     cmds.menuItem(divider=True, parent="hestiaToolsMenu")
-    cmds.menuItem(label="DEBUG TOOLS:", parent="hestiaToolsMenu")
-    cmds.menuItem(divider=True, parent="hestiaToolsMenu")
+    cmds.menuItem(subMenu=True, label="UTILS", parent="hestiaToolsMenu")
 
     # Add clear command to menu.
-    cmds.menuItem("clearAttributeTool", label="Clear attributes", command="from Hestia.dccs.maya.scripts.utils import deleteHestiaAttributes; deleteHestiaAttributes()", parent="hestiaToolsMenu")
+    cmds.menuItem("clearAttributeTool", label="Clear attributes", command="from Hestia.dccs.maya.scripts.utils import deleteHestiaAttributes; deleteHestiaAttributes()")
+    # Add upgrade command to menu.
+    cmds.menuItem("upgradeAttributeTool", label="Upgarde attributes", command="from Hestia.dccs.maya.scripts.utils import upgradeHestiaAttributes; upgradeHestiaAttributes()")
+    # Adding to submenu.
+    cmds.setParent( '..', menu=True )
 
 # Delay execution on UI startup
 utils.executeDeferred(initHestiaToolsMenu)
