@@ -36,6 +36,9 @@ class Manager():
         if(integration == "Maya"):
             from .links.dccs.mayaIntegration import MayaIntegration
             self.__integration = MayaIntegration(manager=self)
+        elif(integration == "Guerilla"):
+            # TODO: Create integration file.
+            self.__integration = DefaultIntegration()
         else:
             self.__integration = DefaultIntegration()
 
