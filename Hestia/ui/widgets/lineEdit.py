@@ -5,10 +5,15 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-from Qt             import QtWidgets
-
-class LineEdit(QtWidgets.QWidget):
+class LineEdit(QWidget):
     """Line Edit class.
 
     Args:
@@ -41,10 +46,10 @@ class LineEdit(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Create title.
-        self.title = QtWidgets.QLabel(self.__name + " : ")
+        self.title = QLabel(self.__name + " : ")
 
         # Add description as tooltip.
         self.title.setToolTip(self.__description)
@@ -53,11 +58,11 @@ class LineEdit(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.title)
 
         # Create the line edit.
-        self.lineEdit = QtWidgets.QLineEdit()
+        self.lineEdit = QLineEdit()
         self.lineEdit.setText(self.__currentValue)
 
         if(self.__isPassword):
-            self.lineEdit.setEchoMode(QtWidgets.QLineEdit.Password)
+            self.lineEdit.setEchoMode(QLineEdit.Password)
 
         # Connect line edit with update method.
         self.lineEdit.textChanged.connect(self.changeCurrentValue)

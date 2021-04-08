@@ -7,12 +7,18 @@
 """
 import os
 
-from Qt import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .ui.widgets.lineEdit   import LineEdit
 from .ui.widgets.iconButton import IconButton
 
-class LoginWindow(QtWidgets.QWidget):
+class LoginWindow(QWidget):
     """Login Window class.
 
     Args:
@@ -53,15 +59,15 @@ class LoginWindow(QtWidgets.QWidget):
 
         # Set the window title.
         self.setWindowTitle("Hestia - Login to %s" % self.__service)
-        self.setWindowFlags(QtCore.Qt.WindowStaysOnTopHint | QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowCloseButtonHint)
+        self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.CustomizeWindowHint | Qt.WindowCloseButtonHint)
         
         self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
-        self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
+        self.setStyle(QStyleFactory.create("Fusion"))
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout = QGridLayout()
         self.mainLayout.setSpacing(10)
 
         # Create the api input.
@@ -77,7 +83,7 @@ class LoginWindow(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.password, 2, 0)
 
         # Create the error window label.
-        self.errorLabel = QtWidgets.QLabel("Login failed, please verify your login informations.")
+        self.errorLabel = QLabel("Login failed, please verify your login informations.")
         self.errorLabel.hide()
         self.mainLayout.addWidget(self.errorLabel, 3, 0)
 

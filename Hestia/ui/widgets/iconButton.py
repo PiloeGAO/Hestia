@@ -7,9 +7,15 @@
 """
 import os
 
-from Qt import QtWidgets, QtGui, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-class IconButton(QtWidgets.QWidget):
+class IconButton(QWidget):
     """Icon Button class.
 
     Args:
@@ -47,27 +53,27 @@ class IconButton(QtWidgets.QWidget):
             scale (int): Icon scale in pixels.
         """
         self._iconScale = scale
-        self.button.setIconSize(QtCore.QSize(self._iconScale, self._iconScale))
+        self.button.setIconSize(QSize(self._iconScale, self._iconScale))
         self.update()
     
     def initUI(self):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
         
         # Set spacing and margin for the current layout.
         self.mainLayout.setSpacing(0)
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
 
         # Create a button.
-        self.button = QtWidgets.QPushButton()
+        self.button = QPushButton()
 
         # Add Icon to button.
         if(os.path.isfile(self._iconPath)):
             # Add Icon to button.
-            self.button.setIcon(QtGui.QIcon(self._iconPath))
-            self.button.setIconSize(QtCore.QSize(self._iconScale, self._iconScale))
+            self.button.setIcon(QIcon(self._iconPath))
+            self.button.setIconSize(QSize(self._iconScale, self._iconScale))
         else:
             # Add text to button.
             self.button.setText(self._name)

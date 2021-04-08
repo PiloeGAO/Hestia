@@ -5,9 +5,15 @@
     :version:   0.0.1
     :brief:     Class to create the footer of the window.  
 """
-from Qt import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-class Footer(QtWidgets.QWidget):
+class Footer(QWidget):
     def __init__(self, manager, parent=None):
         """Footer Class.
 
@@ -29,17 +35,17 @@ class Footer(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Add current logged in user.
-        self.currentUser = QtWidgets.QLabel("Current user: %s" % self.user)
+        self.currentUser = QLabel("Current user: %s" % self.user)
         self.mainLayout.addWidget(self.currentUser)
 
         # Add spacer to footer.
         self.mainLayout.addStretch()
 
         # Add current logged in user.
-        self.currentVersion = QtWidgets.QLabel("V %s" % self.version)
+        self.currentVersion = QLabel("V %s" % self.version)
         self.mainLayout.addWidget(self.currentVersion)
 
         # Set main layout to the window.

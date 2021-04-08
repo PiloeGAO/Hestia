@@ -5,12 +5,18 @@
     :version:   0.0.1
     :brief:     Class to create the header of the window.  
 """
-from Qt import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
 
-class Header(QtWidgets.QWidget):
+class Header(QWidget):
     def __init__(self, manager, mainWindow, parent=None):
         """header Class.
 
@@ -32,10 +38,10 @@ class Header(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Add import as instance checkbox.
-        self.importAsInstance = QtWidgets.QCheckBox("Instance")
+        self.importAsInstance = QCheckBox("Instance")
         self.importAsInstance.setToolTip("Import the asset as instance in the scene.")
         self.importAsInstance.setChecked(self.importAsInstanceState)
         self.importAsInstance.stateChanged.connect(self.changeImportAsInstanceState)
@@ -55,7 +61,7 @@ class Header(QtWidgets.QWidget):
 
         #TODO: ADD PREFERENCES.
         # Add preference button.
-        #self.preferenceButton = QtWidgets.QPushButton("Preferences")
+        #self.preferenceButton = QPushButton("Preferences")
         #self.mainLayout.addWidget(self.preferenceButton)
 
         # Set main layout to the window.

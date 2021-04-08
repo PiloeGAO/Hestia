@@ -7,12 +7,18 @@
 """
 import os
 
-from Qt import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from ..core.category        import Category
 
 from .widgets.entityWidget  import EntityWidget
-class ContentView(QtWidgets.QWidget):
+class ContentView(QWidget):
     """Content View class.
 
     Args:
@@ -43,7 +49,7 @@ class ContentView(QtWidgets.QWidget):
         Args:
             event (class: "QtEvent"): Event.
         """
-        QtWidgets.QWidget.resizeEvent(self, event)
+        QWidget.resizeEvent(self, event)
         self.refresh()
     
     def initUI(self):
@@ -51,16 +57,16 @@ class ContentView(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
-        self.scrollArea = QtWidgets.QScrollArea()
+        self.scrollArea = QScrollArea()
 
-        self.grid = QtWidgets.QGridLayout()
+        self.grid = QGridLayout()
         self.grid.setContentsMargins(0, 0, 0, 0)
 
         self.buildEntitiesGrid()
 
-        self.widget = QtWidgets.QWidget()
+        self.widget = QWidget()
         self.widget.setLayout(self.grid)
 
         self.scrollArea.setWidget(self.widget)
@@ -109,7 +115,7 @@ class ContentView(QtWidgets.QWidget):
                 pass
             
         else:
-            entity = QtWidgets.QLabel("No entities found.")
+            entity = QLabel("No entities found.")
             self.grid.addWidget(entity, 0, 0)
 
         self.update

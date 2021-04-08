@@ -5,7 +5,13 @@
     :version:   0.0.1
     :brief:     Class to create the main window based on QtWidgets.  
 """
-from Qt import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .core.manager    import Manager
 
@@ -16,7 +22,7 @@ from .ui.folderTreeView import FolderTreeView
 from .ui.contentView    import ContentView
 from .ui.footer         import Footer
 
-class MainWindow(QtWidgets.QWidget):
+class MainWindow(QWidget):
     """Main Window class.
 
     Args:
@@ -52,10 +58,10 @@ class MainWindow(QtWidgets.QWidget):
         self.resize(self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
-        self.setStyle(QtWidgets.QStyleFactory.create("Fusion"))
+        self.setStyle(QStyleFactory.create("Fusion"))
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout = QGridLayout()
         self.mainLayout.setSpacing(10)
 
         # Add header to window.

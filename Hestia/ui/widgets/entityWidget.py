@@ -7,12 +7,18 @@
 """
 from os import path
 
-from Qt import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .iconButton    import IconButton
 from .dropDown      import DropDown
 
-class EntityWidget(QtWidgets.QWidget):
+class EntityWidget(QWidget):
     """Entity widget display class.
 
         Args:
@@ -51,10 +57,10 @@ class EntityWidget(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QVBoxLayout()
-        self.groupBox = QtWidgets.QGroupBox(self.__name)
+        self.mainLayout = QVBoxLayout()
+        self.groupBox = QGroupBox(self.__name)
         
-        self.verticalLayout = QtWidgets.QVBoxLayout()
+        self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setContentsMargins(0,0,0,0)
 
@@ -78,8 +84,8 @@ class EntityWidget(QtWidgets.QWidget):
         self.setLayout(self.mainLayout)
 
     def mousePressEvent(self, event):
-        if event.type() == QtCore.QEvent.MouseButtonPress:
-            if event.button() == QtCore.Qt.RightButton:
+        if event.type() == QEvent.MouseButtonPress:
+            if event.button() == Qt.RightButton:
                 self.createRightClickMenu(event=event)
 
     def importAsset(self):
@@ -127,7 +133,7 @@ class EntityWidget(QtWidgets.QWidget):
     def createRightClickMenu(self, event):
         """This function invoke a floating menu at mouse position with advanced functionnalities.
         """
-        menu = QtWidgets.QMenu()
+        menu = QMenu()
 
         currentProject = self.__manager.projects[self.__manager.currentProject]
         if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
@@ -159,11 +165,11 @@ class EntityWidget(QtWidgets.QWidget):
         Returns:
             bool: Function status.
         """
-        exportPathDialog = QtWidgets.QFileDialog()
-        exportPathDialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
+        exportPathDialog = QFileDialog()
+        exportPathDialog.setFileMode(QFileDialog.AnyFile)
         exportPathDialog.setNameFilter("Hestia shot (*.hshot *.json)")
-        exportPathDialog.setViewMode(QtWidgets.QFileDialog.Detail)
-        exportPathDialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
+        exportPathDialog.setViewMode(QFileDialog.Detail)
+        exportPathDialog.setAcceptMode(QFileDialog.AcceptSave)
 
         if exportPathDialog.exec_():
             exportPath = exportPathDialog.selectedFiles()[0]

@@ -5,12 +5,18 @@
     :version:   0.0.1
     :brief:     Class to create the folder tree of the window.  
 """
-from Qt import QtCore, QtWidgets, QtGui
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .widgets.dropDown          import DropDown
 from .widgets.categoryWidget    import CategoryWidget
 
-class FolderTreeView(QtWidgets.QWidget):
+class FolderTreeView(QWidget):
     """Folder tree Class.
 
     Args:
@@ -36,7 +42,7 @@ class FolderTreeView(QtWidgets.QWidget):
         Args:
             event (class: "QtEvent"): Event.
         """
-        QtWidgets.QWidget.resizeEvent(self, event)
+        QWidget.resizeEvent(self, event)
         self.refresh()
     
     def initUI(self):
@@ -44,7 +50,7 @@ class FolderTreeView(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
         self.mainLayout.setSpacing(0)
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
 
@@ -57,14 +63,14 @@ class FolderTreeView(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.type)
 
         # Creating the base of the TreeView (ScrollArea).
-        self.scrollArea = QtWidgets.QScrollArea()
+        self.scrollArea = QScrollArea()
 
-        self.categoriesLayout = QtWidgets.QVBoxLayout()
+        self.categoriesLayout = QVBoxLayout()
         #self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
 
         self.buildTree()
 
-        self.categoriesWidget = QtWidgets.QWidget()
+        self.categoriesWidget = QWidget()
         self.categoriesWidget.setLayout(self.categoriesLayout)
 
         self.scrollArea.setWidget(self.categoriesWidget)
@@ -89,7 +95,7 @@ class FolderTreeView(QtWidgets.QWidget):
                 pass
         
         else:
-            noCategoryText = QtWidgets.QLabel("No categories available.")
+            noCategoryText = QLabel("No categories available.")
             self.categoriesLayout.addWidget(noCategoryText)
         
         self.update()

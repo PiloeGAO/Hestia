@@ -8,7 +8,13 @@
 
 from os import sys, path
 
-from Qt import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 if __name__ == "__main__":
     if __package__ is None:
@@ -17,7 +23,7 @@ if __name__ == "__main__":
 
     from Hestia.mainWindow      import MainWindow
 
-    app = QtWidgets.QApplication(sys.argv)
+    app = QApplication(sys.argv)
 
     window = MainWindow(mode="kitsu")
     window.show()
