@@ -1,7 +1,7 @@
 :: This batch file setup de environement to use the Hestia.
 
 :: Define the Hestia main folder.
-set HESTIA=C:\Users\ldepoix\Documents\DEV\Hestia
+::set HESTIA=C:\Users\userName\Documents\DEV\Hestia
 :: Set the python path to find PySide and the Hestia.
 set PYTHONPATH=%HESTIA%\venv27_win64\Lib\site-packages;%HESTIA%
 :: Set the python dll path.

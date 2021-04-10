@@ -37,8 +37,8 @@ class Manager():
             from .links.dccs.mayaIntegration import MayaIntegration
             self.__integration = MayaIntegration(manager=self)
         elif(integration == "Guerilla"):
-            # TODO: Create integration file.
-            self.__integration = DefaultIntegration()
+            from .links.dccs.guerillaIntegration import GuerillaIntegration
+            self.__integration = GuerillaIntegration(manager=self)
         else:
             self.__integration = DefaultIntegration()
 
