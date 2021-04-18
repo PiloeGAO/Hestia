@@ -28,6 +28,26 @@ class KitsuWrapper(DefaultWrapper):
         self.__active  = False
         self._username = ""
 
+        self._loadPreviews = bool(self.__manager.preferences.getValue("MANAGER", "loadPreviews"))
+    
+    @property
+    def api(self):
+        """Get the api url.
+
+        Returns:
+            str: API URL.
+        """
+        return self.__api
+    
+    @api.setter
+    def api(self, api):
+        """Set the api url.
+
+        Args:
+            api (str): API URL.
+        """
+        self.__api = api
+
     def login(self, username="", password=""):
         """Login to Gazu.
 
@@ -99,8 +119,11 @@ class KitsuWrapper(DefaultWrapper):
             assetData = gazu.asset.get_asset(asset["id"])
 
             # Getting the preview picture.
-            icon_path = self.downloadPreview(entityData=assetData)
-
+            if(self._loadPreviews):
+                icon_path = self.downloadPreview(entityData=assetData)
+            else:
+                icon_path = ""
+            
             # Output versionning.
             versions = self.getVersions(assetData)
 
@@ -138,7 +161,10 @@ class KitsuWrapper(DefaultWrapper):
             shotData = gazu.shot.get_shot(shot["id"])
 
             # Commented due to a bug from Gazu.
-            icon_path = "" #self.downloadPreview(entityData=shotData)
+            if(self._loadPreviews):
+                icon_path = "" #self.downloadPreview(entityData=shotData)
+            else:
+                icon_path = ""
 
             # Output versionning.
             versions = self.getVersions(shotData)

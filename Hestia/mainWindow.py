@@ -32,30 +32,59 @@ class MainWindow(QWidget):
         winH (int, optional): Window height. Defaults to 480.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager=Manager(integration="standalone"), mode="local", winW = 640, winH = 480, parent=None):
+    def __init__(self, manager=Manager(integration="standalone"), parent=None):
         super(MainWindow, self).__init__(parent=parent)
         # Defining the Manager.
         self.__manager = manager
 
         # Set window preferences.
-        self.__windowWidth = winW
-        self.__windowHeight = winH
+        self.__windowWidth, self.__windowHeight = [int(coord) for coord in self.__manager.preferences.getValue("MANAGER", "windowSize").split("x")]
+        self.__posX, self.__posY                = [int(coord) for coord in self.__manager.preferences.getValue("MANAGER", "windowPos").split("x")]
 
+        if(self.__windowWidth == -1):
+            self.__windowWidth = QDesktopWidget().screenGeometry(-1).width() / 4
+        if(self.__windowHeight == -1):
+            self.__windowHeight = QDesktopWidget().screenGeometry(-1).height() / 4
+        if(self.__posX == -1):
+            self.__posX = QDesktopWidget().screenGeometry(-1).width() / 2 - self.__windowWidth / 2
+        if(self.__posY == -1):
+            self.__posY = QDesktopWidget().screenGeometry(-1).height() / 2 - self.__windowHeight / 2
+
+        # Initialize UI.
         self.initUI()
 
-        if(mode != "local" and not self.__manager.link.connected):
-            login = LoginWindow(manager=self.__manager, mainWindow=self, service=mode)
+        # Show online login modal if not set to local.
+        if(self.__manager.mode != "local" and not self.__manager.link.connected):
+            login = LoginWindow(manager=self.__manager, mainWindow=self)
             login.show()
+    
+    def resizeEvent(self, event):
+        """Get the size of the window on window resize.
+
+        Args:
+            event (class: "QtEvent"): Event.
+        """
+        QWidget.resizeEvent(self, event)
+        self.__manager.preferences.setValue("MANAGER", "windowSize", "%ix%i"%(self.width(), self.height()))
+    
+    def moveEvent(self, event):
+        """Get the position of the window on window move.
+
+        Args:
+            event (class: "QtEvent"): Event.
+        """
+        QWidget.moveEvent(self, event)
+        self.__manager.preferences.setValue("MANAGER", "windowPos", "%ix%i"%(self.x(), self.y()))
     
     def initUI(self):
         """Generate the window.
         """
-
         # Set the window title.
         self.setWindowTitle("Hestia Browser")
         
         # Set the window size.
-        self.resize(self.__windowWidth, self.__windowHeight)
+        self.setGeometry(self.__posX, self.__posY,
+                        self.__windowWidth, self.__windowHeight)
 
         # Set the window style.
         self.setStyle(QStyleFactory.create("Fusion"))

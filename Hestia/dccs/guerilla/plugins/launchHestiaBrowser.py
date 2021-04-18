@@ -28,7 +28,7 @@ class LaunchHestiaBrowser(command):
             app = QtGui.QApplication(sys.argv)
         app.setStyle('Plastique')
 
-        globals()['qtHestiaBrowserWindow'] = MainWindow(manager=hestiaManager, mode="kitsu")
+        globals()['qtHestiaBrowserWindow'] = MainWindow(manager=hestiaManager)
         globals()['qtHestiaBrowserWindow'].show()
 
 cmd = LaunchHestiaBrowser('Hestia Browser')

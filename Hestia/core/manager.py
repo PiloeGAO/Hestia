@@ -8,6 +8,8 @@
 import shutil, logging
 import tempfile, atexit
 
+from .preferences                           import Preferences
+
 from .links.dccs.defaultIntegration         import DefaultIntegration
 
 from .links.projectManagers.defaultWrapper  import DefaultWrapper
@@ -22,11 +24,22 @@ class Manager():
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
     def __init__(self, integration = "standalone", projects = [Project(name="local", description="Local file system.")], **kwargs):
+        self.__version  = "0.0.1"
+
+        # Loading preferences.
+        self.__preferences = Preferences(manager=self)
+        isPreferencesLoaded = self.__preferences.loadPreferences()
+        atexit.register(self.__preferences.savePreferences)
+
+        if(not isPreferencesLoaded):
+            # Saving blank preferences on install
+            self.__preferences.generatePreferences()
+            self.__preferences.savePreferences()
+
         # Setting up the logging display.
         logging.basicConfig(format="HESTIA | %(levelname)s @ %(asctime)s | %(message)s")
 
-        self.__version  = "0.0.1"
-        self.__debugMode    = True
+        self.__debugMode = bool(self.__preferences.getValue("MANAGER", "debugMode"))
 
         # Initialize the custom logging system.
         self.__logging = None
@@ -42,11 +55,17 @@ class Manager():
         else:
             self.__integration = DefaultIntegration()
 
-        # 
+        # Temporary folder path.
         self.__tempFolder = tempfile.mkdtemp()
         atexit.register(shutil.rmtree, self.__tempFolder)
         
-        self.__link = DefaultWrapper()
+        # Setting up the service.
+        if(self.__preferences.getValue("MANAGER", "service") == "kitsu"):
+            self.__mode = "kitsu"
+            self.__link = KitsuWrapper(manager=self, api=self.__preferences.getValue("MANAGER", "onlineHost"))
+        else:
+            self.__mode = "local"
+            self.__link = DefaultWrapper()
 
         self.__projects = projects
         self.__currentProject = 0
@@ -127,6 +146,24 @@ class Manager():
         return self.__link
     
     @property
+    def mode(self):
+        """Get the current mode.
+
+        Returns:
+            str: Current link mode.
+        """
+        return self.__mode
+
+    @property
+    def preferences(self):
+        """Get the preference manager.
+
+        Returns:
+            class: 'Preferences' : Preference class.
+        """
+        return self.__preferences
+
+    @property
     def version(self):
         """Get the manager version.
 
@@ -170,7 +207,7 @@ class Manager():
             if(project.name == projectName):
                 del project
     
-    def connectToOnline(self, cleanProjects=True, service="kitsu", **kwargs):
+    def connectToOnline(self, cleanProjects=True, **kwargs):
         """Connect manager to an online service.
 
         Args:
@@ -182,11 +219,11 @@ class Manager():
         if(cleanProjects):
             self.__projects = []
 
-        if(service == "kitsu"
+        if(self.__mode == "kitsu"
             and kwargs["api"] != ""
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
-            self.__link = KitsuWrapper(manager=self, api=kwargs["api"])
+            self.__link.api = kwargs["api"]
             isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
 
             if(isUserLoged):

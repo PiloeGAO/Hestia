@@ -21,5 +21,5 @@ def launchBrowser():
 
     hestiaManager = Manager(integration="Maya")
 
-    browser = MainWindow(manager=hestiaManager, mode="kitsu")
+    browser = MainWindow(manager=hestiaManager)
     browser.show()
