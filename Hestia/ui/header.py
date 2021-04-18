@@ -29,7 +29,7 @@ class Header(QWidget):
         self.__manager = manager
         self.__mainWindow = mainWindow
 
-        self.importAsInstanceState = True
+        self.importAsReferenceState = True
 
         self.initUI()
     
@@ -41,16 +41,16 @@ class Header(QWidget):
         self.mainLayout = QHBoxLayout()
 
         # Add import as instance checkbox.
-        self.importAsInstance = QCheckBox("Instance")
-        self.importAsInstance.setToolTip("Import the asset as instance in the scene.")
-        self.importAsInstance.setChecked(self.importAsInstanceState)
-        self.importAsInstance.stateChanged.connect(self.changeImportAsInstanceState)
-        self.mainLayout.addWidget(self.importAsInstance)
+        self.importAsReference = QCheckBox("Reference")
+        self.importAsReference.setToolTip("Import the asset as reference in the scene.")
+        self.importAsReference.setChecked(self.importAsReferenceState)
+        self.importAsReference.stateChanged.connect(self.changeImportAsReferenceState)
+        self.mainLayout.addWidget(self.importAsReference)
 
         if(self.__manager.integration.supportInstances):
-            self.importAsInstance.show()
+            self.importAsReference.show()
         else:
-            self.importAsInstance.hide()
+            self.importAsReference.hide()
 
         # Add spacer to header.
         self.mainLayout.addStretch()
@@ -67,11 +67,11 @@ class Header(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def changeImportAsInstanceState(self):
+    def changeImportAsReferenceState(self):
         """Change the state of the importAsInstance checkbox.
         """
-        self.importAsInstanceState = self.importAsInstance.checkState()
-        self.__manager.integration.instances = self.importAsInstance.isChecked()
+        self.importAsReferenceState = self.importAsReference.checkState()
+        self.__manager.integration.instances = self.importAsReference.isChecked()
     
     def changeProject(self):
         """Change the project on the manager and update the mainWindow.
