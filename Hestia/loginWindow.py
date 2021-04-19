@@ -37,7 +37,7 @@ class LoginWindow(QWidget):
         # Getting data from preferences.
         self.api            = self.__manager.link.api
         self.username       = self.__manager.preferences.getValue("MANAGER", "onlineUsername")
-        self.isRememberLogin = bool(self.__manager.preferences.getValue("MANAGER", "rememberLogin"))
+        self.isRememberLogin = bool(int(self.__manager.preferences.getValue("MANAGER", "rememberLogin")))
 
         # Set window preferences.
         self.__windowWidth = winW

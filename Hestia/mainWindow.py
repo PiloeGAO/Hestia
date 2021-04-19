@@ -76,6 +76,22 @@ class MainWindow(QWidget):
         QWidget.moveEvent(self, event)
         self.__manager.preferences.setValue("MANAGER", "windowPos", "%ix%i"%(self.x(), self.y()))
     
+    def closeEvent(self, event):
+        """Get the close event on window close.
+
+        Args:
+            event (class: 'QtEvent'): Event.
+        """
+        if(True):
+            if(self.__manager.integration != "standalone"):
+                # This is needed for embedded Python versions
+                # that won't support *atexit* lib.
+                self.__manager.preferences.savePreferences()
+            
+            event.accept()
+        else:
+            event.ignore()
+    
     def initUI(self):
         """Generate the window.
         """

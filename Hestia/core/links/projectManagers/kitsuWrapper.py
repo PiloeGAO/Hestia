@@ -28,7 +28,7 @@ class KitsuWrapper(DefaultWrapper):
         self.__active  = False
         self._username = ""
 
-        self._loadPreviews = bool(self.__manager.preferences.getValue("MANAGER", "loadPreviews"))
+        self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
     @property
     def api(self):
