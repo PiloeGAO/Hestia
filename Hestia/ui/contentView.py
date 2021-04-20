@@ -118,7 +118,7 @@ class ContentView(QWidget):
             entity = QLabel("No entities found.")
             self.grid.addWidget(entity, 0, 0)
 
-        self.update
+        self.update()
     
     def cleanEntitiesGrid(self):
         """Clean the entities grid.
@@ -127,7 +127,7 @@ class ContentView(QWidget):
         for i in reversed(range(self.grid.count())):
             self.grid.itemAt(i).widget().setParent(None)
         
-        self.update
+        self.update()
 
     def refresh(self):
         """Force refresh of the widget.
