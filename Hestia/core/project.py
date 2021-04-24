@@ -14,10 +14,21 @@ class Project():
         name (str, optional): Project's name. Defaults to "".
         description (str, optional): Project's description. Defaults to "".
     """
-    def __init__(self, id="", name="", description=""):
+    def __init__(self, id="", name="", description="", **kwargs):
         self.__id           = id
         self.__name         = name
         self.__description  = description
+
+        self.__framerate = 0.0
+        self.__ratio = "16:9"
+        self.__resolution = 1080
+
+        if(kwargs.has_key("fps")):
+            self.__framerate    = float(kwargs["fps"])
+        if(kwargs.has_key("ratio")):
+            self.__ratio        = kwargs["ratio"]
+        if(kwargs.has_key("resolution")):
+            self.__resolution   = int(kwargs["resolution"])
 
         self.__categories   = []
         self.__currentCategory = 0
@@ -67,6 +78,33 @@ class Project():
         """
         self.__description = description
     
+    @property
+    def framerate(self):
+        """Get the framerate of the project.
+
+        Returns:
+            str: Project's framerate.
+        """
+        return self.__framerate
+    
+    @property
+    def ratio(self):
+        """Get the ratio of the project.
+
+        Returns:
+            str: Project's ratio.
+        """
+        return self.__ratio
+        
+    @property
+    def resolution(self):
+        """Get the resolution of the project.
+
+        Returns:
+            str: Project's resoltuion.
+        """
+        return self.__resolution
+
     @property
     def categories(self):
         """Get the categories of the project.

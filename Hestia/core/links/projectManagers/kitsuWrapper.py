@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.1
 """
-import os
+import os, json
 import gazu
 
 from .defaultWrapper   import DefaultWrapper
@@ -27,6 +27,8 @@ class KitsuWrapper(DefaultWrapper):
         self.__api     = api
         self.__active  = False
         self._username = ""
+
+        self.__debugKitsuData = True
 
         self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
@@ -100,7 +102,11 @@ class KitsuWrapper(DefaultWrapper):
         self.__manager.logging.info("Getting datas for: %s" % project["name"])
 
         # Get and create a new project.
-        newProject = Project(id=project["id"], name=project["name"], description=project["description"])
+        newProject = Project(id=project["id"], name=project["name"], description=project["description"],
+                            fps=project["fps"], ratio=project["ratio"], resolution=project["resolution"])
+
+        if(self.__manager.debug and self.__debugKitsuData):
+            self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
 
         # Get, create and add categories to project.
         categories = gazu.asset.all_asset_types_for_project(project)
@@ -117,6 +123,9 @@ class KitsuWrapper(DefaultWrapper):
         for asset in assets:
             # Get all datas for asset.
             assetData = gazu.asset.get_asset(asset["id"])
+            
+            if(self.__manager.debug and self.__debugKitsuData):
+                self.__manager.logging.debug(json.dumps(assetData, sort_keys=True, indent=4))
 
             # Getting the preview picture.
             if(self._loadPreviews):
@@ -160,6 +169,14 @@ class KitsuWrapper(DefaultWrapper):
         for shot in shots:
             shotData = gazu.shot.get_shot(shot["id"])
 
+            if(self.__manager.debug and self.__debugKitsuData):
+                self.__manager.logging.debug(json.dumps(shotData, sort_keys=True, indent=4))
+
+            # Get technical datas.
+            nb_frames = shotData["nb_frames"]
+            if(nb_frames == 0):
+                nb_frames = shotData["frame_out"] - shotData["frame_in"]
+
             # Commented due to a bug from Gazu.
             if(self._loadPreviews):
                 icon_path = "" #self.downloadPreview(entityData=shotData)
@@ -173,7 +190,8 @@ class KitsuWrapper(DefaultWrapper):
                                 name=shot["name"],
                                 description=shot["description"],
                                 icon=icon_path,
-                                versions=versions)
+                                versions=versions,
+                                frameNumber=nb_frames)
 
             shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
             shotSequence.addEntity(newShot)

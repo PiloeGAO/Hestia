@@ -16,7 +16,8 @@ class Entity():
         icon (str, optional): Entity's icon. Defaults to "".
         versions (list: class: "Version"): Entity's version. Defaults to [].
     """
-    def __init__(self, id = "", name = "", description = "", icon = "", versions=[]):
+    def __init__(self, id = "", name = "", description = "", icon = "", versions=[], **kwargs):
+        # Common datas.
         self.__id           = id
         self.__name         = name
         self.__description  = description
@@ -24,6 +25,11 @@ class Entity():
         self.__icon         = icon
         self.__versions     = versions
         
+        # Shot specific datas.
+        self.__frameNumber = 0
+        if(kwargs.has_key("frameNumber")):
+            self.__frameNbr = kwargs["frameNumber"]
+
     @property
     def id(self):
         """Get the id of the entity.
@@ -104,3 +110,13 @@ class Entity():
             versions (list): Versions of the entity
         """
         self.__versions = versions
+    
+    # Shot specific datas.
+    @property
+    def frameNumber(self):
+        """Get the shot duration in frames.
+
+        Returns:
+            int: Shot duration.
+        """
+        return self.__frameNumber

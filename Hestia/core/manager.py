@@ -80,6 +80,15 @@ class Manager():
         return self.__logging
     
     @property
+    def debug(self):
+        """Get the current state of debug of the manager.
+
+        Returns:
+            bool: Debug state.
+        """
+        return self.__debugMode
+    
+    @property
     def integration(self):
         """Get the current integration used.
 
