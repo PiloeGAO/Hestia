@@ -17,7 +17,9 @@ except:
 
 from ..core.category        import Category
 
+from .widgets.gridWidget    import GridWidget
 from .widgets.entityWidget  import EntityWidget
+
 class ContentView(QWidget):
     """Content View class.
 
@@ -61,79 +63,18 @@ class ContentView(QWidget):
 
         self.scrollArea = QScrollArea()
 
-        self.grid = QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-
-        self.buildEntitiesGrid()
-
-        self.widget = QWidget()
-        self.widget.setLayout(self.grid)
-
-        self.scrollArea.setWidget(self.widget)
+        self.grid = GridWidget(manager=self.__manager, parentGeometry=self.scrollArea.geometry(), xSize=self.xSize, itemList=self.__entities)
+        
+        self.scrollArea.setWidget(self.grid)
 
         self.mainLayout.addWidget(self.scrollArea)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
 
-    def buildEntitiesGrid(self):
-        """Build the entities grid.
-        """
-        entitiesCount = len(self.__entities)
-
-        contentWidgetSizeX = self.scrollArea.size().width() - 20
-        contentWidgetSizeY = self.scrollArea.size().height() - 20
-        
-        if(entitiesCount > 0):
-            ySize = entitiesCount / self.xSize + entitiesCount % self.xSize
-
-            for y in range(ySize):
-                for x in range(self.xSize):
-                    count = x + y * self.xSize
-
-                    if(count < entitiesCount):
-                        # Create the widget.
-                        # TODO: Set the icon scale to it's max scale.
-                        entity = EntityWidget(manager=self.__manager,
-                                            asset=self.__entities[count],
-                                            iconSize=100,
-                                            status=1)
-                        
-                        self.grid.addWidget(entity, y, x)
-            
-                    # Reset the size of the grid properly.
-                    self.grid.setColumnMinimumWidth(x, contentWidgetSizeX/self.xSize)
-                    self.grid.setRowMinimumHeight(y, contentWidgetSizeY/self.xSize)
-            
-            try:
-                # Reset the size of the widget.
-                self.widget.setFixedWidth(contentWidgetSizeX)
-                if(ySize < self.xSize):
-                    ySize = self.xSize
-                self.widget.setFixedHeight(contentWidgetSizeY/self.xSize * ySize)
-            except AttributeError:
-                pass
-            
-        else:
-            entity = QLabel("No entities found.")
-            self.grid.addWidget(entity, 0, 0)
-
-        self.update()
-    
-    def cleanEntitiesGrid(self):
-        """Clean the entities grid.
-        """
-        # Removing the old widgets.
-        for i in reversed(range(self.grid.count())):
-            self.grid.itemAt(i).widget().setParent(None)
-        
-        self.update()
-
     def refresh(self):
         """Force refresh of the widget.
         """
-        self.cleanEntitiesGrid()
-
         # Updating variables.
         self.__project  = self.__manager.projects[self.__manager.currentProject]
 
@@ -143,8 +84,8 @@ class ContentView(QWidget):
 
         self.__entities = self.__category.entities
 
-        # ---------------------------------------------
-
-        self.buildEntitiesGrid()
+        # Updating the grid with a new grid.
+        self.grid = GridWidget(manager=self.__manager, parentGeometry=self.scrollArea.geometry(), xSize=self.xSize, itemList=self.__entities)
+        self.scrollArea.setWidget(self.grid)
 
         self.update()
