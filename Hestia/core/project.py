@@ -22,6 +22,8 @@ class Project():
         self.__framerate = 0.0
         self.__ratio = "16:9"
         self.__resolution = 1080
+        self.__preRoll = 24
+        self.__postRoll = 24
 
         if(kwargs.has_key("fps")):
             self.__framerate    = float(kwargs["fps"])
@@ -29,6 +31,10 @@ class Project():
             self.__ratio        = kwargs["ratio"]
         if(kwargs.has_key("resolution")):
             self.__resolution   = int(kwargs["resolution"])
+        if(kwargs.has_key("preRoll")):
+            self.__preRoll      = int(kwargs["preRoll"])
+        if(kwargs.has_key("postRoll")):
+            self.__postRoll     = int(kwargs["postRoll"])
 
         self.__categories   = []
         self.__currentCategory = 0
@@ -95,7 +101,7 @@ class Project():
             str: Project's ratio.
         """
         return self.__ratio
-        
+
     @property
     def resolution(self):
         """Get the resolution of the project.
@@ -104,6 +110,24 @@ class Project():
             str: Project's resoltuion.
         """
         return self.__resolution
+    
+    @property
+    def preRoll(self):
+        """Get the pre-roll value of the project.
+
+        Returns:
+            int: Frame number.
+        """
+        return self.__preRoll
+    
+    @property
+    def postRoll(self):
+        """Get the post-roll value of the project.
+
+        Returns:
+           int: Frame number
+        """
+        return self.__postRoll
 
     @property
     def categories(self):
