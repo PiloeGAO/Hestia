@@ -49,6 +49,7 @@ class GridWidget(QWidget):
                 # Creating the horizontal layout for X.
                 horizontalLayout = QHBoxLayout()
                 horizontalLayout.setSpacing(0)
+                horizontalLayout.setSizeConstraint(QLayout.SetMaximumSize)
                 horizontalLayout.setContentsMargins(0, 0, 0, 0)
 
                 for x in range(self.__xSize):
@@ -57,19 +58,18 @@ class GridWidget(QWidget):
                     if(itemCount < self.__itemListSize):
                         # Create the widget.
                         # TODO: Update icon size to correct size.
-                        entity = EntityWidget(manager=self.__manager,
+                        item = EntityWidget(manager=self.__manager,
                                             asset=self.__itemList[itemCount],
                                             iconSize=100,
                                             status=1)
                                             
                     else:
                         # Add empty string if no item available to keep grid.
-                        entity = QLabel("")
+                        item = QLabel("")
                     
-                    entity.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-                    # TODO: Resize the widget to correct fullscreen size.
-                    #entity.resize(self.__parentGeometry[2]/self.__xSize, self.sizeHint().height()/self.__ySize)
-                    horizontalLayout.addWidget(entity)
+                    item.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+                    item.setMinimumWidth(self.__parentGeometry.width()/self.__xSize - 10)
+                    horizontalLayout.addWidget(item)
                 
                 self.mainLayout.addLayout(horizontalLayout)
         
