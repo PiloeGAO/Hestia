@@ -57,7 +57,8 @@ class GridWidget(QWidget):
 
                     if(itemCount < self.__itemListSize):
                         # Create the widget.
-                        # TODO: Update icon size to correct size.
+                        # TODO: Move this outside for more generic use of this class
+                        #       and update icon size to correct size.
                         item = EntityWidget(manager=self.__manager,
                                             asset=self.__itemList[itemCount],
                                             iconSize=100,
