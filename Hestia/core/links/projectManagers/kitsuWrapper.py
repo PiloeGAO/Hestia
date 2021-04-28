@@ -28,7 +28,7 @@ class KitsuWrapper(DefaultWrapper):
         self.__active  = False
         self._username = ""
 
-        self.__debugKitsuData = True
+        self.__debugKitsuData = False
 
         self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
