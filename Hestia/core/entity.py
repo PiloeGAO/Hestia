@@ -10,18 +10,23 @@ class Entity():
     """Entity class.
 
     Args:
+        manager (class: "Manager"): The Hestia Manager.
+        entityType (str): Entity's type. Defaults to "Assets".
         id (str): Entity's ID. Defaults to "".
         name (str, optional): Entity's name. Defaults to "".
         description (str, optional): Entity's description. Defaults to "".
         icon (str, optional): Entity's icon. Defaults to "".
         versions (list: class: "Version"): Entity's version. Defaults to [].
     """
-    def __init__(self, id = "", name = "", description = "", icon = "", versions=[], **kwargs):
+    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", versions=[], **kwargs):
+        self.__manager      = manager
         # Common datas.
+        self.__type         = entityType
         self.__id           = id
         self.__name         = name
         self.__description  = description
 
+        self.__iconDownloaded = False
         self.__icon         = icon
         self.__versions     = versions
         
@@ -82,6 +87,11 @@ class Entity():
         Returns:
             str : The icon of the entity.
         """
+        # Download the preview if not local.
+        if(not self.__iconDownloaded):
+            self.__icon = self.__manager.link.downloadPreview(entityType=self.__type, entityId=self.__id)
+            self.__iconDownloaded = True
+        
         return self.__icon
     
     @icon.setter
@@ -92,6 +102,7 @@ class Entity():
             icon (str): The icon of the entity
         """
         self.__icon = icon
+        self.__iconDownloaded = True
     
     @property
     def versions(self):

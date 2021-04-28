@@ -126,26 +126,21 @@ class KitsuWrapper(DefaultWrapper):
             
             if(self.__manager.debug and self.__debugKitsuData):
                 self.__manager.logging.debug(json.dumps(assetData, sort_keys=True, indent=4))
-
-            # Getting the preview picture.
-            if(self._loadPreviews):
-                icon_path = self.downloadPreview(entityData=assetData)
-            else:
-                icon_path = ""
             
             # Output versionning.
             versions = self.getVersions(assetData)
 
             # Buildint the Entity with all datas.
-            newAsset = Entity(id=asset["id"],
+            newAsset = Entity(manager=self.__manager,
+                                entityType="Assets",
+                                id=asset["id"],
                                 name=asset["name"],
                                 description=asset["description"],
-                                icon=icon_path,
+                                icon="",
                                 versions=versions)
             
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
             assetCategory.addEntity(newAsset)
-        
         
         self.__manager.logging.info("Assets loaded.")
 
@@ -159,7 +154,6 @@ class KitsuWrapper(DefaultWrapper):
                                     type="Shots")
             
             newProject.addCategory(newCategory)
-        
         
         self.__manager.logging.info("Sequences loaded.")
 
@@ -177,31 +171,26 @@ class KitsuWrapper(DefaultWrapper):
             if(nb_frames == 0):
                 nb_frames = shotData["frame_out"] - shotData["frame_in"]
 
-            # Commented due to a bug from Gazu.
-            if(self._loadPreviews):
-                icon_path = "" #self.downloadPreview(entityData=shotData)
-            else:
-                icon_path = ""
-
             # Output versionning.
             versions = self.getVersions(shotData)
 
-            newShot = Entity(id=shot["id"],
+            newShot = Entity(manager=self.__manager,
+                                entityType="Shots",
+                                id=shot["id"],
                                 name=shot["name"],
                                 description=shot["description"],
-                                icon=icon_path,
+                                icon="",
                                 versions=versions,
                                 frameNumber=nb_frames)
 
             shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
             shotSequence.addEntity(newShot)
 
-        
         self.__manager.logging.info("Shots loaded.")
 
         return newProject
     
-    def downloadPreview(self, entityData=None):
+    def downloadPreview(self, entityType="Assets", entityId=None):
         """Download the preview from Kitsu.
 
         Args:
@@ -210,6 +199,18 @@ class KitsuWrapper(DefaultWrapper):
         Returns:
             str: Path of the icon.
         """
+        if(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")) == 0):
+            return ""
+        
+        if(entityType == "Assets"):
+            entityData = gazu.asset.get_asset(entityId)
+        elif(entityType == "Shots"):
+            # Shots not supported for now.
+            entityData = gazu.shot.get_shot(entityId)
+            return ""
+        else:
+            return ""
+        
         # Getting the preview picture.
         icon_path = ""
         tempPath = self.__manager.tempFolder
