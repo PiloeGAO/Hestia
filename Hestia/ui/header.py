@@ -5,6 +5,8 @@
     :version:   0.0.1
     :brief:     Class to create the header of the window.  
 """
+import os
+
 try:
     from PySide2.QtCore import *
     from PySide2.QtGui import *
@@ -28,6 +30,8 @@ class Header(QWidget):
         super(Header, self).__init__(parent=parent)
         self.__manager = manager
         self.__mainWindow = mainWindow
+        
+        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
         self.importAsReferenceState = True
 
@@ -59,10 +63,15 @@ class Header(QWidget):
         self.projectSelector = DropDown("Project", "Current project", ["Local"], self.changeProject)
         self.mainLayout.addWidget(self.projectSelector)
 
-        #TODO: ADD PREFERENCES.
         # Add preference button.
-        #self.preferenceButton = QPushButton("Preferences")
-        #self.mainLayout.addWidget(self.preferenceButton)
+        self.preferenceButton = IconButton(name="Preferences",
+                                            description="Open preferences window.",
+                                            iconPath=self.__rootPath + "/../ui/icons/gear.svg",
+                                            iconScale=16,
+                                            status=1,
+                                            functionToInvoke=self.__mainWindow.openPreferencesWindow,
+                                            parent=None)                                       
+        self.mainLayout.addWidget(self.preferenceButton)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)

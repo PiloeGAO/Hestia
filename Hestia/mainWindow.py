@@ -16,6 +16,7 @@ except:
 from .core.manager    import Manager
 
 from .loginWindow       import LoginWindow
+from .preferencesWindow    import PreferencesWindow
 
 from .ui.header         import Header
 from .ui.folderTreeView import FolderTreeView
@@ -52,6 +53,9 @@ class MainWindow(QWidget):
 
         # Initialize UI.
         self.initUI()
+
+        # Initialize the preference window.
+        self.preferencesWindow = PreferencesWindow(manager=self.__manager)
 
         # Show online login modal if not set to local.
         if(self.__manager.mode != "local" and not self.__manager.link.connected):
@@ -129,6 +133,11 @@ class MainWindow(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
+    def openPreferencesWindow(self):
+        """Display the preferences window.
+        """
+        self.preferencesWindow.show()
+
     def refresh(self):
         """Force refresh of the window.
         """
