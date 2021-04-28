@@ -62,8 +62,13 @@ class ContentView(QWidget):
         self.mainLayout = QHBoxLayout()
 
         self.scrollArea = QScrollArea()
-
-        self.grid = GridWidget(manager=self.__manager, parentGeometry=self.scrollArea.geometry(), xSize=self.xSize, itemList=self.__entities)
+        
+        # Updating the grid with a new grid.
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=self.xSize,
+                                itemList=self.buildEntityList(),
+                                emptyLabel="No items availables.")
         
         self.scrollArea.setWidget(self.grid)
 
@@ -85,7 +90,30 @@ class ContentView(QWidget):
         self.__entities = self.__category.entities
 
         # Updating the grid with a new grid.
-        self.grid = GridWidget(manager=self.__manager, parentGeometry=self.scrollArea.geometry(), xSize=self.xSize, itemList=self.__entities)
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=self.xSize,
+                                itemList=self.buildEntityList(),
+                                emptyLabel="No items availables.")
+
         self.scrollArea.setWidget(self.grid)
 
         self.update()
+    
+    def buildEntityList(self):
+        """Build the entity array.
+
+        Returns:
+            list (class:"EntityWidget"): Array of EntityWidget.
+        """
+        entityList = []
+
+        for entity in range(len(self.__entities)):
+            newEntity = EntityWidget(manager=self.__manager,
+                                    asset=self.__entities[entity],
+                                    iconSize=100,
+                                    status=1)
+            
+            entityList.append(newEntity)
+
+        return entityList

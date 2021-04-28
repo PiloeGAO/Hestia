@@ -21,7 +21,7 @@ class GridWidget(QWidget):
     Args:
         parent (QtWidgets, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager, parentGeometry, xSize=2, itemList=[], parent=None):
+    def __init__(self, manager, parentGeometry, xSize=2, itemList=[], emptyLabel="Grid empty", parent=None):
         super(GridWidget, self).__init__(parent=parent)
         self.__manager = manager
         self.__parentGeometry = parentGeometry
@@ -31,6 +31,8 @@ class GridWidget(QWidget):
 
         self.__xSize = xSize
         self.__ySize = self.__itemListSize / self.__xSize + self.__itemListSize % self.__xSize
+
+        self.__emptyLabel = emptyLabel
 
         self.initUI()
     
@@ -57,12 +59,7 @@ class GridWidget(QWidget):
 
                     if(itemCount < self.__itemListSize):
                         # Create the widget.
-                        # TODO: Move this outside for more generic use of this class
-                        #       and update icon size to correct size.
-                        item = EntityWidget(manager=self.__manager,
-                                            asset=self.__itemList[itemCount],
-                                            iconSize=100,
-                                            status=1)
+                        item = self.__itemList[itemCount]
                                             
                     else:
                         # Add empty string if no item available to keep grid.
@@ -75,7 +72,7 @@ class GridWidget(QWidget):
                 self.mainLayout.addLayout(horizontalLayout)
         
         else:
-            self.textDisplay = QLabel("Grid is empty.")
+            self.textDisplay = QLabel(self.__emptyLabel)
             self.mainLayout.addWidget(self.textDisplay)
 
         # Set main layout to the window.
