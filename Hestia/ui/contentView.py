@@ -25,17 +25,19 @@ class ContentView(QWidget):
 
     Args:
         manager (class: "Manager"): The Hestia manager.
+        mainWindow (class: "MainWindow"): The Hestia main window.
         xSize (int, optional): Number of widgets on X axis. Defaults to 4.
         parent (class: "QtWidget", optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager, xSize=2, parent=None):
+    def __init__(self, manager, mainWindow, xSize=2, parent=None):
         super(ContentView, self).__init__(parent=parent)
-        self.__manager  = manager
-        self.__project  = self.__manager.projects[self.__manager.currentProject]
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
+        self.__project      = self.__manager.projects[self.__manager.currentProject]
         
-        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
+        self.__rootPath     = os.path.dirname(os.path.abspath(__file__))
 
-        self.__category = Category(name="Empty", type="Assets")
+        self.__category     = Category(name="Empty", type="Assets")
         if(len(self.__project.categories) > 0):
             self.__category = self.__project.categories[self.__project.currentCategory]
 

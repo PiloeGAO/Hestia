@@ -25,7 +25,6 @@ class Footer(QWidget):
 
         self.__manager = manager
 
-        self.user = self.__manager.link.username
         self.version = self.__manager.version
 
         self.initUI()
@@ -38,8 +37,8 @@ class Footer(QWidget):
         self.mainLayout = QHBoxLayout()
 
         # Add current logged in user.
-        self.currentUser = QLabel("Current user: %s" % self.user)
-        self.mainLayout.addWidget(self.currentUser)
+        self.logWidget = QLabel("")
+        self.mainLayout.addWidget(self.logWidget)
 
         # Add spacer to footer.
         self.mainLayout.addStretch()
@@ -51,9 +50,15 @@ class Footer(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
+    def updateLog(self, text=""):
+        """Update the log widget of the footer.
+
+        Args:
+            text (str, optional): Text to display. Defaults to "".
+        """
+        self.logWidget.setText(text)
+
     def refresh(self):
         """Force refresh of the widget.
         """
-        self.user = self.__manager.link.username
-        self.currentUser.setText("Current user: %s" % self.user)
         self.update()

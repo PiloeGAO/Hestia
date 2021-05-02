@@ -125,6 +125,7 @@ class LoginWindow(QWidget):
         if (self.__connection):
             # Close this window.
             self.hide()
+            self.__mainWindow.updateLog(text="Login done: %s (%s)" % (self.username.currentValue, self.__service))
             self.__mainWindow.refresh()
             self.close()
         else:

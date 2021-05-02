@@ -123,12 +123,13 @@ class MainWindow(QWidget):
         self.mainLayout.addWidget(self.folderTreeView, 1, 0, 1, 1)
 
         # Add content view.
-        self.contentView = ContentView(manager=self.__manager)
+        self.contentView = ContentView(manager=self.__manager, mainWindow=self)
         self.mainLayout.addWidget(self.contentView, 1, 1, 1, 3)
 
         # Add footer to window.
         self.footer = Footer(manager=self.__manager)
         self.mainLayout.addWidget(self.footer, 2, 0, 1, 4)
+        self.footer.updateLog(text="Welcome to Hestia!")
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
@@ -137,6 +138,15 @@ class MainWindow(QWidget):
         """Display the preferences window.
         """
         self.preferencesWindow.show()
+
+    def updateLog(self, text=""):
+        """Update log in the footer.
+
+        Args:
+            text (str, optional): Text to display. Defaults to "".
+        """
+        self.footer.updateLog(text=text)
+        self.footer.refresh()
 
     def refresh(self):
         """Force refresh of the window.
