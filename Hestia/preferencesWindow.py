@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      preferencesWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the preferences window based on QtWidgets.  
 """
 try:

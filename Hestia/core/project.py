@@ -3,7 +3,7 @@
     :file:      project.py
     :brief:     Project class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 
 class Project():

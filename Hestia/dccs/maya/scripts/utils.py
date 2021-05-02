@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      utils.py
     :author:    ldepoix
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Utils functions for Hestia.
 '''
 

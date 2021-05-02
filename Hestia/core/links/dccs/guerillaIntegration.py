@@ -3,7 +3,7 @@
     :file:      guerillaIntegration.py
     :brief:     Guerilla Render integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 import os
 

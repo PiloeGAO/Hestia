@@ -3,7 +3,13 @@
 
 An assets browser and a shot assembly system for CGI/VFX productions.
 
-![Hestia (Asset Browser - V0.0.1)](./Hestia_0.0.1.png) 
+![Hestia (Asset Browser - V0.0.2)](./Hestia_0.0.2.png)
+
+## FEATURES
+- [x] Mostly implemented Kitsu link.
+- [x] Preferences system to store login credentials.
+- [x] Maya integration with Asset import/reference system.
+- [x] Maya scene setup.
 
 ## Getting Started
 
@@ -41,18 +47,29 @@ cd ./Hestia
 python __init__.py
 ```
 
+To open the browser inside of Maya please add the following lines to your Maya.env:
+```bash
+PYTHONPATH = ;%hestiaInstallPath%\Hestia;%hestiaInstallPath%\Hestia\Hestia\dccs\maya\scripts;%yourVirtualEnvPath%\Lib\site-packages;
+```
+Please change %hestiaInstallPath% with the correct install path.
+For the %yourVirtualEnvPath%, please follow instructions from the Installation category.
 ## Roadmap
+
+Trello Board (with releases notes): https://trello.com/b/90POyZZC/hestia-dev-board
 
 - Links to projects managers:
     - [ ] Local Folders
-    - [x] Kitsu (Only for the Asset Browser)
+    - [x] Kitsu (Only for the Asset Browser - Shot assembly is WIP)
 - Assets Browser:
-    - [x] Maya 2020
-    - [ ] Houdini
-    - [ ] Blender 2.83+
-    - [ ] Guerilla Render
+    - [x] Maya 2020+ [Currently in development]
+    - [ ] Houdini 
+    - [ ] Blender 2.93+
+    - [ ] Guerilla Render [Currently in development]
 - Shot Assembly:
-    - [ ] Designing the main system
+    - [x] Shot setup for Maya
+    - [x] Designing the main system
+    - [ ] Building the HSHOT file exporter
+    - [ ] Building the HSHOT file importer
 
 
 ## Contributing

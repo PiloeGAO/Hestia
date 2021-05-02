@@ -3,7 +3,7 @@
     :file:      manager.py
     :brief:     Manager class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 import shutil, logging
 import tempfile, atexit
@@ -23,7 +23,7 @@ class Manager():
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
     def __init__(self, integration = "standalone", projects = [Project(name="local", description="Local file system.")], **kwargs):
-        self.__version  = "0.0.1"
+        self.__version  = "0.0.2"
 
         # Loading preferences.
         self.__preferences = Preferences(manager=self)

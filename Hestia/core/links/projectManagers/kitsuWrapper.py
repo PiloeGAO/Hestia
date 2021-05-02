@@ -3,7 +3,7 @@
     :file:      kitsuWrapper.py
     :brief:     Kitsu wrapper class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 import os, json
 import gazu

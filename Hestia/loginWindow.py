@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      loginWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the login window based on QtWidgets.  
 """
 import os
@@ -98,7 +98,7 @@ class LoginWindow(QWidget):
         self.mainLayout.addWidget(self.errorLabel, 4, 0)
 
         # Create the login button.
-        self.loginButton = IconButton(name="Login", description="Login", iconPath=self.__rootPath + "/ui/icons/check-square-fill.svg", iconScale=64, status=1, functionToInvoke=self.login)
+        self.loginButton = IconButton(name="Login", description="Login", iconPath=self.__rootPath + "/ui/icons/check-square.svg", iconScale=64, status=1, functionToInvoke=self.login)
         self.mainLayout.addWidget(self.loginButton, 5, 0)
 
         # Set main layout to the window.
