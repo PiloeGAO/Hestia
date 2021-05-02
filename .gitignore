@@ -110,9 +110,13 @@ ENV/
 env.bak/
 venv.bak/
 venv27_win64/
-venv27_osx64
+venv27_osx64/
+venv27_macos64/
+venv27_linux64/
 venv38_win64/
-venv38_osx64
+venv38_osx64/
+venv38_macos64/
+venv38_linux64/
 
 # Spyder project settings
 .spyderproject
