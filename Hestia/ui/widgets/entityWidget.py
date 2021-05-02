@@ -137,16 +137,21 @@ class EntityWidget(QWidget):
 
         currentProject = self.__manager.projects[self.__manager.currentProject]
         if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
+            # Assign shader to asset button.
             assignShader = menu.addAction("Assign shader to current object")
             assignShader.triggered.connect(self.assignShaderToSelectedAsset)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+            # Setup scene for shot button.
+            setupShot = menu.addAction("Setup shot")
+            setupShot.triggered.connect(self.setupSceneForShot)
+            # Export to HSHOT button.
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
 
         menu.exec_(event.globalPos())
     
     def assignShaderToSelectedAsset(self):
-        """Fucntion to assign the shader ID to the selected asset.
+        """Function to assign the shader ID to the selected asset.
 
         Returns:
             bool: Function status.
@@ -157,6 +162,23 @@ class EntityWidget(QWidget):
             return True
         else:
             self.__manager.logging.error("Failed to assign shader to selection.")
+            return False
+        
+    def setupSceneForShot(self):
+        """Function to setup scene for selected shot.
+
+        Returns:
+            bool: Function status.
+        """
+        currentProject = self.__manager.projects[self.__manager.currentProject]
+        
+        setupStatus = self.__manager.integration.setupShot(category=currentProject.categories[currentProject.currentCategory],
+                                                            shot=self.__asset)
+
+        if(setupStatus):
+            return True
+        else:
+            self.__manager.logging.error("Shot setup failed.")
             return False
 
     def exportShotToHSHOT(self):

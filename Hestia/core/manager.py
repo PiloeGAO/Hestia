@@ -13,7 +13,6 @@ from .preferences                           import Preferences
 from .links.dccs.defaultIntegration         import DefaultIntegration
 
 from .links.projectManagers.defaultWrapper  import DefaultWrapper
-from .links.projectManagers.kitsuWrapper    import KitsuWrapper
 
 from .project                               import Project
 
@@ -61,6 +60,7 @@ class Manager():
         
         # Setting up the service.
         if(self.__preferences.getValue("MANAGER", "service") == "kitsu"):
+            from .links.projectManagers.kitsuWrapper    import KitsuWrapper
             self.__mode = "kitsu"
             self.__link = KitsuWrapper(manager=self, api=self.__preferences.getValue("MANAGER", "onlineHost"))
         else:
@@ -195,7 +195,6 @@ class Manager():
             self.__logging.setLevel(logging.INFO)
 
         self.__logging.debug("Logging system setup successfully.")
-
     
     def addProject(self, project):
         """Add a new project to the projects list.

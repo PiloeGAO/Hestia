@@ -167,9 +167,14 @@ class KitsuWrapper(DefaultWrapper):
                 self.__manager.logging.debug(json.dumps(shotData, sort_keys=True, indent=4))
 
             # Get technical datas.
-            nb_frames = shotData["nb_frames"]
-            if(nb_frames == 0):
-                nb_frames = shotData["frame_out"] - shotData["frame_in"]
+            nb_frames = 0
+
+            if(shotData["nb_frames"] != None):
+                nb_frames = shotData["nb_frames"]
+
+                if(nb_frames == 0 and 
+                    shotData["frame_in"] != None and shotData["frame_out"] != None):
+                    nb_frames = shotData["frame_out"] - shotData["frame_in"]
 
             # Output versionning.
             versions = self.getVersions(shotData)

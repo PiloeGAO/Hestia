@@ -84,6 +84,18 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
+    def setupShot(self, category=None, shot=None):
+        """Setup shot values (eg: Framerate, duration, camera...) inside of the scene.
+
+        Args:
+            category (class: "Category"): Categrory datas. Defaults to None.
+            shot (class: "Entity"): Shot datas. Defaults to None.
+
+        Returns:
+            bool: Setup status.
+        """
+        return NotImplemented
+    
     def loadShot(self, asset=None, version=None):
         """Load the selected shot inside of the scene.
 

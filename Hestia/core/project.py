@@ -19,18 +19,21 @@ class Project():
         self.__name         = name
         self.__description  = description
 
-        self.__framerate = 0.0
+        self.__framerate = 0
         self.__ratio = "16:9"
         self.__resolution = 1080
+        self.__startFrame = 1000
         self.__preRoll = 24
         self.__postRoll = 24
 
         if(kwargs.has_key("fps")):
-            self.__framerate    = float(kwargs["fps"])
+            self.__framerate    = int(float(kwargs["fps"]))
         if(kwargs.has_key("ratio")):
             self.__ratio        = kwargs["ratio"]
         if(kwargs.has_key("resolution")):
             self.__resolution   = int(kwargs["resolution"])
+        if(kwargs.has_key("startFrame")):
+            self.__startFrame   = int(kwargs["startFrame"])
         if(kwargs.has_key("preRoll")):
             self.__preRoll      = int(kwargs["preRoll"])
         if(kwargs.has_key("postRoll")):
@@ -109,8 +112,18 @@ class Project():
         Returns:
             str: Project's resoltuion.
         """
-        return self.__resolution
+        # TODO: Build a resolution manager with ratio selection.
+        return 1920, 1080
     
+    @property
+    def startFrame(self):
+        """Get the start frame value of the project.
+
+        Returns:
+            int: Frame number.
+        """
+        return self.__startFrame
+
     @property
     def preRoll(self):
         """Get the pre-roll value of the project.

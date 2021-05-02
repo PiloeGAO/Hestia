@@ -11,6 +11,7 @@ global integrationActive
 
 try:
     from maya import cmds
+    from maya.plugin.timeSliderBookmark.timeSliderBookmark import createBookmark
 except:
     integrationActive = False
 else:
@@ -43,6 +44,7 @@ class MayaIntegration(DefaultIntegration):
         self.__manager.logging.info("Initialize File Formats.")
         self._availableFormats = [".ma", ".mb"]
 
+        # Enabling plugins for additional formats
         pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll"]}
         for plugin in pluginFormats:
             for subPlugin in pluginFormats[plugin]:
@@ -52,6 +54,11 @@ class MayaIntegration(DefaultIntegration):
 
             if(loadPluginStatus):
                 self._availableFormats.append(plugin)
+        
+        # Enabling plugins for additional features.
+        plugins = ["timeSliderBookmark.mll"]
+        for plugin in plugins:
+            loadPluginStatus = self.loadExternalPlugin(pluginName=plugin)
     
     def loadExternalPlugin(self, pluginName):
         """Load external plugins needed by the implementation (exemple: for special formats...)
@@ -178,6 +185,79 @@ class MayaIntegration(DefaultIntegration):
             return False
         else:
             return False
+    
+    def setupShot(self, category=None, shot=None):
+        """Setup shot values (eg: Framerate, duration, camera...) inside of the scene.
+
+        Args:
+            category (class: "Category"): Categrory datas. Defaults to None.
+            shot (class: "Entity"): Shot datas. Defaults to None.
+
+        Returns:
+            bool: Setup status.
+        """
+        project = self.__manager.projects[self.__manager.currentProject]
+
+        # Checking if the file current file is part of a maya projet foldertree.
+        filepath = cmds.file(q=True, sn=True)
+
+        if(filepath != ""):
+            if(os.path.basename(os.path.dirname(filepath)) == "scenes" and
+                os.path.isfile(os.path.dirname(filepath) + os.sep + ".." + os.sep + "workspace.mel")):
+                self.__manager.logging.debug("The scene is part of a Maya Project, Hestia will setup the project correctly! ")
+                cmds.workspace(os.path.abspath(os.path.dirname(filepath) + os.sep + ".."), openWorkspace=True)
+            else:
+                self.__manager.logging.warning("The scene isn't part of a Maya Project, please build a Maya project and save your scene in the \"scenes\" subdirectory (all features couldn't work as expected).")
+        else:
+            self.__manager.logging.warning("Please save your scene (all features couldn't work as expected).")
+
+        # Set main values for timeline setup.
+        # Correct order is:
+        # |-----------------------------------------------------------------------|
+        # | startFrame | startAnimationFrame ======> endAnimationFrame | endFrame |
+        # |-----------------------------------------------------------------------|
+        startFrame          = project.startFrame
+        startAnimationFrame = startFrame + project.preRoll
+        endAnimationFrame   = startAnimationFrame + shot.frameNumber
+        endFrame            = endAnimationFrame + project.postRoll
+
+        # Set timeline datas.
+        cmds.currentUnit( time='%sfps' % int(project.framerate)) # WARNING: Framerate must be setup before timeline !
+
+        cmds.playbackOptions(animationStartTime=startFrame, minTime=startAnimationFrame,
+                            animationEndTime=endFrame,      maxTime=endAnimationFrame,
+                            playbackSpeed=1.0)
+
+        # Create timeline bookmarks (for visual feedback).
+        # "timeSliderBookmark.mll" need to be loaded first.
+        createBookmark(name="PREROLL",  start=startFrame,            stop=(startAnimationFrame-1), color=(0.67, 0.23, 0.23))
+        createBookmark(name="ANIM",     start=startAnimationFrame,   stop=endAnimationFrame,       color=(0.28, 0.69, 0.48))
+        createBookmark(name="POSTROLL", start=(endAnimationFrame+1), stop=endFrame,                color=(0.67, 0.23, 0.23))
+
+        # Setting up render settings in the scene.
+        cmds.setAttr("defaultRenderGlobals.imageFilePrefix", "%s_%s_<Scene>_<RenderLayer>_<Camera>" % (category.name, shot.name), type="string")
+
+        width, height = project.resolution
+        cmds.setAttr("defaultResolution.width", width)
+        cmds.setAttr("defaultResolution.height", height)
+
+        cmds.setAttr("defaultRenderGlobals.startFrame", startAnimationFrame)
+        cmds.setAttr("defaultRenderGlobals.endFrame", endAnimationFrame)
+        cmds.setAttr("defaultRenderGlobals.byFrameStep", 1.0)
+
+        cmds.setAttr("defaultRenderGlobals.animation", True)
+        cmds.setAttr("defaultRenderGlobals.putFrameBeforeExt", True)
+
+        # Getting the number of digits from last frame to set padding.
+        paddingCount = 0
+        counter = endFrame
+        while(counter>0):
+            paddingCount=paddingCount+1
+            counter=counter//10
+
+        cmds.setAttr("defaultRenderGlobals.extensionPadding", paddingCount)
+
+        return True
     
     def buildShot(self, shotPath = ""):
         """Build the shot from shot assembly system.
