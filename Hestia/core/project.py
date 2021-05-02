@@ -3,7 +3,7 @@
     :file:      project.py
     :brief:     Project class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 
 class Project():
@@ -14,10 +14,30 @@ class Project():
         name (str, optional): Project's name. Defaults to "".
         description (str, optional): Project's description. Defaults to "".
     """
-    def __init__(self, id="", name="", description=""):
+    def __init__(self, id="", name="", description="", **kwargs):
         self.__id           = id
         self.__name         = name
         self.__description  = description
+
+        self.__framerate = 0
+        self.__ratio = "16:9"
+        self.__resolution = 1080
+        self.__startFrame = 1000
+        self.__preRoll = 24
+        self.__postRoll = 24
+
+        if("fps" in kwargs):
+            self.__framerate    = int(float(kwargs["fps"]))
+        if("ratio" in kwargs):
+            self.__ratio        = kwargs["ratio"]
+        if("resolution" in kwargs):
+            self.__resolution   = int(kwargs["resolution"])
+        if("startFrame" in kwargs):
+            self.__startFrame   = int(kwargs["startFrame"])
+        if("preRoll" in kwargs):
+            self.__preRoll      = int(kwargs["preRoll"])
+        if("postRoll" in kwargs):
+            self.__postRoll     = int(kwargs["postRoll"])
 
         self.__categories   = []
         self.__currentCategory = 0
@@ -67,6 +87,61 @@ class Project():
         """
         self.__description = description
     
+    @property
+    def framerate(self):
+        """Get the framerate of the project.
+
+        Returns:
+            str: Project's framerate.
+        """
+        return self.__framerate
+    
+    @property
+    def ratio(self):
+        """Get the ratio of the project.
+
+        Returns:
+            str: Project's ratio.
+        """
+        return self.__ratio
+
+    @property
+    def resolution(self):
+        """Get the resolution of the project.
+
+        Returns:
+            str: Project's resoltuion.
+        """
+        # TODO: Build a resolution manager with ratio selection.
+        return 1920, 1080
+    
+    @property
+    def startFrame(self):
+        """Get the start frame value of the project.
+
+        Returns:
+            int: Frame number.
+        """
+        return self.__startFrame
+
+    @property
+    def preRoll(self):
+        """Get the pre-roll value of the project.
+
+        Returns:
+            int: Frame number.
+        """
+        return self.__preRoll
+    
+    @property
+    def postRoll(self):
+        """Get the post-roll value of the project.
+
+        Returns:
+           int: Frame number
+        """
+        return self.__postRoll
+
     @property
     def categories(self):
         """Get the categories of the project.

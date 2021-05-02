@@ -2,12 +2,18 @@
     :package:   Hestia
     :file:      footer.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the footer of the window.  
 """
-from Qt import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-class Footer(QtWidgets.QWidget):
+class Footer(QWidget):
     def __init__(self, manager, parent=None):
         """Footer Class.
 
@@ -19,7 +25,6 @@ class Footer(QtWidgets.QWidget):
 
         self.__manager = manager
 
-        self.user = self.__manager.link.username
         self.version = self.__manager.version
 
         self.initUI()
@@ -29,25 +34,31 @@ class Footer(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Add current logged in user.
-        self.currentUser = QtWidgets.QLabel("Current user: %s" % self.user)
-        self.mainLayout.addWidget(self.currentUser)
+        self.logWidget = QLabel("")
+        self.mainLayout.addWidget(self.logWidget)
 
         # Add spacer to footer.
         self.mainLayout.addStretch()
 
         # Add current logged in user.
-        self.currentVersion = QtWidgets.QLabel("V %s" % self.version)
+        self.currentVersion = QLabel("V %s" % self.version)
         self.mainLayout.addWidget(self.currentVersion)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
+    def updateLog(self, text=""):
+        """Update the log widget of the footer.
+
+        Args:
+            text (str, optional): Text to display. Defaults to "".
+        """
+        self.logWidget.setText(text)
+
     def refresh(self):
         """Force refresh of the widget.
         """
-        self.user = self.__manager.link.username
-        self.currentUser.setText("Current user: %s" % self.user)
         self.update()

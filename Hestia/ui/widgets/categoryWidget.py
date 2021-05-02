@@ -3,13 +3,19 @@
     :file:      categoryWidget.py
     :brief:     Category widget.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
-from Qt import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .iconButton    import IconButton
 
-class CategoryWidget(QtWidgets.QWidget):
+class CategoryWidget(QWidget):
     """Entity widget display class.
 
         Args:
@@ -43,7 +49,7 @@ class CategoryWidget(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Horizontal.
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
 
         self.categoryButton = IconButton(name=self.__category.name,
                                          description=self.__category.description,

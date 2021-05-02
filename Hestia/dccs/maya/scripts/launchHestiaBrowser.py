@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      launchHestiaBrowser.py
     :author:    ldepoix
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to start UI from Autodesk Maya.
 '''
 
@@ -21,5 +21,5 @@ def launchBrowser():
 
     hestiaManager = Manager(integration="Maya")
 
-    browser = MainWindow(manager=hestiaManager, mode="kitsu")
+    browser = MainWindow(manager=hestiaManager)
     browser.show()

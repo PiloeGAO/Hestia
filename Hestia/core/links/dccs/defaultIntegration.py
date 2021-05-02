@@ -3,7 +3,7 @@
     :file:      defaultIntegration.py
     :brief:     Default integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 
 class DefaultIntegration(object):
@@ -72,23 +72,54 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def loadAsset(self, assetPath=""):
+    def loadAsset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
-        Returns:
-            bool: Status of the import.
-        """
-        return NotImplemented
-    
-    def loadShot(self, shotPath=""):
-        """Load the selected shot inside of the scene.
+        Args:
+            asset (class:"Entity"): Asset datas. Defaults to None.
+            version (class:"Version"): Version datas. Defaults to None.
 
         Returns:
-            bool: Status of the import.
+            bool: load status.
+        """
+        return NotImplemented
+    
+    def setupShot(self, category=None, shot=None):
+        """Setup shot values (eg: Framerate, duration, camera...) inside of the scene.
+
+        Args:
+            category (class: "Category"): Categrory datas. Defaults to None.
+            shot (class: "Entity"): Shot datas. Defaults to None.
+
+        Returns:
+            bool: Setup status.
+        """
+        return NotImplemented
+    
+    def loadShot(self, asset=None, version=None):
+        """Load the selected shot inside of the scene.
+
+        Args:
+            asset (class:"Entity"): Asset datas. Defaults to None.
+            version (class:"Version"): Version datas. Defaults to None.
+
+        Returns:
+            bool: load status.
         """
         return NotImplemented
     
     
+    def buildShot(self, shotPath = ""):
+        """Build the shot from shot assembly system.
+
+        Args:
+            shotPath (str): Shot path. Defaults to "".
+
+        Args:
+            shotPath (str, optional): [description]. Defaults to "".
+        """
+        return NotImplemented
+
     def importAsset(self, path = ""):
         """Import the asset inside of default.
 
@@ -96,3 +127,28 @@ class DefaultIntegration(object):
             path (str, optional): Path of the asset. Defaults to "".
         """
         return NotImplemented
+    
+    def isInstanceImport(self, version=None):
+        """Return the status for instance import.
+
+        Returns:
+            bool: Instance status.
+        """
+        return NotImplementedError
+
+    def assignShaderToSelectedAsset(self, version):
+        """Assign a shader ID to an Hestia asset.
+
+        Args:
+            version (class:"Version"): Version datas. Defaults to None.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError
+
+    def extractAssets(self):
+        """Extracts assets for shot building file.
+        """
+
+        return NotImplementedError

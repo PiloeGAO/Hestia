@@ -3,12 +3,17 @@
     :file:      dropDown.py
     :brief:     Drop down field with text.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-from Qt             import QtWidgets
-
-class DropDown(QtWidgets.QWidget):
+class DropDown(QWidget):
     """Drop Down class.
 
     Args:
@@ -66,10 +71,10 @@ class DropDown(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Create title.
-        self.title = QtWidgets.QLabel(self.__name + " : ")
+        self.title = QLabel(self.__name + " : ")
 
         # Add description as tooltip.
         self.title.setToolTip(self.__description)
@@ -78,7 +83,7 @@ class DropDown(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.title)
 
         # Create ComboBox.
-        self.dropDown = QtWidgets.QComboBox()
+        self.dropDown = QComboBox()
 
         # Add datas to drop down.
         self.dropDown.addItems(self.__datas)

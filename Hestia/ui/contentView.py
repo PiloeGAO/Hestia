@@ -2,32 +2,42 @@
     :package:   Hestia
     :file:      contentView.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the content view of the window.  
 """
 import os
 
-from Qt import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from ..core.category        import Category
 
+from .widgets.gridWidget    import GridWidget
 from .widgets.entityWidget  import EntityWidget
-class ContentView(QtWidgets.QWidget):
+
+class ContentView(QWidget):
     """Content View class.
 
     Args:
         manager (class: "Manager"): The Hestia manager.
+        mainWindow (class: "MainWindow"): The Hestia main window.
         xSize (int, optional): Number of widgets on X axis. Defaults to 4.
         parent (class: "QtWidget", optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager, xSize=2, parent=None):
+    def __init__(self, manager, mainWindow, xSize=2, parent=None):
         super(ContentView, self).__init__(parent=parent)
-        self.__manager  = manager
-        self.__project  = self.__manager.projects[self.__manager.currentProject]
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
+        self.__project      = self.__manager.projects[self.__manager.currentProject]
         
-        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
+        self.__rootPath     = os.path.dirname(os.path.abspath(__file__))
 
-        self.__category = Category(name="Empty", type="Assets")
+        self.__category     = Category(name="Empty", type="Assets")
         if(len(self.__project.categories) > 0):
             self.__category = self.__project.categories[self.__project.currentCategory]
 
@@ -43,7 +53,7 @@ class ContentView(QtWidgets.QWidget):
         Args:
             event (class: "QtEvent"): Event.
         """
-        QtWidgets.QWidget.resizeEvent(self, event)
+        QWidget.resizeEvent(self, event)
         self.refresh()
     
     def initUI(self):
@@ -51,83 +61,27 @@ class ContentView(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
-        self.scrollArea = QtWidgets.QScrollArea()
-
-        self.grid = QtWidgets.QGridLayout()
-        self.grid.setContentsMargins(0, 0, 0, 0)
-
-        self.buildEntitiesGrid()
-
-        self.widget = QtWidgets.QWidget()
-        self.widget.setLayout(self.grid)
-
-        self.scrollArea.setWidget(self.widget)
+        self.scrollArea = QScrollArea()
+        
+        # Updating the grid with a new grid.
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=self.xSize,
+                                itemList=self.buildEntityList(),
+                                emptyLabel="No items availables.")
+        
+        self.scrollArea.setWidget(self.grid)
 
         self.mainLayout.addWidget(self.scrollArea)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
 
-    def buildEntitiesGrid(self):
-        """Build the entities grid.
-        """
-        entitiesCount = len(self.__entities)
-
-        contentWidgetSizeX = self.scrollArea.size().width() - 20
-        contentWidgetSizeY = self.scrollArea.size().height() - 20
-        
-        if(entitiesCount > 0):
-            ySize = entitiesCount / self.xSize + entitiesCount % self.xSize
-
-            for y in range(ySize):
-                for x in range(self.xSize):
-                    count = x + y * self.xSize
-
-                    if(count < entitiesCount):
-                        # Create the widget.
-                        # TODO: Set the icon scale to it's max scale.
-                        entity = EntityWidget(manager=self.__manager,
-                                            asset=self.__entities[count],
-                                            iconSize=100,
-                                            status=1)
-                        
-                        self.grid.addWidget(entity, y, x)
-            
-                    # Reset the size of the grid properly.
-                    self.grid.setColumnMinimumWidth(x, contentWidgetSizeX/self.xSize)
-                    self.grid.setRowMinimumHeight(y, contentWidgetSizeY/self.xSize)
-            
-            try:
-                # Reset the size of the widget.
-                self.widget.setFixedWidth(contentWidgetSizeX)
-                if(ySize < self.xSize):
-                    ySize = self.xSize
-                self.widget.setFixedHeight(contentWidgetSizeY/self.xSize * ySize)
-            except AttributeError:
-                pass
-            
-        else:
-            entity = QtWidgets.QLabel("No entities found.")
-            self.grid.addWidget(entity, 0, 0)
-
-        self.update
-    
-    def cleanEntitiesGrid(self):
-        """Clean the entities grid.
-        """
-        # Removing the old widgets.
-        for i in reversed(range(self.grid.count())):
-            self.grid.itemAt(i).widget().setParent(None)
-        
-        self.update
-
     def refresh(self):
         """Force refresh of the widget.
         """
-        self.cleanEntitiesGrid()
-
         # Updating variables.
         self.__project  = self.__manager.projects[self.__manager.currentProject]
 
@@ -137,8 +91,31 @@ class ContentView(QtWidgets.QWidget):
 
         self.__entities = self.__category.entities
 
-        # ---------------------------------------------
+        # Updating the grid with a new grid.
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=self.xSize,
+                                itemList=self.buildEntityList(),
+                                emptyLabel="No items availables.")
 
-        self.buildEntitiesGrid()
+        self.scrollArea.setWidget(self.grid)
 
         self.update()
+    
+    def buildEntityList(self):
+        """Build the entity array.
+
+        Returns:
+            list (class:"EntityWidget"): Array of EntityWidget.
+        """
+        entityList = []
+
+        for entity in range(len(self.__entities)):
+            newEntity = EntityWidget(manager=self.__manager,
+                                    asset=self.__entities[entity],
+                                    iconSize=100,
+                                    status=1)
+            
+            entityList.append(newEntity)
+
+        return entityList

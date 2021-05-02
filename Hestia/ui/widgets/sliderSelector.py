@@ -3,12 +3,18 @@
     :file:      sliderSelector.py
     :brief:     Slider with labels under it.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
 
-from Qt             import QtWidgets, QtCore
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-class SliderSelector(QtWidgets.QWidget):
+class SliderSelector(QWidget):
     """Slider Selector class.
 
     Args:
@@ -41,10 +47,10 @@ class SliderSelector(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QGridLayout()
+        self.mainLayout = QGridLayout()
 
         # Create title.
-        self.title = QtWidgets.QLabel(self._name + " : ")
+        self.title = QLabel(self._name + " : ")
 
         # Add description as tooltip.
         self.title.setToolTip(self._description)
@@ -53,7 +59,7 @@ class SliderSelector(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.title, 0, 0, 1, 1)
 
         # Create slider.
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider = QSlider(Qt.Horizontal)
 
         # Set minimum and maximum value.
         self.slider.setMinimum(0)
@@ -67,7 +73,7 @@ class SliderSelector(QtWidgets.QWidget):
         self.slider.setSingleStep(1)
 
         # Set slider ticks below.
-        self.slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.slider.setTickPosition(QSlider.TicksBelow)
 
         # Connect slider with update method.
         self.slider.valueChanged.connect(self.changeCurrentValue)
@@ -76,7 +82,7 @@ class SliderSelector(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.slider, 0, 1, 0, len(self._datas)-1)
 
         # Create empty label for alignment.
-        self.sliderLabelEmpty = QtWidgets.QLabel(" ")
+        self.sliderLabelEmpty = QLabel(" ")
 
         # Add empty label to mainLayout.
         self.mainLayout.addWidget(self.sliderLabelEmpty, 1, 0, 1, 1)
@@ -87,7 +93,7 @@ class SliderSelector(QtWidgets.QWidget):
             if type(currentData) != str:
                 currentData = str(currentData)
             
-            self.sliderLabel = QtWidgets.QLabel(currentData)
+            self.sliderLabel = QLabel(currentData)
 
             self.mainLayout.addWidget(self.sliderLabel, 1, 1 + i, 1, 1)
 

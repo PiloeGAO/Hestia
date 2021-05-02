@@ -2,15 +2,22 @@
     :package:   Hestia
     :file:      folderTreeView.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the folder tree of the window.  
 """
-from Qt import QtCore, QtWidgets, QtGui
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .widgets.dropDown          import DropDown
 from .widgets.categoryWidget    import CategoryWidget
+from .widgets.gridWidget        import GridWidget
 
-class FolderTreeView(QtWidgets.QWidget):
+class FolderTreeView(QWidget):
     """Folder tree Class.
 
     Args:
@@ -36,7 +43,7 @@ class FolderTreeView(QtWidgets.QWidget):
         Args:
             event (class: "QtEvent"): Event.
         """
-        QtWidgets.QWidget.resizeEvent(self, event)
+        QWidget.resizeEvent(self, event)
         self.refresh()
     
     def initUI(self):
@@ -44,7 +51,7 @@ class FolderTreeView(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QVBoxLayout()
+        self.mainLayout = QVBoxLayout()
         self.mainLayout.setSpacing(0)
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
 
@@ -57,51 +64,20 @@ class FolderTreeView(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.type)
 
         # Creating the base of the TreeView (ScrollArea).
-        self.scrollArea = QtWidgets.QScrollArea()
+        self.scrollArea = QScrollArea()
 
-        self.categoriesLayout = QtWidgets.QVBoxLayout()
-        #self.categoriesLayout.setContentsMargins(0, 0, 0, 0)
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=1,
+                                itemList=self.buildCategoryList(),
+                                emptyLabel="No categories availables.")
 
-        self.buildTree()
+        self.scrollArea.setWidget(self.grid)
 
-        self.categoriesWidget = QtWidgets.QWidget()
-        self.categoriesWidget.setLayout(self.categoriesLayout)
-
-        self.scrollArea.setWidget(self.categoriesWidget)
         self.mainLayout.addWidget(self.scrollArea)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
-    
-    def buildTree(self):
-        """Build the category tree.
-        """
-        if(len(self.__categories) > 0):
-            for category in self.__categories:
-                categoryButton = CategoryWidget(manager=self.__manager, mainWindow=self.__mainWindow, category=category, parentWidget=self)
-                self.categoriesLayout.addWidget(categoryButton)
-            
-            try:
-                # Reset the size of the layout properly.
-                self.categoriesWidget.setFixedWidth(self.scrollArea.size().width() - 20)
-                self.categoriesWidget.setFixedHeight(self.scrollArea.size().height())
-            except AttributeError:
-                pass
-        
-        else:
-            noCategoryText = QtWidgets.QLabel("No categories available.")
-            self.categoriesLayout.addWidget(noCategoryText)
-        
-        self.update()
-    
-    def cleanTree(self):
-        """Clean the category tree.
-        """
-        # Removing the old widgets.
-        for i in reversed(range(self.categoriesLayout.count())):
-            self.categoriesLayout.itemAt(i).widget().setParent(None)
-        
-        self.update()
     
     def changeCurrentCategoryType(self):
         """Updating the current selected category when type change.
@@ -117,11 +93,34 @@ class FolderTreeView(QtWidgets.QWidget):
     def refresh(self):
         """Force refresh of the widget.
         """
-        self.cleanTree()
-        
+        # Updating variables.
         self.__project    = self.__manager.projects[self.__manager.currentProject]
         self.__categories = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]]
 
-        self.buildTree()
+        # Updating the grid with a new grid.
+        self.grid = GridWidget(manager=self.__manager,
+                                parentGeometry=self.scrollArea.geometry(),
+                                xSize=1,
+                                itemList=self.buildCategoryList(),
+                                emptyLabel="No categories availables.")
+        
+        self.scrollArea.setWidget(self.grid)
 
         self.update()
+    
+    def buildCategoryList(self):
+        """Build the category array.
+
+        Returns:
+            list: (class:"CategoryWidget"): Array of CategoryWidget.
+        """
+        categoriesList = []
+        for category in self.__categories:
+            categoryButton = CategoryWidget(manager=self.__manager,
+                                            mainWindow=self.__mainWindow,
+                                            category=category,
+                                            parentWidget=self)
+
+            categoriesList.append(categoryButton)
+        
+        return categoriesList

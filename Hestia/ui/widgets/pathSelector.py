@@ -3,11 +3,17 @@
     :file:      pathSelector.py
     :brief:     Path field with search button.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
 """
-from Qt             import QtWidgets
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
-class PathSelector(QtWidgets.QWidget):
+class PathSelector(QWidget):
     """Icon Button class.
 
     Args:
@@ -40,10 +46,10 @@ class PathSelector(QtWidgets.QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Create title.
-        self.title = QtWidgets.QLabel(self._name + " : ")
+        self.title = QLabel(self._name + " : ")
 
         # Add description as tooltip.
         self.title.setToolTip(self._description)
@@ -52,7 +58,7 @@ class PathSelector(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.title)
 
         # Create line edit to display path.
-        self.pathDisplay = QtWidgets.QLineEdit(self._path)
+        self.pathDisplay = QLineEdit(self._path)
 
         # Connect QLineEdit to editPath.
         self.pathDisplay.textEdited.connect(self.editPath)
@@ -61,7 +67,7 @@ class PathSelector(QtWidgets.QWidget):
         self.mainLayout.addWidget(self.pathDisplay)
 
         # Create browse button.
-        self.browseButton = QtWidgets.QPushButton("Browse")
+        self.browseButton = QPushButton("Browse")
 
         # Connect button to browse method.
         self.browseButton.clicked.connect(self.browseFunction)
@@ -81,12 +87,12 @@ class PathSelector(QtWidgets.QWidget):
         """Open popup to select the targeted directory.
         """
         if(self._pathIsDir):
-            path = QtWidgets.QFileDialog.getExistingDirectory(self, "Open " + self._name,
+            path = QFileDialog.getExistingDirectory(self, "Open " + self._name,
                                        self._path,
-                                       QtWidgets.QFileDialog.ShowDirsOnly
-                                       | QtWidgets.QFileDialog.DontResolveSymlinks)
+                                       QFileDialog.ShowDirsOnly
+                                       | QFileDialog.DontResolveSymlinks)
         else:
-            path = QtWidgets.QFileDialog.getOpenFileName(self,
+            path = QFileDialog.getOpenFileName(self,
                                                 "Open " + self._name,
                                                 self._path,
                                                 "*")[0]

@@ -2,15 +2,23 @@
     :package:   Hestia
     :file:      header.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.1
+    :version:   0.0.2
     :brief:     Class to create the header of the window.  
 """
-from Qt import QtWidgets
+import os
+
+try:
+    from PySide2.QtCore import *
+    from PySide2.QtGui import *
+    from PySide2.QtWidgets import *
+except:
+    from PySide.QtCore import *
+    from PySide.QtGui import *
 
 from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
 
-class Header(QtWidgets.QWidget):
+class Header(QWidget):
     def __init__(self, manager, mainWindow, parent=None):
         """header Class.
 
@@ -22,8 +30,10 @@ class Header(QtWidgets.QWidget):
         super(Header, self).__init__(parent=parent)
         self.__manager = manager
         self.__mainWindow = mainWindow
+        
+        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
-        self.importAsInstanceState = True
+        self.importAsReferenceState = True
 
         self.initUI()
     
@@ -32,40 +42,45 @@ class Header(QtWidgets.QWidget):
         """
 
         # Set the main layout component.
-        self.mainLayout = QtWidgets.QHBoxLayout()
+        self.mainLayout = QHBoxLayout()
 
         # Add import as instance checkbox.
-        self.importAsInstance = QtWidgets.QCheckBox("Instance")
-        self.importAsInstance.setToolTip("Import the asset as instance in the scene.")
-        self.importAsInstance.setChecked(self.importAsInstanceState)
-        self.importAsInstance.stateChanged.connect(self.changeImportAsInstanceState)
-        self.mainLayout.addWidget(self.importAsInstance)
+        self.importAsReference = QCheckBox("Reference")
+        self.importAsReference.setToolTip("Import the asset as reference in the scene.")
+        self.importAsReference.setChecked(self.importAsReferenceState)
+        self.importAsReference.stateChanged.connect(self.changeImportAsReferenceState)
+        self.mainLayout.addWidget(self.importAsReference)
 
         if(self.__manager.integration.supportInstances):
-            self.importAsInstance.show()
+            self.importAsReference.show()
         else:
-            self.importAsInstance.hide()
+            self.importAsReference.hide()
 
         # Add spacer to header.
         self.mainLayout.addStretch()
 
         # Add project selector to header.
-        self.projectSelector = DropDown("Project", "Current project", ["Local"], self.changeProject)
+        self.projectSelector = DropDown(name="Project", description="Current project", datas=["Local"], functionToInvoke=self.changeProject)
         self.mainLayout.addWidget(self.projectSelector)
 
-        #TODO: ADD PREFERENCES.
         # Add preference button.
-        #self.preferenceButton = QtWidgets.QPushButton("Preferences")
-        #self.mainLayout.addWidget(self.preferenceButton)
+        self.preferenceButton = IconButton(name="Preferences",
+                                            description="Open preferences window.",
+                                            iconPath=self.__rootPath + "/../ui/icons/gear.svg",
+                                            iconScale=16,
+                                            status=1,
+                                            functionToInvoke=self.__mainWindow.openPreferencesWindow,
+                                            parent=None)                                       
+        self.mainLayout.addWidget(self.preferenceButton)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def changeImportAsInstanceState(self):
+    def changeImportAsReferenceState(self):
         """Change the state of the importAsInstance checkbox.
         """
-        self.importAsInstanceState = self.importAsInstance.checkState()
-        self.__manager.integration.instances = self.importAsInstance.isChecked()
+        self.importAsReferenceState = self.importAsReference.checkState()
+        self.__manager.integration.instances = self.importAsReference.isChecked()
     
     def changeProject(self):
         """Change the project on the manager and update the mainWindow.
