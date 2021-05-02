@@ -26,17 +26,17 @@ class Project():
         self.__preRoll = 24
         self.__postRoll = 24
 
-        if("fps" in kwargs):
+        if(kwargs.has_key("fps")):
             self.__framerate    = int(float(kwargs["fps"]))
-        if("ratio" in kwargs):
+        if(kwargs.has_key("ratio")):
             self.__ratio        = kwargs["ratio"]
-        if("resolution" in kwargs):
+        if(kwargs.has_key("resolution")):
             self.__resolution   = int(kwargs["resolution"])
-        if("startFrame" in kwargs):
+        if(kwargs.has_key("startFrame")):
             self.__startFrame   = int(kwargs["startFrame"])
-        if("preRoll" in kwargs):
+        if(kwargs.has_key("preRoll")):
             self.__preRoll      = int(kwargs["preRoll"])
-        if("postRoll" in kwargs):
+        if(kwargs.has_key("postRoll")):
             self.__postRoll     = int(kwargs["postRoll"])
 
         self.__categories   = []
