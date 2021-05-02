@@ -60,7 +60,7 @@ class Header(QWidget):
         self.mainLayout.addStretch()
 
         # Add project selector to header.
-        self.projectSelector = DropDown("Project", "Current project", ["Local"], self.changeProject)
+        self.projectSelector = DropDown(name="Project", description="Current project", datas=["Local"], functionToInvoke=self.changeProject)
         self.mainLayout.addWidget(self.projectSelector)
 
         # Add preference button.

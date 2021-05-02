@@ -29,8 +29,8 @@ class GridWidget(QWidget):
         self.__itemList = itemList
         self.__itemListSize = len(itemList)
 
-        self.__xSize = xSize
-        self.__ySize = self.__itemListSize / self.__xSize + self.__itemListSize % self.__xSize
+        self.__xSize = int(xSize)
+        self.__ySize = int(self.__itemListSize / self.__xSize + self.__itemListSize % self.__xSize)
 
         self.__emptyLabel = emptyLabel
 
