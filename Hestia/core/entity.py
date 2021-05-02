@@ -32,7 +32,7 @@ class Entity():
         
         # Shot specific datas.
         self.__frameNumber = 0
-        if(kwargs.has_key("frameNumber")):
+        if("frameNumber" in kwargs):
             self.__frameNumber = int(kwargs["frameNumber"])
 
     @property

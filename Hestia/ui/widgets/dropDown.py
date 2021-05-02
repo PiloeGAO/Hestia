@@ -30,7 +30,10 @@ class DropDown(QWidget):
         self.__name = name
         self.__description = description
         self.__datas = datas
-        self.__currentValue = defaultValue if defaultValue > 0 and defaultValue < len(self.__datas) else 0
+        self.__currentValue = 0
+
+        if(defaultValue > 0 and defaultValue < len(self.__datas)):
+            self.__currentValue = defaultValue
 
         self.__functionToInvoke = functionToInvoke
 
