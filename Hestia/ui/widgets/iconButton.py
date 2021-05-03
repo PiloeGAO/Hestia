@@ -8,12 +8,12 @@
 import os
 
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class IconButton(QWidget):
     """Icon Button class.
@@ -24,8 +24,8 @@ class IconButton(QWidget):
         iconPath (str, optional): Path to icon. Defaults to "".
         iconScale (int, optional): Icon scale in pixels. Defaults to 64.
         status (int, optional): Status of the button, 0 is disable and 1 is enable. Defaults to 1.
-        functionToInvoke ([type], optional): Function to activate on button click. Defaults to None.
-        parent ([type], optional): Parent widget. Defaults to None.
+        functionToInvoke (function, optional): Function to activate on button click. Defaults to None.
+        parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
     def __init__(self, name="", description="", iconPath="", iconScale=64, status=1, functionToInvoke=None, parent=None):
         super(IconButton, self).__init__(parent=parent)

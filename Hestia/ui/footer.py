@@ -6,21 +6,21 @@
     :brief:     Class to create the footer of the window.  
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class Footer(QWidget):
-    def __init__(self, manager, parent=None):
-        """Footer Class.
+    """Footer Class.
 
-        Args:
-            manager (class: "Manager"): The hestia manager.
-            parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
-        """
+    Args:
+        manager (class: "Manager"): The hestia manager.
+        parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
+    """
+    def __init__(self, manager, parent=None):
         super(Footer, self).__init__(parent=parent)
 
         self.__manager = manager

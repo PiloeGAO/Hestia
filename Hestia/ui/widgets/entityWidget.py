@@ -8,27 +8,25 @@
 from os import path
 
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
-from .iconButton    import IconButton
-from .dropDown      import DropDown
+from .iconButton            import IconButton
+from .dropDown              import DropDown
 
 class EntityWidget(QWidget):
     """Entity widget display class.
 
         Args:
-            name (str, optional): [description]. Defaults to "".
-            description (str, optional): [description]. Defaults to "".
-            iconPath (str, optional): [description]. Defaults to "".
-            iconSize (int, optional): [description]. Defaults to 64.
-            status (int, optional): [description]. Defaults to 1.
-            versionList (list, optional): [description]. Defaults to [].
-            parent ([type], optional): [description]. Defaults to None.
+            manager (class: `Manager`): The Hestia manager.
+            asset (class: `Entity`): The entity to display.
+            iconSize (int, optional): Size of the icon to display. Defaults to 64.
+            status (int, optional): Status of the button. Defaults to 1.
+            parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
     def __init__(self, manager=None, asset=None, iconSize=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)

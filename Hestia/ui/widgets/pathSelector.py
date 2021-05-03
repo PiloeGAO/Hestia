@@ -6,12 +6,12 @@
     :version:   0.0.2
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class PathSelector(QWidget):
     """Icon Button class.
@@ -20,7 +20,7 @@ class PathSelector(QWidget):
         name (str, optional): Text of the button. Defaults to "".
         description (str, optional): Tooltip. Defaults to "".
         path (str, optional): Default path. Defaults to "".
-        isDir (bool, optional): Is path to directory or file. Defaults to True.
+        isDir (bool, optional): Is path a directory or a file. Defaults to True.
         parent ([type], optional): Parent widget. Defaults to None.
     """
     def __init__(self, name="", description="", path="", isDir=True, parent=None):

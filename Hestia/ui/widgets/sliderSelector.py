@@ -7,12 +7,12 @@
 """
 
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class SliderSelector(QWidget):
     """Slider Selector class.
@@ -20,9 +20,9 @@ class SliderSelector(QWidget):
     Args:
         name (str, optional): Text of the button. Defaults to "".
         description (str, optional): Tooltip. Defaults to "".
-        datas (list, optional): Data array (Strings or integers only). Defaults to [].
+        datas (list: str, optional): Data array (Strings or integers only). Defaults to [].
         defaultValue (int, optional): Default value ID. Defaults to 0.
-        parent (QtWidgets, optional): Parent widget. Defaults to None.
+        parent (class: `QWidgets`, optional): Parent widget. Defaults to None.
     """
     def __init__(self, name="", description="", datas=[], defaultValue=0, parent=None):
         super(SliderSelector, self).__init__(parent=parent)

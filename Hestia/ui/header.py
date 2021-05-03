@@ -8,25 +8,25 @@
 import os
 
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
 
 class Header(QWidget):
-    def __init__(self, manager, mainWindow, parent=None):
-        """header Class.
+    """header Class.
 
-        Args:
-            manager (class: "Manager"): The Hestia manager.
-            mainWindow (class: "MainWindow"): The Hestia main window.
-            parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
-        """
+    Args:
+        manager (class: "Manager"): The Hestia manager.
+        mainWindow (class: "MainWindow"): The Hestia main window.
+        parent (class: "QtWidgets.QWidget", optional): The parent widget. Defaults to None.
+    """
+    def __init__(self, manager, mainWindow, parent=None):
         super(Header, self).__init__(parent=parent)
         self.__manager = manager
         self.__mainWindow = mainWindow

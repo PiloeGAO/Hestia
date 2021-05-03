@@ -6,12 +6,12 @@
     :brief:     Class to create the preferences window based on QtWidgets.  
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 from .ui.widgets.dropDown   import DropDown
 
@@ -20,8 +20,6 @@ class PreferencesWindow(QWidget):
 
     Args:
         manager (class: "Manager", optional): Manager of Hestia. Defaults to Manager().
-        winW (int, optional): Window width. Defaults to 640.
-        winH (int, optional): Window height. Defaults to 480.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
     def __init__(self, manager, parent=None):
