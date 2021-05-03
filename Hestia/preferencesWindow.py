@@ -91,9 +91,11 @@ class PreferencesWindow(QWidget):
         self.__manager.preferences.setValue("MANAGER", "loadPreviews", str(int(self.loadPreviews.isChecked())))
         self.__manager.preferences.savePreferences()
 
-        # Shwo information message.
-        infoPopup = QMessageBox()
-        infoPopup.setText("Please restart Hestia.")
-        infoPopup.exec_()
+        # Show information message.
+        QMessageBox.warning(self, self.tr("Hestia"),
+                            self.tr("Preferences has been modified.\n" + \
+                                "Please restart Hestia."),
+                            QMessageBox.NoButton,
+                            QMessageBox.Ok)
 
         self.hide()
