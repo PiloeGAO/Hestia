@@ -92,7 +92,7 @@ class PreferencesWindow(QWidget):
         self.__manager.preferences.savePreferences()
 
         # Shwo information message.
-        infoPopup = QMessageBox("Hestia | Warning")
+        infoPopup = QMessageBox()
         infoPopup.setText("Please restart Hestia.")
         infoPopup.exec_()
 
