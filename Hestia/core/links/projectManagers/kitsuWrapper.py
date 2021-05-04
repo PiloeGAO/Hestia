@@ -174,7 +174,7 @@ class KitsuWrapper(DefaultWrapper):
 
                 if(nb_frames == 0 and 
                     shotData["frame_in"] != None and shotData["frame_out"] != None):
-                    nb_frames = shotData["frame_out"] - shotData["frame_in"]
+                    nb_frames = int(shotData["frame_out"]) - int(shotData["frame_in"])
 
             # Output versionning.
             versions = self.getVersions(shotData)
