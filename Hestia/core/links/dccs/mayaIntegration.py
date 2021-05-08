@@ -89,6 +89,35 @@ class MayaIntegration(DefaultIntegration):
             self.__manager.logging.error("File not found.")
             return False
 
+        # Looking for asset replacement.
+        currentSelection = cmds.ls(sl=True)
+        if(len(currentSelection) > 0):
+            currentSelection = currentSelection[0]
+            if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
+                if(cmds.getAttr(currentSelection+".hestiaAssetID") == str(asset.id)):
+                    if(cmds.objectType(currentSelection) == "reference"):
+                        # Updating reference is done with the file function. From: https://stackoverflow.com/a/44718215
+                        referenceToUpdate = cmds.referenceQuery(currentSelection, referenceNode=True)
+                        cmds.file(version.outputPath, loadReference=referenceToUpdate)
+                    else:
+                        # Delete objects inside of the selected group.
+                        oldObjects = cmds.listRelatives(currentSelection, children=True)
+                        cmds.delete(oldObjects)
+
+                        # Importing the asset and getting the transform node.
+                        before = set(cmds.ls(type="transform"))
+
+                        self.importAsset(asset=asset, version=version)
+
+                        after = set(cmds.ls(type="transform"))
+                        imported = after - before
+
+                        # Reparent new objects.
+                        cmds.parent(imported, currentSelection, relative=True)
+                    
+                    return True
+
+        # If nothing is selected or asset isn't the same, start import procedure.
         currentAsset = None    
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
