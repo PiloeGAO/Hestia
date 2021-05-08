@@ -106,7 +106,9 @@ class MayaIntegration(DefaultIntegration):
             while(cmds.objExists(groupName)):
                 groupName = groupName + "_bis"
 
-            cmds.group(imported, n=groupName)
+            # Group need to be created as empty to make sure pivot is in the center of the scene.
+            cmds.group(empty=True, name=groupName, absolute=True)
+            cmds.parent(imported, groupName, relative=True)
 
             cmds.select(groupName, r=True)
             currentAsset = cmds.ls(sl=True)[0]
