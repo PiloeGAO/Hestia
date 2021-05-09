@@ -95,11 +95,11 @@ class MayaIntegration(DefaultIntegration):
             currentSelection = currentSelection[0]
             if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
                 if(cmds.getAttr(currentSelection+".hestiaAssetID") == str(asset.id)):
-                    if(cmds.objectType(currentSelection) == "reference"):
+                    if(cmds.objectType(currentSelection) == "reference" and self.isInstanceImport(version=version)):
                         # Updating reference is done with the file function. From: https://stackoverflow.com/a/44718215
                         referenceToUpdate = cmds.referenceQuery(currentSelection, referenceNode=True)
                         cmds.file(version.outputPath, loadReference=referenceToUpdate)
-                    else:
+                    elif(cmds.objectType(currentSelection) == "transform" and not self.isInstanceImport(version=version)):
                         # Delete objects inside of the selected group.
                         oldObjects = cmds.listRelatives(currentSelection, children=True)
                         cmds.delete(oldObjects)
@@ -114,6 +114,13 @@ class MayaIntegration(DefaultIntegration):
 
                         # Reparent new objects.
                         cmds.parent(imported, currentSelection, relative=True)
+                        
+                        #Rename each object to avoid duplication on second import.
+                        for object in imported:
+                            cmds.rename(object, "%s_%s" % (currentSelection, object))
+                    else:
+                        self.__manager.logging.warning("Reference and traditional import can't be mixed together.")
+                        return False
                     
                     return True
 
@@ -128,16 +135,21 @@ class MayaIntegration(DefaultIntegration):
 
             after = set(cmds.ls(type="transform"))
             imported = after - before
+            print(imported)
 
             staticAsset = 1
             groupName = asset.name
 
-            while(cmds.objExists(groupName)):
+            while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
                 groupName = groupName + "_bis"
 
             # Group need to be created as empty to make sure pivot is in the center of the scene.
             cmds.group(empty=True, name=groupName, absolute=True)
             cmds.parent(imported, groupName, relative=True)
+
+            #Rename each object to avoid duplication on second import.
+            for object in imported:
+                cmds.rename(object, "%s_%s" % (groupName, object))
 
             cmds.select(groupName, r=True)
             currentAsset = cmds.ls(sl=True)[0]
