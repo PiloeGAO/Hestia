@@ -8,7 +8,7 @@
 
 from    maya                            import OpenMayaUI
 from    shiboken2                       import wrapInstance
-from    PySide2                         import QtWidgets
+from    PySide2                         import QtWidgets, QtCore
 
 from    Hestia.mainWindow               import MainWindow
 from    Hestia.core.manager             import Manager
@@ -19,7 +19,7 @@ def launchBrowser():
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
     mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
 
-    hestiaManager = Manager(integration="Maya")
-
-    browser = MainWindow(manager=hestiaManager)
+    browser = MainWindow(manager=Manager(integration="Maya"), parent=mainWindow)
+    browser.setWindowFlags(QtCore.Qt.Window)
     browser.show()
+    browser = None

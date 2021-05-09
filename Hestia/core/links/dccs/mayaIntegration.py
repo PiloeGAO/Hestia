@@ -135,7 +135,6 @@ class MayaIntegration(DefaultIntegration):
 
             after = set(cmds.ls(type="transform"))
             imported = after - before
-            print(imported)
 
             staticAsset = 1
             groupName = asset.name
@@ -172,7 +171,6 @@ class MayaIntegration(DefaultIntegration):
             cmds.getAttr(currentAsset + ".locked")
             cmds.lockNode(currentAsset,q=1,lock=1)
             cmds.lockNode(currentAsset,lock=0)
-        
 
         # Setting needed attributes for shot assembly.
         cmds.addAttr(attributeType="bool", hidden=0,
