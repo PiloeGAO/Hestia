@@ -7,13 +7,16 @@
 """
 from os import path
 
+global pysideVers
 try:
     from PySide2.QtCore     import *
     from PySide2.QtGui      import *
     from PySide2.QtWidgets  import *
+    pysideVers = 2
 except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
+    pysideVers = 1
 
 from .iconButton            import IconButton
 from .dropDown              import DropDown
@@ -35,7 +38,11 @@ class EntityWidget(QWidget):
         
         self.__rootPath = path.dirname(path.abspath(__file__))
 
-        self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
+        self.__defaultIcon = ""
+        if(pysideVers == 2):
+            self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
+        else:
+            self.__defaultIcon = self.__rootPath + "/../icons/card-image.png"
 
         self.__name           = asset.name
         self.__description    = asset.description
