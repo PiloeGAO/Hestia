@@ -16,9 +16,10 @@ class Entity():
         name (str, optional): Entity's name. Defaults to "".
         description (str, optional): Entity's description. Defaults to "".
         icon (str, optional): Entity's icon. Defaults to "".
+        tasks (list: class: "Task"): Entity's tasks. Defaults to [].
         versions (list: class: "Version"): Entity's version. Defaults to [].
     """
-    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", versions=[], **kwargs):
+    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", tasks=[], versions=[], **kwargs):
         self.__manager      = manager
         # Common datas.
         self.__type         = entityType
@@ -28,6 +29,7 @@ class Entity():
 
         self.__iconDownloaded = False
         self.__icon         = icon
+        self.__tasks        = tasks
         self.__versions     = versions
         
         # Shot specific datas.

@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.2
 """
-import os, json
+import os, json, sys
 import gazu
 
 from .defaultWrapper    import DefaultWrapper
@@ -154,6 +154,11 @@ class KitsuWrapper(DefaultWrapper):
             if(self.__manager.debug and self.__debugKitsuData):
                 self.__manager.logging.debug(json.dumps(assetData, sort_keys=True, indent=4))
             
+            # Get tasks for asset.
+            assetTasks = []
+            for assetTask in gazu.task.all_task_types_for_asset(assetData):
+                assetTasks.append([task for task in newProject.tasks if task.id == assetTask["id"]][0])
+            
             # Output versionning.
             versions = self.getVersions(newProject, assetData)
 
@@ -164,6 +169,7 @@ class KitsuWrapper(DefaultWrapper):
                                 name=asset["name"],
                                 description=asset["description"],
                                 icon="",
+                                tasks=assetTasks,
                                 versions=versions)
             
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
@@ -203,6 +209,12 @@ class KitsuWrapper(DefaultWrapper):
                     shotData["frame_in"] != None and shotData["frame_out"] != None):
                     nb_frames = int(shotData["frame_out"]) - int(shotData["frame_in"])
 
+            
+            # Get tasks for shot.
+            shotTasks = []
+            for shotTask in gazu.task.all_task_types_for_shot(shotData):
+                shotTasks.append([task for task in newProject.tasks if task.id == shotTask["id"]][0])
+
             # Output versionning.
             versions = self.getVersions(newProject, shotData)
 
@@ -212,6 +224,7 @@ class KitsuWrapper(DefaultWrapper):
                                 name=shot["name"],
                                 description=shot["description"],
                                 icon="",
+                                tasks=shotTasks,
                                 versions=versions,
                                 frameNumber=nb_frames)
 
