@@ -13,7 +13,7 @@ class Category():
         id (str, optional): Category's ID. Defaults to "".
         name (str, optional): Catgeory's name. Defaults to "".
         description (str, optional): Category's description. Defaults to "".
-        type (str, optional): Category's type (must be "Asset" or "Shot"). Defaults to "".
+        type (str, optional): Category's type (must be "Assets" or "Shots"). Defaults to "".
     """
     def __init__(self, id="", name="", description="", type=""):
         self.__id               = id

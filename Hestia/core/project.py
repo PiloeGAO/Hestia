@@ -6,6 +6,8 @@
     :version:   0.0.2
 """
 
+from Hestia.core.category import Category
+from Hestia.core.entity import Entity
 import os
 
 class Project():
@@ -16,11 +18,12 @@ class Project():
         name (str, optional): Project's name. Defaults to "".
         description (str, optional): Project's description. Defaults to "".
     """
-    def __init__(self, id="", name="", description="", **kwargs):
+    def __init__(self, id="", name="", description="", tasks=[], **kwargs):
         # Project name.
         self.__id           = id
         self.__name         = name
         self.__description  = description
+        self.__tasks        = tasks
 
         # Project technical datas.
         self.__framerate = 0
@@ -50,16 +53,12 @@ class Project():
         # Project file management.
         self.__mountPoint = ""
         self.__rootPoint = ""
-        self.__outputFilenameStyle = "lowercase"
         self.__outputFilenameAsset = ""
         self.__outputFilenameShot = ""
-        self.__outputFolderPathStyle = "lowercase"
         self.__outputFolderPathAsset = ""
         self.__outputFolderPathShot = ""
-        self.__workingFilenameStyle = "lowercase"
         self.__workingFilenameAsset = ""
         self.__workingFilenameShot = ""
-        self.__workingFolderPathStyle = "lowercase"
         self.__workingFolderPathAsset = ""
         self.__workingFolderPathShot = ""
 
@@ -67,26 +66,18 @@ class Project():
             self.__mountPoint = str(kwargs["mountPoint"])
         if("rootPoint" in kwargs):
             self.__rootPoint = str(kwargs["rootPoint"])
-        if("outputFilenameStyle" in kwargs):
-            self.__outputFilenameStyle = str(kwargs["outputFilenameStyle"])
         if("outputFilenameAsset" in kwargs):
             self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"])
         if("outputFilenameShot" in kwargs):
             self.__outputFilenameShot = str(kwargs["outputFilenameShot"])
-        if("outputFolderPathStyle" in kwargs):
-            self.__outputFolderPathStyle = str(kwargs["outputFolderPathStyle"])
         if("outputFolderPathAsset" in kwargs):
             self.__outputFolderPathAsset = str(kwargs["outputFolderPathAsset"])
         if("outputFolderPathShot" in kwargs):
             self.__outputFolderPathShot = str(kwargs["outputFolderPathShot"])
-        if("workingFilenameStyle" in kwargs):
-            self.__workingFilenameStyle = str(kwargs["workingFilenameStyle"])
         if("workingFilenameAsset" in kwargs):
             self.__workingFilenameAsset = str(kwargs["workingFilenameAsset"])
         if("workingFilenameShot" in kwargs):
             self.__workingFilenameShot = str(kwargs["workingFilenameShot"])
-        if("workingFolderPathStyle" in kwargs):
-            self.__workingFolderPathStyle = str(kwargs["workingFolderPathStyle"])
         if("workingFolderPathAsset" in kwargs):
             self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"])
         if("workingFolderPathShot" in kwargs):
@@ -97,6 +88,10 @@ class Project():
         print(self.outputFolderpathAsset)
         print(self.outputFilenameShot)
         print(self.outputFolderpathShot)
+
+        demoCategory = Category(id="0514641", name="SEQ01", type="Shots")
+        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100")
+        print(self.getFolderpath(exportType="output", category=demoCategory, taskType="layout", versionNumber=5, shot=demoEntity))
     
     @property
     def id(self):
@@ -245,32 +240,116 @@ class Project():
     
     @property
     def outputFilenameAsset(self):
+        """Get the filename structure (output only) for assets.
+
+        Returns:
+            str: Output filename for assets.
+        """
         return self.__outputFilenameAsset
     
     @property
     def outputFilenameShot(self):
+        """Get the filename structure (output only) for shots.
+
+        Returns:
+            str: Output filename for shots.
+        """
         return self.__outputFilenameShot
 
     @property
     def outputFolderpathAsset(self):
+        """Get the folder path structure (output only) for assets.
+
+        Returns:
+            str: Output folder path for assets.
+        """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathAsset.replace("<Project>", self.__name, 1)
     
     @property
     def outputFolderpathShot(self):
+        """Get the folder path structure (output only) for shots.
+
+        Returns:
+            str: Output folder path for shot.
+        """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathShot.replace("<Project>", self.__name, 1)
     
     @property
     def workingFilenameAsset(self):
+        """Get the filename structure (working files only) for assets.
+
+        Returns:
+            str: Output filename for assets.
+        """
         return self.__workingFilenameAsset
     
     @property
     def workingFilenameShot(self):
+        """Get the filename structure (working files only) for assets.
+
+        Returns:
+            str: Output filename for shots.
+        """
         return self.__workingFilenameShot
 
     @property
     def workingFolderpathAsset(self):
+        """Get the folder path structure (working files only) for assets.
+
+        Returns:
+            str: Output folder path for assets.
+        """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathAsset.replace("<Project>", self.__name, 1)
     
     @property
     def workingFolderpathShot(self):
+        """Get the folder path structure (working files only) for shots.
+
+        Returns:
+            str: Output folder path for shots.
+        """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
+    
+    def getFolderpath(self, exportType="output", category=None, taskType="", versionNumber=0, **kwargs):
+        """Get the folderpath.
+
+        Args:
+            exportType (str, optional): Export type, output or working. Defaults to "output".
+            entityType (str, optional): Entity type, Assets or Shots. Defaults to "Assets".
+            entity (class: `Entity`): Entity.
+            taskType (str, optional): Task name. Defaults to "".
+            versionNumber (int, optional): Version number, use -1 for auto count. Defaults to 0.
+
+        Returns:
+            str: Path generated.
+        """
+        path = ""
+
+        if(exportType == "output"):
+            if(category.type == "Assets"):
+                path = self.outputFolderpathAsset
+                path = path.replace("<Type>", category.name, 1)
+                path = path.replace("<Asset>", kwargs["asset"].name, 1)
+            else:
+                path = self.outputFolderpathShot
+                path = path.replace("<Sequence>", category.name, 1)
+                path = path.replace("<Shot>", kwargs["shot"].name, 1)
+        elif(exportType == "working"):
+            if(category.type == "Assets"):
+                path = self.workingFolderpathAsset
+                path = path.replace("<Type>", category.name, 1)
+                path = path.replace("<Asset>", kwargs["asset"].name, 1)
+            else:
+                path = self.workingFolderpathShot
+                path = path.replace("<Sequence>", category.name, 1)
+                path = path.replace("<Shot>", kwargs["shot"].name, 1)
+        else:
+            return "./"
+        
+        path = path.replace("<TaskType>", taskType)
+        path = path.replace("<Version>", "V%03d" % versionNumber)
+
+        return path
+
+    def getFilename():
+        pass

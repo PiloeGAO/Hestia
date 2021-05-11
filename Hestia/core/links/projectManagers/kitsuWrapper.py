@@ -106,21 +106,18 @@ class KitsuWrapper(DefaultWrapper):
                             fps=project["fps"], ratio=project["ratio"], resolution=project["resolution"],
                             mountPoint=project["file_tree"]["output"]["mountpoint"],
                             rootPoint=project["file_tree"]["output"]["root"],
-                            outputFilenameStyle=project["file_tree"]["output"]["file_name"]["style"],
                             outputFilenameAsset=project["file_tree"]["output"]["file_name"]["asset"],
                             outputFilenameShot=project["file_tree"]["output"]["file_name"]["shot"],
-                            outputFolderPathStyle=project["file_tree"]["output"]["folder_path"]["style"],
                             outputFolderPathAsset=project["file_tree"]["output"]["folder_path"]["asset"],
                             outputFolderPathShot=project["file_tree"]["output"]["folder_path"]["shot"],
-                            workingFilenameStyle=project["file_tree"]["working"]["file_name"]["style"],
                             workingFilenameAsset=project["file_tree"]["working"]["file_name"]["asset"],
                             workingFilenameShot=project["file_tree"]["working"]["file_name"]["shot"],
-                            workingFolderPathStyle=project["file_tree"]["working"]["folder_path"]["style"],
                             workingFolderPathAsset=project["file_tree"]["working"]["folder_path"]["asset"],
                             workingFolderPathShot=project["file_tree"]["working"]["folder_path"]["shot"],)
 
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
+            print(json.dumps(gazu.task.all_task_types(), sort_keys=True, indent=4))
             sys.exit()
 
         # Get, create and add categories to project.
