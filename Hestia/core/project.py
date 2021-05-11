@@ -383,7 +383,7 @@ class Project():
                 path = path.replace("<Sequence>", category.name, 1)
                 path = path.replace("<Shot>", entity.name, 1)
         else:
-            return "./"
+            return "./%s_%s_<TaskType>_<Version>/"
         
         path = path.replace("<TaskType>", taskType.name, 1)
         path = path.replace("<Version>", "V%03d" % versionNumber)
@@ -432,7 +432,7 @@ class Project():
                 filename = filename.replace("<Sequence>", category.name, 1)
                 filename = filename.replace("<Shot>", entity.name, 1)
         else:
-            return "./"
+            return "%s_%s_<TaskType>_<Version>" % (category.name, entity.name)
         
         filename = filename.replace("<TaskType>", taskType.name, 1)
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
