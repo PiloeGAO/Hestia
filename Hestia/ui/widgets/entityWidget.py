@@ -145,10 +145,18 @@ class EntityWidget(QWidget):
             # Assign shader to asset button.
             assignShader = menu.addAction("Assign shader to current object")
             assignShader.triggered.connect(self.assignShaderToSelectedAsset)
+            # Asset publish area.
+            menu.addSeparator()
+            publishAsset = menu.addAction("Publish selection")
+            publishAsset.triggered.connect(self.publishSelectionToProjectManager)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
+            # Shot publish area.
+            menu.addSeparator()
+            publishShot = menu.addAction("Publish selection")
+            publishShot.triggered.connect(self.publishSelectionToProjectManager)
             # Export to HSHOT button.
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
@@ -205,4 +213,13 @@ class EntityWidget(QWidget):
 
         self.__manager.integration.extractAssets()
         
+        return True
+    
+    def publishSelectionToProjectManager(self):
+        """Function to publish entity to project manager.
+
+        Returns:
+            bool: Function status.
+        """
+        print("Publish....")
         return True
