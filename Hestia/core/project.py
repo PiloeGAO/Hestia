@@ -6,6 +6,8 @@
     :version:   0.0.2
 """
 
+import os
+
 class Project():
     """Project class.
 
@@ -89,6 +91,12 @@ class Project():
             self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"])
         if("workingFolderPathShot" in kwargs):
             self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"])
+        
+        # For debuging, clean this for final branch merge.
+        print(self.outputFilenameAsset)
+        print(self.outputFolderpathAsset)
+        print(self.outputFilenameShot)
+        print(self.outputFolderpathShot)
     
     @property
     def id(self):
@@ -234,3 +242,35 @@ class Project():
             newCategory (class: "Category"): New category to add.
         """
         self.__categories.append(newCategory)
+    
+    @property
+    def outputFilenameAsset(self):
+        return self.__outputFilenameAsset
+    
+    @property
+    def outputFilenameShot(self):
+        return self.__outputFilenameShot
+
+    @property
+    def outputFolderpathAsset(self):
+        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathAsset.replace("<Project>", self.__name, 1)
+    
+    @property
+    def outputFolderpathShot(self):
+        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathShot.replace("<Project>", self.__name, 1)
+    
+    @property
+    def workingFilenameAsset(self):
+        return self.__workingFilenameAsset
+    
+    @property
+    def workingFilenameShot(self):
+        return self.__workingFilenameShot
+
+    @property
+    def workingFolderpathAsset(self):
+        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathAsset.replace("<Project>", self.__name, 1)
+    
+    @property
+    def workingFolderpathShot(self):
+        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
