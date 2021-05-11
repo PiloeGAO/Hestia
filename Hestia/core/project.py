@@ -92,9 +92,9 @@ class Project():
         print(self.outputFolderpathShot)
 
         demoCategory = Category(id="0514641", name="SEQ01", type="Shots")
-        demoVersion = Version(id="797465", name="Version something", type=".abc", revisionNumber=1)
-        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100", versions=[demoVersion])        
         demoTask = Task(taskType="Shots", id="84686786", name="DemoTask")
+        demoVersion = Version(id="797465", name="Version something", task=demoTask, type=".abc", revisionNumber=1)
+        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100", versions=[demoVersion])
         print(self.getFolderpath(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
     
     @property
@@ -341,24 +341,25 @@ class Project():
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
     
     def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0,):
-        """Get the folderpath.
+        """Get the folderpath for entity.
 
         Args:
-            exportType (str, optional): Export type, output or working. Defaults to "output".
-            entityType (str, optional): Entity type, Assets or Shots. Defaults to "Assets".
-            entity (class: `Entity`): Entity.
-            taskType (str, optional): Task name. Defaults to "".
-            versionNumber (int, optional): Version number, use -1 for auto-count. Defaults to 0.
+            exportType (str, optional): Export type, "output" ou "working". Defaults to "output".
+            category (class:`Category`, optional): Category of the entity. Defaults to None.
+            entity (class:`Entity`, optional): Entity. Defaults to None.
+            taskType (class:`Task`, optional): Task. Defaults to None.
+            versionNumber (int, optional): Version of the entity, use "-1" for autocount. Defaults to 0.
 
         Returns:
-            str: Path generated.
+            str: Folder path.
         """
         path = ""
 
         if(versionNumber == -1):
+            # Find the last version number automaticly.
             versionNumber = 1
             for version in entity.versions:
-                if(version.revisionNumber > versionNumber):
+                if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
                     versionNumber = version.revisionNumber
             versionNumber = versionNumber + 1
 

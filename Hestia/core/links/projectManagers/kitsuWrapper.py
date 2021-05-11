@@ -5,12 +5,12 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.2
 """
-from Hestia.core.task import Task
-import os, json, sys
+import os, json
 import gazu
 
-from .defaultWrapper   import DefaultWrapper
+from .defaultWrapper    import DefaultWrapper
 from ....core.project   import Project
+from ....core.task      import Task
 from ....core.category  import Category
 from ....core.entity    import Entity
 from ....core.version   import Version
@@ -29,7 +29,7 @@ class KitsuWrapper(DefaultWrapper):
         self.__active  = False
         self._username = ""
 
-        self.__debugKitsuData = True
+        self.__debugKitsuData = False
 
         self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
