@@ -360,6 +360,7 @@ class Project():
             for version in entity.versions:
                 if(version.revisionNumber > versionNumber):
                     versionNumber = version.revisionNumber
+            versionNumber = versionNumber + 1
 
         if(exportType == "output"):
             if(category.type == "Assets"):
