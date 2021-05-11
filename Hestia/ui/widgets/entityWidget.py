@@ -145,25 +145,21 @@ class EntityWidget(QWidget):
             # Assign shader to asset button.
             assignShader = menu.addAction("Assign shader to current object")
             assignShader.triggered.connect(self.assignShaderToSelectedAsset)
-            # Asset publish area.
-            menu.addSeparator()
-            openAssetMenu = menu.addAction("Open file")
-            openAssetMenu.triggered.connect(self.openFile)
-            publishAsset = menu.addAction("Publish selection")
-            publishAsset.triggered.connect(self.publishSelectionToProjectManager)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
-            # Shot publish area.
-            menu.addSeparator()
-            openAssetMenu = menu.addAction("Open file")
-            openAssetMenu.triggered.connect(self.openFile)
-            publishShot = menu.addAction("Publish selection")
-            publishShot.triggered.connect(self.publishSelectionToProjectManager)
             # Export to HSHOT button.
+            menu.addSeparator()
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
+
+        # Asset management area.
+        menu.addSeparator()
+        openFileMenu = menu.addAction("Open file")
+        openFileMenu.triggered.connect(self.openFile)
+        publishEntity = menu.addAction("Publish selection")
+        publishEntity.triggered.connect(self.publishSelectionToProjectManager)
 
         menu.exec_(event.globalPos())
     
