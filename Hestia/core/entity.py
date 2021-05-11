@@ -107,6 +107,15 @@ class Entity():
         self.__iconDownloaded = True
     
     @property
+    def tasks(self):
+        """Get tasks of the entity.
+
+        Returns:
+            list: class:`Task`: Task of the entity.
+        """
+        return self.__tasks
+    
+    @property
     def versions(self):
         """Get versions of the entity.
 
