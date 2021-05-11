@@ -96,6 +96,7 @@ class Project():
         demoVersion = Version(id="797465", name="Version something", task=demoTask, type=".abc", revisionNumber=1)
         demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100", versions=[demoVersion])
         print(self.getFolderpath(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
+        print(self.getFilename(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
     
     @property
     def id(self):
@@ -340,7 +341,7 @@ class Project():
         """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
     
-    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0,):
+    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0):
         """Get the folderpath for entity.
 
         Args:
@@ -365,20 +366,20 @@ class Project():
 
         if(exportType == "output"):
             if(category.type == "Assets"):
-                path = self.outputFolderpathAsset
+                path = self.outputFilenameAsset
                 path = path.replace("<Type>", category.name, 1)
                 path = path.replace("<Asset>", entity.name, 1)
             else:
-                path = self.outputFolderpathShot
+                path = self.outputFilenameShot
                 path = path.replace("<Sequence>", category.name, 1)
                 path = path.replace("<Shot>", entity.name, 1)
         elif(exportType == "working"):
             if(category.type == "Assets"):
-                path = self.workingFolderpathAsset
+                path = self.workingFilenameAsset
                 path = path.replace("<Type>", category.name, 1)
                 path = path.replace("<Asset>", entity.name, 1)
             else:
-                path = self.workingFolderpathShot
+                path = self.workingFilenameShot
                 path = path.replace("<Sequence>", category.name, 1)
                 path = path.replace("<Shot>", entity.name, 1)
         else:
@@ -389,5 +390,51 @@ class Project():
 
         return path
 
-    def getFilename():
-        pass
+    def getFilename(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0):
+        """Get the filename for the entity.
+
+        Args:
+            exportType (str, optional): Export type, "output" ou "working". Defaults to "output".
+            category (class:`Category`, optional): Category of the entity. Defaults to None.
+            entity (class:`Entity`, optional): Entity. Defaults to None.
+            taskType (class:`Task`, optional): Task. Defaults to None.
+            versionNumber (int, optional): Version of the entity, use "-1" for autocount. Defaults to 0.
+
+        Returns:
+            str: File name.
+        """
+        filename = ""
+
+        if(versionNumber == -1):
+            # Find the last version number automaticly.
+            versionNumber = 1
+            for version in entity.versions:
+                if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
+                    versionNumber = version.revisionNumber
+            versionNumber = versionNumber + 1
+
+        if(exportType == "output"):
+            if(category.type == "Assets"):
+                filename = self.outputFolderpathAsset
+                filename = filename.replace("<Type>", category.name, 1)
+                filename = filename.replace("<Asset>", entity.name, 1)
+            else:
+                filename = self.outputFolderpathShot
+                filename = filename.replace("<Sequence>", category.name, 1)
+                filename = filename.replace("<Shot>", entity.name, 1)
+        elif(exportType == "working"):
+            if(category.type == "Assets"):
+                filename = self.workingFolderpathAsset
+                filename = filename.replace("<Type>", category.name, 1)
+                filename = filename.replace("<Asset>", entity.name, 1)
+            else:
+                filename = self.workingFolderpathShot
+                filename = filename.replace("<Sequence>", category.name, 1)
+                filename = filename.replace("<Shot>", entity.name, 1)
+        else:
+            return "./"
+        
+        filename = filename.replace("<TaskType>", taskType.name, 1)
+        filename = filename.replace("<Version>", "V%03d" % versionNumber)
+
+        return filename
