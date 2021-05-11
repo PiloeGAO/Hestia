@@ -150,5 +150,15 @@ class DefaultIntegration(object):
     def extractAssets(self):
         """Extracts assets for shot building file.
         """
+        return NotImplementedError
+        
+    def openFile(self, path):
+        """Open the file in the DCC.
 
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Function status.
+        """
         return NotImplementedError

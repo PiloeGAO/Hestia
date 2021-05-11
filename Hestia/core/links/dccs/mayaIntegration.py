@@ -367,3 +367,21 @@ class MayaIntegration(DefaultIntegration):
                 print(cmds.xform(t, query=True, matrix=True, worldSpace=True))
 
         return False
+    
+    def openFile(self, version):
+        """Open the file in the DCC.
+
+        Args:
+            version (class:`Version`): Version of the asset.
+
+        Returns:
+            bool: Function status.
+        """
+        filePath = str(version.workingPath)
+        if(os.path.isfile(filePath) and
+            (os.path.splitext(filePath)[1] == ".ma" or os.path.splitext(filePath)[1] == ".mb")):
+            cmds.file(new=True, force=True)
+            cmds.file(version.workingPath, o=True)
+            return True
+        else:
+            return False

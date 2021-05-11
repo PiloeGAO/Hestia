@@ -147,6 +147,8 @@ class EntityWidget(QWidget):
             assignShader.triggered.connect(self.assignShaderToSelectedAsset)
             # Asset publish area.
             menu.addSeparator()
+            openAssetMenu = menu.addAction("Open file")
+            openAssetMenu.triggered.connect(self.openFile)
             publishAsset = menu.addAction("Publish selection")
             publishAsset.triggered.connect(self.publishSelectionToProjectManager)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
@@ -155,6 +157,8 @@ class EntityWidget(QWidget):
             setupShot.triggered.connect(self.setupSceneForShot)
             # Shot publish area.
             menu.addSeparator()
+            openAssetMenu = menu.addAction("Open file")
+            openAssetMenu.triggered.connect(self.openFile)
             publishShot = menu.addAction("Publish selection")
             publishShot.triggered.connect(self.publishSelectionToProjectManager)
             # Export to HSHOT button.
@@ -215,6 +219,30 @@ class EntityWidget(QWidget):
         
         return True
     
+    def openFile(self):
+        """Function to open file.
+
+        Returns:
+            bool: Function status.
+        """
+        # Show information message.
+        warningPopup = QMessageBox.warning(self, self.tr("Hestia"),
+                            self.tr("Openning a new file will loose the current datas.\n" + \
+                                "Please save before."),
+                            QMessageBox.Cancel,
+                            QMessageBox.Ok)
+        
+        if(warningPopup == QMessageBox.Ok):
+            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
+            openStatus = self.__manager.integration.openFile(self.__currentVersion)
+
+            if(not openStatus):
+                self.__manager.logging.error("Open failed.")
+
+            return openStatus
+        else:
+            return False
+
     def publishSelectionToProjectManager(self):
         """Function to publish entity to project manager.
 
