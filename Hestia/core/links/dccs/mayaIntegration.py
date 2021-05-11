@@ -346,6 +346,9 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Function status.
         """
+        if(len(cmds.ls(sl=True)) == 0):
+            return False
+        
         currentAsset = cmds.ls(sl=True)[0]
 
         if(cmds.attributeQuery("isHestiaAsset", node=currentAsset, exists=True)
