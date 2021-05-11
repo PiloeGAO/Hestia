@@ -15,10 +15,12 @@ class Project():
         description (str, optional): Project's description. Defaults to "".
     """
     def __init__(self, id="", name="", description="", **kwargs):
+        # Project name.
         self.__id           = id
         self.__name         = name
         self.__description  = description
 
+        # Project technical datas.
         self.__framerate = 0
         self.__ratio = "16:9"
         self.__resolution = 1080
@@ -39,8 +41,54 @@ class Project():
         if("postRoll" in kwargs):
             self.__postRoll     = int(kwargs["postRoll"])
 
+        # Project categories.
         self.__categories   = []
         self.__currentCategory = 0
+
+        # Project file management.
+        self.__mountPoint = ""
+        self.__rootPoint = ""
+        self.__outputFilenameStyle = "lowercase"
+        self.__outputFilenameAsset = ""
+        self.__outputFilenameShot = ""
+        self.__outputFolderPathStyle = "lowercase"
+        self.__outputFolderPathAsset = ""
+        self.__outputFolderPathShot = ""
+        self.__workingFilenameStyle = "lowercase"
+        self.__workingFilenameAsset = ""
+        self.__workingFilenameShot = ""
+        self.__workingFolderPathStyle = "lowercase"
+        self.__workingFolderPathAsset = ""
+        self.__workingFolderPathShot = ""
+
+        if("mountPoint" in kwargs):
+            self.__mountPoint = str(kwargs["mountPoint"])
+        if("rootPoint" in kwargs):
+            self.__rootPoint = str(kwargs["rootPoint"])
+        if("outputFilenameStyle" in kwargs):
+            self.__outputFilenameStyle = str(kwargs["outputFilenameStyle"])
+        if("outputFilenameAsset" in kwargs):
+            self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"])
+        if("outputFilenameShot" in kwargs):
+            self.__outputFilenameShot = str(kwargs["outputFilenameShot"])
+        if("outputFolderPathStyle" in kwargs):
+            self.__outputFolderPathStyle = str(kwargs["outputFolderPathStyle"])
+        if("outputFolderPathAsset" in kwargs):
+            self.__outputFolderPathAsset = str(kwargs["outputFolderPathAsset"])
+        if("outputFolderPathShot" in kwargs):
+            self.__outputFolderPathShot = str(kwargs["outputFolderPathShot"])
+        if("workingFilenameStyle" in kwargs):
+            self.__workingFilenameStyle = str(kwargs["workingFilenameStyle"])
+        if("workingFilenameAsset" in kwargs):
+            self.__workingFilenameAsset = str(kwargs["workingFilenameAsset"])
+        if("workingFilenameShot" in kwargs):
+            self.__workingFilenameShot = str(kwargs["workingFilenameShot"])
+        if("workingFolderPathStyle" in kwargs):
+            self.__workingFolderPathStyle = str(kwargs["workingFolderPathStyle"])
+        if("workingFolderPathAsset" in kwargs):
+            self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"])
+        if("workingFolderPathShot" in kwargs):
+            self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"])
     
     @property
     def id(self):

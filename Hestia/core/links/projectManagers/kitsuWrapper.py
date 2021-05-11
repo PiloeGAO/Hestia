@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.2
 """
-import os, json
+import os, json, sys
 import gazu
 
 from .defaultWrapper   import DefaultWrapper
@@ -28,7 +28,7 @@ class KitsuWrapper(DefaultWrapper):
         self.__active  = False
         self._username = ""
 
-        self.__debugKitsuData = False
+        self.__debugKitsuData = True
 
         self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
@@ -103,10 +103,25 @@ class KitsuWrapper(DefaultWrapper):
 
         # Get and create a new project.
         newProject = Project(id=project["id"], name=project["name"], description=project["description"],
-                            fps=project["fps"], ratio=project["ratio"], resolution=project["resolution"])
+                            fps=project["fps"], ratio=project["ratio"], resolution=project["resolution"],
+                            mountPoint=project["file_tree"]["output"]["mountpoint"],
+                            rootPoint=project["file_tree"]["output"]["root"],
+                            outputFilenameStyle=project["file_tree"]["output"]["file_name"]["style"],
+                            outputFilenameAsset=project["file_tree"]["output"]["file_name"]["asset"],
+                            outputFilenameShot=project["file_tree"]["output"]["file_name"]["shot"],
+                            outputFolderPathStyle=project["file_tree"]["output"]["folder_path"]["style"],
+                            outputFolderPathAsset=project["file_tree"]["output"]["folder_path"]["asset"],
+                            outputFolderPathShot=project["file_tree"]["output"]["folder_path"]["shot"],
+                            workingFilenameStyle=project["file_tree"]["working"]["file_name"]["style"],
+                            workingFilenameAsset=project["file_tree"]["working"]["file_name"]["asset"],
+                            workingFilenameShot=project["file_tree"]["working"]["file_name"]["shot"],
+                            workingFolderPathStyle=project["file_tree"]["working"]["folder_path"]["style"],
+                            workingFolderPathAsset=project["file_tree"]["working"]["folder_path"]["asset"],
+                            workingFolderPathShot=project["file_tree"]["working"]["folder_path"]["shot"],)
 
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
+            sys.exit()
 
         # Get, create and add categories to project.
         categories = gazu.asset.all_asset_types_for_project(project)
