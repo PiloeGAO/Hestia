@@ -126,7 +126,7 @@ class KitsuWrapper(DefaultWrapper):
             taskType = "Assets" if task["for_shots"] == "false" else "Shots"
             newTask = Task(taskType=taskType, id=task["id"], name=task["name"])
             newProject.addTask(newTask)
-        
+
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(tasks, sort_keys=True, indent=4))
         
@@ -155,7 +155,7 @@ class KitsuWrapper(DefaultWrapper):
                 self.__manager.logging.debug(json.dumps(assetData, sort_keys=True, indent=4))
             
             # Output versionning.
-            versions = self.getVersions(assetData)
+            versions = self.getVersions(newProject, assetData)
 
             # Buildint the Entity with all datas.
             newAsset = Entity(manager=self.__manager,
@@ -204,7 +204,7 @@ class KitsuWrapper(DefaultWrapper):
                     nb_frames = int(shotData["frame_out"]) - int(shotData["frame_in"])
 
             # Output versionning.
-            versions = self.getVersions(shotData)
+            versions = self.getVersions(newProject, shotData)
 
             newShot = Entity(manager=self.__manager,
                                 entityType="Shots",
@@ -263,7 +263,7 @@ class KitsuWrapper(DefaultWrapper):
         
         return icon_path
     
-    def getVersions(self, entityData=None):
+    def getVersions(self, project=None, entityData=None):
         """Get versions for entity.
 
         Args:
@@ -276,14 +276,16 @@ class KitsuWrapper(DefaultWrapper):
         outputs = gazu.files.all_output_files_for_entity(entityData)
 
         for output in outputs:
-            task_type = gazu.task.get_task_type(output["task_type_id"])
+            task = [task for task in project.tasks if task.id == output["task_type_id"]][0]
 
             newVersion = Version(id=output["id"],
-                                    name="%s: Revision %s" % (task_type["name"], output["revision"]),
+                                    name="",
                                     description="",
+                                    task=task,
                                     workingPath=output["source_file"]["path"],
-                                    outputPath=output["path"])
+                                    outputPath=output["path"],
+                                    revisionNumber=output["revision"])
 
             versions.append(newVersion)
-        
+
         return versions

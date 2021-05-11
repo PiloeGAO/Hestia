@@ -8,12 +8,14 @@
 from os import path
 
 class Version():
-    def __init__(self, id="", name="", description="", workingPath="", outputPath="", type=""):
-        self.__id           = id
-        self.__name         = name
-        self.__description  = description
-        self.__workingPath  = workingPath
-        self.__outputPath   = outputPath
+    def __init__(self, id="", name="", description="", task=None, workingPath="", outputPath="", type="", revisionNumber=0):
+        self.__id               = id
+        self.__name             = name
+        self.__description      = description
+        self.__task             = task
+        self.__workingPath      = workingPath
+        self.__outputPath       = outputPath
+        self.__revisionNumber   = revisionNumber
 
         if(type == ""):
             self.__type = path.splitext(self.__outputPath)[1]
@@ -36,7 +38,10 @@ class Version():
         Returns:
             str : The name of the version.
         """
-        return self.__name
+        if(self.__name == ""):
+            return "%s: Revision %s" % (self.__task.name, self.__revisionNumber)
+        else:
+            return self.__name
     
     @name.setter
     def name(self, name):
@@ -64,6 +69,15 @@ class Version():
             description (str): The description of the version
         """
         self.__description = description
+    
+    @property
+    def task(self):
+        """Get the task of the version.
+
+        Returns:
+            class:`Task`: The task of the version.
+        """
+        return self.__task
         
     @property
     def workingPath(self):
@@ -118,3 +132,12 @@ class Version():
             type (str): The output type of the version
         """
         self.__type = type
+        
+    @property
+    def revisionNumber(self):
+        """Get the revision number of the version.
+
+        Returns:
+            int : The revision number of the version.
+        """
+        return self.__revisionNumber

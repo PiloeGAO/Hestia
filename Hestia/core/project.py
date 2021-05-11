@@ -6,6 +6,8 @@
     :version:   0.0.2
 """
 
+from Hestia.core.version import Version
+from Hestia.core.task import Task
 from Hestia.core.category import Category
 from Hestia.core.entity import Entity
 import os
@@ -90,8 +92,10 @@ class Project():
         print(self.outputFolderpathShot)
 
         demoCategory = Category(id="0514641", name="SEQ01", type="Shots")
-        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100")
-        print(self.getFolderpath(exportType="output", category=demoCategory, taskType="layout", versionNumber=5, shot=demoEntity))
+        demoVersion = Version(id="797465", name="Version something", type=".abc", revisionNumber=1)
+        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100", versions=[demoVersion])        
+        demoTask = Task(taskType="Shots", id="84686786", name="DemoTask")
+        print(self.getFolderpath(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
     
     @property
     def id(self):
@@ -336,7 +340,7 @@ class Project():
         """
         return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
     
-    def getFolderpath(self, exportType="output", category=None, taskType="", versionNumber=0, **kwargs):
+    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0,):
         """Get the folderpath.
 
         Args:
@@ -344,35 +348,41 @@ class Project():
             entityType (str, optional): Entity type, Assets or Shots. Defaults to "Assets".
             entity (class: `Entity`): Entity.
             taskType (str, optional): Task name. Defaults to "".
-            versionNumber (int, optional): Version number, use -1 for auto count. Defaults to 0.
+            versionNumber (int, optional): Version number, use -1 for auto-count. Defaults to 0.
 
         Returns:
             str: Path generated.
         """
         path = ""
 
+        if(versionNumber == -1):
+            versionNumber = 1
+            for version in entity.versions:
+                if(version.revisionNumber > versionNumber):
+                    versionNumber = version.revisionNumber
+
         if(exportType == "output"):
             if(category.type == "Assets"):
                 path = self.outputFolderpathAsset
                 path = path.replace("<Type>", category.name, 1)
-                path = path.replace("<Asset>", kwargs["asset"].name, 1)
+                path = path.replace("<Asset>", entity.name, 1)
             else:
                 path = self.outputFolderpathShot
                 path = path.replace("<Sequence>", category.name, 1)
-                path = path.replace("<Shot>", kwargs["shot"].name, 1)
+                path = path.replace("<Shot>", entity.name, 1)
         elif(exportType == "working"):
             if(category.type == "Assets"):
                 path = self.workingFolderpathAsset
                 path = path.replace("<Type>", category.name, 1)
-                path = path.replace("<Asset>", kwargs["asset"].name, 1)
+                path = path.replace("<Asset>", entity.name, 1)
             else:
                 path = self.workingFolderpathShot
                 path = path.replace("<Sequence>", category.name, 1)
-                path = path.replace("<Shot>", kwargs["shot"].name, 1)
+                path = path.replace("<Shot>", entity.name, 1)
         else:
             return "./"
         
-        path = path.replace("<TaskType>", taskType)
+        path = path.replace("<TaskType>", taskType.name, 1)
         path = path.replace("<Version>", "V%03d" % versionNumber)
 
         return path

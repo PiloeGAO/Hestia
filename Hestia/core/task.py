@@ -39,15 +39,6 @@ class Task():
         """
         return self.__name
     
-    @name.setter
-    def name(self, name):
-        """Set the name of the entity.
-
-        Args:
-            name (str): The name of the entity
-        """
-        self.__name = name
-    
     @property
     def type(self):
         """Get the type of the class.
