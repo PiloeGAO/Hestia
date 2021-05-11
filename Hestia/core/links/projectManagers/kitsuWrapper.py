@@ -5,6 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.2
 """
+from Hestia.core.task import Task
 import os, json, sys
 import gazu
 
@@ -117,8 +118,19 @@ class KitsuWrapper(DefaultWrapper):
 
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
-            print(json.dumps(gazu.task.all_task_types(), sort_keys=True, indent=4))
-            sys.exit()
+        
+        # Get, create and add tasks to project.
+        tasks = gazu.task.all_task_types()
+
+        for task in tasks:
+            taskType = "Assets" if task["for_shots"] == "false" else "Shots"
+            newTask = Task(taskType=taskType, id=task["id"], name=task["name"])
+            newProject.addTask(newTask)
+        
+        if(self.__manager.debug and self.__debugKitsuData):
+            self.__manager.logging.debug(json.dumps(tasks, sort_keys=True, indent=4))
+        
+        self.__manager.logging.info("Tasks loaded.")
 
         # Get, create and add categories to project.
         categories = gazu.asset.all_asset_types_for_project(project)
@@ -126,6 +138,9 @@ class KitsuWrapper(DefaultWrapper):
         for category in categories:
             newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets")
             newProject.addCategory(newCategory)
+        
+        if(self.__manager.debug and self.__debugKitsuData):
+            self.__manager.logging.debug(json.dumps(categories, sort_keys=True, indent=4))
         
         self.__manager.logging.info("Categories loaded.")
 

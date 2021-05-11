@@ -139,6 +139,32 @@ class Project():
         self.__description = description
     
     @property
+    def tasks(self):
+        """Get the tasks of the projects.
+
+        Returns:
+            list(class:`Task`): Tasks.
+        """
+        return self.__tasks
+    
+    @tasks.setter
+    def tasks(self, tasks):
+        """Set the tasks of the project.
+
+        Args:
+            tasks (list: class:`Tasks`): New tasks.
+        """
+        self.__tasks = tasks
+    
+    def addTask(self, newTask):
+        """Add a task to project.
+
+        Args:
+            newTask (class: "Task"): New task to add.
+        """
+        self.__tasks.append(newTask)
+    
+    @property
     def framerate(self):
         """Get the framerate of the project.
 
