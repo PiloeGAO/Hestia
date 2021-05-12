@@ -57,8 +57,6 @@ class PreferencesWindow(QWidget):
         self.mainLayout = QGridLayout()
         self.mainLayout.setSpacing(10)
 
-        # Set window size.
-
         # Set service.
         self.serviceButton = DropDown(name="Service",
                                         description="Service used.",

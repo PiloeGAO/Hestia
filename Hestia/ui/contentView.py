@@ -112,6 +112,7 @@ class ContentView(QWidget):
 
         for entity in range(len(self.__entities)):
             newEntity = EntityWidget(manager=self.__manager,
+                                    mainWindow=self.__mainWindow,
                                     asset=self.__entities[entity],
                                     iconSize=100,
                                     status=1)

@@ -16,6 +16,7 @@ except:
 from .core.manager          import Manager
 
 from .loginWindow           import LoginWindow
+from .publishWindow         import PublishWindow
 from .preferencesWindow     import PreferencesWindow
 
 from .ui.header             import Header
@@ -50,6 +51,9 @@ class MainWindow(QWidget):
 
         # Initialize UI.
         self.initUI()
+
+        # Initialize the publish window.
+        self.publishWindow = PublishWindow(manager=self.__manager)
 
         # Initialize the preference window.
         self.preferencesWindow = PreferencesWindow(manager=self.__manager)

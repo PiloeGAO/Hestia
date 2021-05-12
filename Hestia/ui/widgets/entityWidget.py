@@ -6,6 +6,7 @@
     :version:   0.0.2
 """
 from os import path
+import time
 
 global pysideVers
 try:
@@ -31,10 +32,11 @@ class EntityWidget(QWidget):
             status (int, optional): Status of the button. Defaults to 1.
             parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager=None, asset=None, iconSize=64, status=1, parent=None):
+    def __init__(self, manager=None, mainWindow=None, asset=None, iconSize=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)
-        self.__manager  = manager
-        self.__asset    = asset
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
+        self.__asset        = asset
         
         self.__rootPath = path.dirname(path.abspath(__file__))
 
@@ -245,5 +247,5 @@ class EntityWidget(QWidget):
         Returns:
             bool: Function status.
         """
-        print("Publish....")
+        self.__mainWindow.publishWindow.displayWindow()
         return True
