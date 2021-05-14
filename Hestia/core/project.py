@@ -28,62 +28,28 @@ class Project():
         self.__tasks        = tasks
 
         # Project technical datas.
-        self.__framerate = 0
-        self.__ratio = "16:9"
-        self.__resolution = 1080
-        self.__startFrame = 1000
-        self.__preRoll = 24
-        self.__postRoll = 24
-
-        if("fps" in kwargs):
-            self.__framerate    = int(float(kwargs["fps"]))
-        if("ratio" in kwargs):
-            self.__ratio        = kwargs["ratio"]
-        if("resolution" in kwargs):
-            self.__resolution   = int(kwargs["resolution"])
-        if("startFrame" in kwargs):
-            self.__startFrame   = int(kwargs["startFrame"])
-        if("preRoll" in kwargs):
-            self.__preRoll      = int(kwargs["preRoll"])
-        if("postRoll" in kwargs):
-            self.__postRoll     = int(kwargs["postRoll"])
+        self.__framerate = int(float(kwargs["fps"])) if "fps" in kwargs else 0
+        self.__ratio = kwargs["ratio"] if "ratio" in kwargs else ""
+        self.__resolution = int(kwargs["resolution"]) if "resolution" in kwargs else 1080
+        self.__startFrame = int(kwargs["startFrame"]) if "startFrame" in kwargs else 1000
+        self.__preRoll = int(kwargs["preRoll"]) if "preRoll" in kwargs else 24
+        self.__postRoll = int(kwargs["postRoll"]) if "postRoll" in kwargs else 24
 
         # Project categories.
         self.__categories   = []
         self.__currentCategory = 0
 
         # Project file management.
-        self.__mountPoint = ""
-        self.__rootPoint = ""
-        self.__outputFilenameAsset = ""
-        self.__outputFilenameShot = ""
-        self.__outputFolderPathAsset = ""
-        self.__outputFolderPathShot = ""
-        self.__workingFilenameAsset = ""
-        self.__workingFilenameShot = ""
-        self.__workingFolderPathAsset = ""
-        self.__workingFolderPathShot = ""
-
-        if("mountPoint" in kwargs):
-            self.__mountPoint = str(kwargs["mountPoint"])
-        if("rootPoint" in kwargs):
-            self.__rootPoint = str(kwargs["rootPoint"])
-        if("outputFilenameAsset" in kwargs):
-            self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"])
-        if("outputFilenameShot" in kwargs):
-            self.__outputFilenameShot = str(kwargs["outputFilenameShot"])
-        if("outputFolderPathAsset" in kwargs):
-            self.__outputFolderPathAsset = str(kwargs["outputFolderPathAsset"])
-        if("outputFolderPathShot" in kwargs):
-            self.__outputFolderPathShot = str(kwargs["outputFolderPathShot"])
-        if("workingFilenameAsset" in kwargs):
-            self.__workingFilenameAsset = str(kwargs["workingFilenameAsset"])
-        if("workingFilenameShot" in kwargs):
-            self.__workingFilenameShot = str(kwargs["workingFilenameShot"])
-        if("workingFolderPathAsset" in kwargs):
-            self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"])
-        if("workingFolderPathShot" in kwargs):
-            self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"])
+        self.__mountPoint = str(kwargs["mountPoint"]) if "mountPoint" in kwargs else ""
+        self.__rootPoint = str(kwargs["rootPoint"]) if "rootPoint" in kwargs else ""
+        self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"]) if "outputFilenameAsset" in kwargs else ""
+        self.__outputFilenameShot = str(kwargs["outputFilenameShot"]) if "outputFilenameShot" in kwargs else ""
+        self.__outputFolderPathAsset = str(kwargs["outputFolderPathAsset"]) if "outputFolderPathAsset" in kwargs else ""
+        self.__outputFolderPathShot = str(kwargs["outputFolderPathShot"]) if "outputFolderPathShot" in kwargs else ""
+        self.__workingFilenameAsset = str(kwargs["workingFilenameAsset"]) if "workingFilenameAsset" in kwargs else ""
+        self.__workingFilenameShot = str(kwargs["workingFilenameShot"]) if "workingFilenameShot" in kwargs else ""
+        self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"]) if "workingFolderPathAsset" in kwargs else ""
+        self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"]) if "workingFolderPathShot" in kwargs else ""
         
         # For debuging, clean this for final branch merge.
         print(self.outputFilenameAsset)

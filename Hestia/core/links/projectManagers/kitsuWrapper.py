@@ -101,20 +101,37 @@ class KitsuWrapper(DefaultWrapper):
             class: "Project": Project generated from kitsu.
         """
         self.__manager.logging.info("Getting datas for: %s" % project["name"])
+        self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
+
+        # Setup project variables.
+        description             = project["description"] if project["description"] != None else ""
+        fps                     = project["fps"] if project["fps"] != None else 0
+        ratio                   = project["ratio"] if project["ratio"] != None else 0
+        resolution              = project["resolution"] if project["resolution"] != None else 0
+        mountPoint              = project["file_tree"]["output"]["mountpoint"] if project["file_tree"] != None else ""
+        rootPoint               = project["file_tree"]["output"]["root"] if project["file_tree"] != None else ""
+        outputFilenameAsset     = project["file_tree"]["output"]["file_name"]["asset"] if project["file_tree"] != None else ""
+        outputFilenameShot      = project["file_tree"]["output"]["file_name"]["shot"] if project["file_tree"] != None else ""
+        outputFolderPathAsset   = project["file_tree"]["output"]["folder_path"]["asset"] if project["file_tree"] != None else ""
+        outputFolderPathShot    = project["file_tree"]["output"]["folder_path"]["shot"] if project["file_tree"] != None else ""
+        workingFilenameAsset    = project["file_tree"]["working"]["file_name"]["asset"] if project["file_tree"] != None else ""
+        workingFilenameShot     = project["file_tree"]["working"]["file_name"]["shot"] if project["file_tree"] != None else ""
+        workingFolderPathAsset  = project["file_tree"]["working"]["folder_path"]["asset"] if project["file_tree"] != None else ""
+        workingFolderPathShot   = project["file_tree"]["working"]["folder_path"]["shot"] if project["file_tree"] != None else ""
 
         # Get and create a new project.
-        newProject = Project(id=project["id"], name=project["name"], description=project["description"],
-                            fps=project["fps"], ratio=project["ratio"], resolution=project["resolution"],
-                            mountPoint=project["file_tree"]["output"]["mountpoint"],
-                            rootPoint=project["file_tree"]["output"]["root"],
-                            outputFilenameAsset=project["file_tree"]["output"]["file_name"]["asset"],
-                            outputFilenameShot=project["file_tree"]["output"]["file_name"]["shot"],
-                            outputFolderPathAsset=project["file_tree"]["output"]["folder_path"]["asset"],
-                            outputFolderPathShot=project["file_tree"]["output"]["folder_path"]["shot"],
-                            workingFilenameAsset=project["file_tree"]["working"]["file_name"]["asset"],
-                            workingFilenameShot=project["file_tree"]["working"]["file_name"]["shot"],
-                            workingFolderPathAsset=project["file_tree"]["working"]["folder_path"]["asset"],
-                            workingFolderPathShot=project["file_tree"]["working"]["folder_path"]["shot"],)
+        newProject = Project(id=project["id"], name=project["name"], description=description,
+                            fps=fps, ratio=ratio, resolution=resolution,
+                            mountPoint=mountPoint,
+                            rootPoint=rootPoint,
+                            outputFilenameAsset=outputFilenameAsset,
+                            outputFilenameShot=outputFilenameShot,
+                            outputFolderPathAsset=outputFolderPathAsset,
+                            outputFolderPathShot=outputFolderPathShot,
+                            workingFilenameAsset=workingFilenameAsset,
+                            workingFilenameShot=workingFilenameShot,
+                            workingFolderPathAsset=workingFolderPathAsset,
+                            workingFolderPathShot=workingFolderPathShot)
 
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))

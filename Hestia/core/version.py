@@ -16,11 +16,7 @@ class Version():
         self.__workingPath      = workingPath
         self.__outputPath       = outputPath
         self.__revisionNumber   = revisionNumber
-
-        if(type == ""):
-            self.__type = path.splitext(self.__outputPath)[1]
-        else:
-            self.__type = type
+        self.__type = path.splitext(self.__outputPath)[1] if type == "" else type
     
     @property
     def id(self):

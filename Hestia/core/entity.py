@@ -33,9 +33,7 @@ class Entity():
         self.__versions     = versions
         
         # Shot specific datas.
-        self.__frameNumber = 0
-        if("frameNumber" in kwargs):
-            self.__frameNumber = int(kwargs["frameNumber"])
+        self.__frameNumber = int(kwargs["frameNumber"]) if "frameNumber" in kwargs else 0
 
     @property
     def id(self):
