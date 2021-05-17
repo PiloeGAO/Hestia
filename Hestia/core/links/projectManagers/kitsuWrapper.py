@@ -320,3 +320,62 @@ class KitsuWrapper(DefaultWrapper):
             versions.append(newVersion)
 
         return versions
+    
+    def publish(self, name="", comment="", taskId="", taskStatus="", version="", software="", workingFilePath="", outputFiles=[], previewFilePath=""):
+        """Publish files (working and outputs) to Kitsu. (Code from Guillaume Baratte project's called managerTools)
+
+        Args:
+            name (str, optional): Publish name. Defaults to "".
+            comment (str, optional): Publish comment. Defaults to "".
+            taskId (str, optional): Task ID. Defaults to "".
+            taskStatus (str, optional): Status of the publish. Defaults to "".
+            version (str, optional): Version. Defaults to "".
+            software (str, optional): Software name. Defaults to "".
+            workingFilePath (str, optional): Working file path. Defaults to "".
+            outputFiles (list, optional): Outputs files. Defaults to [].
+            previewFilePath (str, optional): Preview image/video path. Defaults to "".
+
+        Returns:
+            bool: Publish status.
+        """
+
+        # Add working file.
+        workingFileData = {
+            "name": name,
+            "comment": comment,
+            "person_id": self.__userID,
+            "task_id": taskId,
+            "revision": version,
+            "mode": "working"
+        }
+
+        # Assigning softwate.
+        if(software != ""):
+            softwareId = gazu.client.fetch_first(
+                            'softwares',
+                            {
+                                'name': name
+                            })["id"]
+
+            if(softwareId != None):
+                workingFileData["software_id"] = softwareId
+        
+        # Create the working file entry on Zou.
+        workingFilePublishData = gazu.client.post(
+                                        'data/tasks/%s/working-files/new' % taskId,
+                                        workingFileData
+                                    )
+        
+        # Set the path in the DB entry.
+        gazu.client.put('data/working-files/%s' % workingFilePublishData["id"],
+                {
+                    'path': workingFilePath
+                }
+            )
+
+        # Add output files.
+
+        # Add the comment.
+
+        # Add the preview.
+        return True
