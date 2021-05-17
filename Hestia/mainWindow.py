@@ -56,12 +56,13 @@ class MainWindow(QWidget):
         self.publishWindow = None
 
         # Initialize the preference window.
-        self.preferencesWindow = PreferencesWindow(manager=self.__manager)
+        self.preferencesWindow = None
 
         # Show online login modal if not set to local.
+        self.loginWindow = None
         if(self.__manager.mode != "local" and not self.__manager.link.connected):
-            login = LoginWindow(manager=self.__manager, mainWindow=self)
-            login.show()
+            self.loginWindow = LoginWindow(manager=self.__manager, mainWindow=self)
+            self.loginWindow.show()
     
     def resizeEvent(self, event):
         """Get the size of the window on window resize.
@@ -88,6 +89,11 @@ class MainWindow(QWidget):
             event (class: 'QtEvent'): Event.
         """
         if(True):
+            # Closing other window if Main Window is closed.
+            if(self.loginWindow != None): self.loginWindow.hide()
+            if(self.preferencesWindow != None): self.preferencesWindow.hide()
+            if(self.publishWindow != None): self.publishWindow.hide()
+
             if(self.__manager.integration != "standalone"):
                 # This is needed for embedded Python versions
                 # that won't support *atexit* lib.
@@ -138,7 +144,7 @@ class MainWindow(QWidget):
     def openPreferencesWindow(self):
         """Display the preferences window.
         """
-        # TODO: Apply same window mechanic as Publish Window.
+        self.preferencesWindow = PreferencesWindow(manager=self.__manager)
         self.preferencesWindow.show()
     
     def openPublishWindow(self, entity):

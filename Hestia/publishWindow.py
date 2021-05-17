@@ -6,6 +6,7 @@
     :brief:     Class to create the publish window based on QtWidgets.  
 """
 import os
+from datetime               import datetime
 
 global pysideVers
 try:
@@ -72,7 +73,7 @@ class PublishWindow(QWidget):
         self.mainLayout.addLayout(self.taskLayout)
 
         # Publish name.
-        self.publishName = LineEdit(name="Name", description="Publish Name", defaultValue="")
+        self.publishName = LineEdit(name="Name", description="Publish Name", defaultValue="Publish %s | %s" % (self.__entity.name, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
         self.mainLayout.addWidget(self.publishName)
 
         self.mainLayout.setSpacing(0)
@@ -128,12 +129,13 @@ class PublishWindow(QWidget):
         Returns:
             list: str: List of task names.
         """
-        return ["DEMO"]
+        return [task.name for task in self.__entity.tasks]
 
     def addOutput(self):
         """Add a new line in the output list.
         """
-        outputChoice = DropDown(name="Export Type", datas=["ABC", "FBX", "VDB"])
+        availableFormats = self.__manager.integration.availableFormats
+        outputChoice = DropDown(name="Export Type", datas=availableFormats)
         self.outputsList.append(outputChoice)
         
         self.outputGrid = GridWidget(manager=self.__manager,
@@ -157,3 +159,5 @@ class PublishWindow(QWidget):
         for i, widget in enumerate(self.outputsList):
             print("%i > %s" % (i, widget.datas[widget.currentValue]))
         print("Publish preview file: %s" % self.previewPath.currentValue)
+
+        self.hide()
