@@ -321,16 +321,17 @@ class KitsuWrapper(DefaultWrapper):
 
         return versions
     
-    def publish(self, name="", comment="", taskId="", taskStatus="", version="", software="", workingFilePath="", outputFiles=[], previewFilePath=""):
+    def publish(self, name="", comment="", task="", taskStatus="", version="", software="", outputType="", workingFilePath="", outputFiles=[], previewFilePath=""):
         """Publish files (working and outputs) to Kitsu. (Code from Guillaume Baratte project's called managerTools)
 
         Args:
             name (str, optional): Publish name. Defaults to "".
             comment (str, optional): Publish comment. Defaults to "".
-            taskId (str, optional): Task ID. Defaults to "".
+            task (str, optional): Task dict. Defaults to "".
             taskStatus (str, optional): Status of the publish. Defaults to "".
             version (str, optional): Version. Defaults to "".
             software (str, optional): Software name. Defaults to "".
+            outputType (str, optional): Output type name. Defaults to "".
             workingFilePath (str, optional): Working file path. Defaults to "".
             outputFiles (list, optional): Outputs files. Defaults to [].
             previewFilePath (str, optional): Preview image/video path. Defaults to "".
@@ -344,7 +345,7 @@ class KitsuWrapper(DefaultWrapper):
             "name": name,
             "comment": comment,
             "person_id": self.__userID,
-            "task_id": taskId,
+            "task_id": task["id"],
             "revision": version,
             "mode": "working"
         }
@@ -352,9 +353,9 @@ class KitsuWrapper(DefaultWrapper):
         # Assigning softwate.
         if(software != ""):
             softwareId = gazu.client.fetch_first(
-                            'softwares',
+                            "softwares",
                             {
-                                'name': name
+                                "name": name
                             })["id"]
 
             if(softwareId != None):
@@ -362,19 +363,55 @@ class KitsuWrapper(DefaultWrapper):
         
         # Create the working file entry on Zou.
         workingFilePublishData = gazu.client.post(
-                                        'data/tasks/%s/working-files/new' % taskId,
+                                        "data/tasks/%s/working-files/new" % task["id"],
                                         workingFileData
                                     )
         
         # Set the path in the DB entry.
-        gazu.client.put('data/working-files/%s' % workingFilePublishData["id"],
+        gazu.client.put("data/working-files/%s" % workingFilePublishData["id"],
                 {
-                    'path': workingFilePath
+                    "path": workingFilePath
                 }
             )
 
         # Add output files.
+        outputFilesPublishData = []
+        for outputFilePath in outputFiles:
+            ouputFileData = {
+                "task_type_id": task["task_type_id"],
+                "comment": comment,
+                "revision": version,
+                "representation": "output",
+                "name": name,
+                "nb_elements": 1,
+                "sep": "/",
+                "working_file_id": workingFilePublishData["id"],
+                "person_id": self.__userID
+            }
 
+            if(outputType != ""):
+                outputTypeId = gazu.client.fetch_first(
+                                    "output-types",
+                                    {
+                                        "name": name
+                                    }
+                                )["id"]
+                if(outputType != None):
+                    ouputFileData["output_type_id"] = outputTypeId
+            
+            outputFilePublishData = gazu.client.post(
+                                        "data/entities/%s/output-files/new" % task["entity_id"],
+                                        ouputFileData
+                                        )
+            
+            gazu.client.put("data/output-files/%s" % outputFilePublishData["id"],
+                    {
+                        "path" : outputFilePath
+                    }
+                )
+            
+            outputFilesPublishData.append(outputFilePublishData)
+        
         # Add the comment.
 
         # Add the preview.
