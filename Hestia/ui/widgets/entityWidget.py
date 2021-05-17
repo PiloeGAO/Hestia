@@ -247,5 +247,5 @@ class EntityWidget(QWidget):
         Returns:
             bool: Function status.
         """
-        self.__mainWindow.publishWindow.displayWindow()
+        self.__mainWindow.openPublishWindow(entity=self.__asset)
         return True

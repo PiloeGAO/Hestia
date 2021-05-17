@@ -28,12 +28,15 @@ class PublishWindow(QWidget):
     """Publish Window class.
 
     Args:
-        manager (class: "Manager"): Manager of Hestia.
-        parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
+        manager (class: `Manager`): Manager of Hestia.
+        manager (class: `Entity`): Entity to publish.
+        parent (class: `QtWidgets`, optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, parent=None):
+    def __init__(self, manager, entity, parent=None):
         super(PublishWindow, self).__init__(parent=parent)
         self.__manager      = manager
+        self.__entity       = entity
+
         self.__screenshotSupport = self.__manager.integration.supportScreenshots
         
         self.__rootPath = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +62,7 @@ class PublishWindow(QWidget):
         self.taskLayout = QHBoxLayout()
 
         # Task drop down.
-        self.taskDropBox = DropDown(name="Task", description="Task of the publish.", datas=self.getTasksFromManager())
+        self.taskDropBox = DropDown(name="Task", description="Task of the publish.", datas=self.getTasksNames())
         self.taskLayout.addWidget(self.taskDropBox)
 
         # Task status drop drown.
@@ -80,8 +83,6 @@ class PublishWindow(QWidget):
 
         # Output paths.
         self.outputsList = []
-        outputChoice = DropDown(name="Export Type", datas=["ABC", "FBX", "VDB"])
-        self.outputsList.append(outputChoice)
 
         self.outputScrollArea = QScrollArea()
         self.outputGrid = GridWidget(manager=self.__manager,
@@ -121,7 +122,7 @@ class PublishWindow(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def getTasksFromManager(self):
+    def getTasksNames(self):
         """Get all tasks for entity.
 
         Returns:
@@ -156,8 +157,3 @@ class PublishWindow(QWidget):
         for i, widget in enumerate(self.outputsList):
             print("%i > %s" % (i, widget.datas[widget.currentValue]))
         print("Publish preview file: %s" % self.previewPath.currentValue)
-
-    def displayWindow(self):
-        """Initialize/reset and show the window.
-        """
-        self.show()

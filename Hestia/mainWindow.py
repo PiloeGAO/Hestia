@@ -53,7 +53,7 @@ class MainWindow(QWidget):
         self.initUI()
 
         # Initialize the publish window.
-        self.publishWindow = PublishWindow(manager=self.__manager)
+        self.publishWindow = None
 
         # Initialize the preference window.
         self.preferencesWindow = PreferencesWindow(manager=self.__manager)
@@ -138,7 +138,17 @@ class MainWindow(QWidget):
     def openPreferencesWindow(self):
         """Display the preferences window.
         """
+        # TODO: Apply same window mechanic as Publish Window.
         self.preferencesWindow.show()
+    
+    def openPublishWindow(self, entity):
+        """Display the publish window.
+
+        Args:
+            entity (class:`Entity`): Entity datas to publish.
+        """
+        self.publishWindow = PublishWindow(manager=self.__manager, entity=entity)
+        self.publishWindow.show()
 
     def updateLog(self, text=""):
         """Update log in the footer.
