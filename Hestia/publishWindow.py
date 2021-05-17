@@ -5,6 +5,7 @@
     :version:   0.0.2
     :brief:     Class to create the publish window based on QtWidgets.  
 """
+import os
 
 global pysideVers
 try:
@@ -17,6 +18,12 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
+from .ui.widgets.iconButton import IconButton
+from .ui.widgets.dropDown   import DropDown
+from .ui.widgets.lineEdit   import LineEdit
+from .ui.widgets.textEdit   import TextEdit
+from .ui.widgets.gridWidget import GridWidget
+
 class PublishWindow(QWidget):
     """Publish Window class.
 
@@ -27,6 +34,9 @@ class PublishWindow(QWidget):
     def __init__(self, manager, parent=None):
         super(PublishWindow, self).__init__(parent=parent)
         self.__manager      = manager
+        self.__screenshotSupport = self.__manager.integration.supportScreenshots
+        
+        self.__rootPath = os.path.dirname(os.path.abspath(__file__))
 
         self.initUI()
 
@@ -46,12 +56,107 @@ class PublishWindow(QWidget):
         # Set the main layout component.
         self.mainLayout = QVBoxLayout()
 
-        demoButton = QPushButton("DEMO")
-        self.mainLayout.addWidget(demoButton)
+        self.taskLayout = QHBoxLayout()
+
+        # Task drop down.
+        self.taskDropBox = DropDown(name="Task", description="Task of the publish.", datas=self.getTasksFromManager())
+        self.taskLayout.addWidget(self.taskDropBox)
+
+        # Task status drop drown.
+        self.taskStatusDropDown = DropDown(name="Status", description="Task status.", datas=["WIP", "WFA"], defaultValue=1)
+        self.taskLayout.addWidget(self.taskStatusDropDown)
+
+        self.mainLayout.addLayout(self.taskLayout)
+
+        # Publish name.
+        self.publishName = LineEdit(name="Name", description="Publish Name", defaultValue="")
+        self.mainLayout.addWidget(self.publishName)
+
+        self.mainLayout.setSpacing(0)
+
+        # Publish comment.
+        self.publishComment = TextEdit(name="Comment", description="Publish comment.", defaultValue="")
+        self.mainLayout.addWidget(self.publishComment)
+
+        # Output paths.
+        self.outputsList = []
+        outputChoice = DropDown(name="Export Type", datas=["ABC", "FBX", "VDB"])
+        self.outputsList.append(outputChoice)
+
+        self.outputScrollArea = QScrollArea()
+        self.outputGrid = GridWidget(manager=self.__manager,
+                                    parentGeometry=self.outputScrollArea.geometry(),
+                                    xSize=1,
+                                    itemList=self.outputsList,
+                                    emptyLabel="No outputs in list")
+        self.outputScrollArea.setWidget(self.outputGrid)
+        self.mainLayout.addWidget(self.outputScrollArea)
+
+        self.addOutputButton = QPushButton("Add output")
+        self.addOutputButton.clicked.connect(self.addOutput)
+        self.mainLayout.addWidget(self.addOutputButton)
+
+        # Preview path.
+        self.previewLayout = QHBoxLayout()
+        self.previewPath = LineEdit(name="Preview file", description="Preview file path", defaultValue="//")
+        self.previewLayout.addWidget(self.previewPath)
+
+        if(self.__screenshotSupport):
+            if(pysideVers == 2):
+                iconPath = self.__rootPath + "/ui/icons/camera-reels.svg"
+            else:
+                iconPath = self.__rootPath + "/ui/icons/camera-reels.png"
+            self.screenshotButton = IconButton(name="Take screenshot", description="Take screenshot of current scene.",
+                                                iconPath=iconPath, iconScale=16,
+                                                status=1, functionToInvoke=self.takeScreenshot)
+            self.previewLayout.addWidget(self.screenshotButton)
+
+        self.mainLayout.addLayout(self.previewLayout)
+
+        # Publish button.
+        self.publishButton = QPushButton("Publish file")
+        self.publishButton.clicked.connect(self.publish)
+        self.mainLayout.addWidget(self.publishButton)
 
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
+    def getTasksFromManager(self):
+        """Get all tasks for entity.
+
+        Returns:
+            list: str: List of task names.
+        """
+        return ["DEMO"]
+
+    def addOutput(self):
+        """Add a new line in the output list.
+        """
+        outputChoice = DropDown(name="Export Type", datas=["ABC", "FBX", "VDB"])
+        self.outputsList.append(outputChoice)
+        
+        self.outputGrid = GridWidget(manager=self.__manager,
+                                    parentGeometry=self.outputScrollArea.geometry(),
+                                    xSize=1,
+                                    itemList=self.outputsList,
+                                    emptyLabel="No outputs in list")
+        self.outputScrollArea.setWidget(self.outputGrid)
+
+    def takeScreenshot(self):
+        """Take a screenshot of the scene.
+        """
+        # TODO: Implement the screenshot support inside of DCCs.
+        print("Screenshot OK.")
+
+    def publish(self):
+        """Publish function.
+        """
+        print("Publish Name: %s" % self.publishName.currentValue)
+        print("Publish Comment: %s" % self.publishComment.currentValue)
+        for i, widget in enumerate(self.outputsList):
+            print("%i > %s" % (i, widget.datas[widget.currentValue]))
+        print("Publish preview file: %s" % self.previewPath.currentValue)
+
     def displayWindow(self):
         """Initialize/reset and show the window.
         """

@@ -18,6 +18,7 @@ class DefaultIntegration(object):
 
         self._supportInstances = False
         self._instances = False
+        self._supportScreenshots = False
     
     @property
     def availableFormats(self):
@@ -55,6 +56,15 @@ class DefaultIntegration(object):
         """
         print("Instances new status" + str(newStatus))
         self._instances = newStatus
+    
+    @property
+    def supportScreenshots(self):
+        """Get the screenshots support.
+
+        Returns:
+            bool: Is screenshot support is available.
+        """
+        return self._supportScreenshots
     
     def initializeFileFormats(self):
         """Initialize the file formats list.

@@ -377,12 +377,13 @@ class KitsuWrapper(DefaultWrapper):
         # Add output files.
         outputFilesPublishData = []
         for outputFilePath in outputFiles:
+            filename = os.path.split(outputFilePath)[1]
             ouputFileData = {
                 "task_type_id": task["task_type_id"],
                 "comment": comment,
                 "revision": version,
                 "representation": "output",
-                "name": name,
+                "name": "%s_%s" % (name, filename),
                 "nb_elements": 1,
                 "sep": "/",
                 "working_file_id": workingFilePublishData["id"],

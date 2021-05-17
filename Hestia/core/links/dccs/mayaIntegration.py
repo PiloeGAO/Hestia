@@ -32,8 +32,9 @@ class MayaIntegration(DefaultIntegration):
         self.initializeFileFormats()
 
         # Autodesk Maya support instance by using "References". 
-        self._supportInstances  = True
-        self._instances         = True
+        self._supportInstances      = True
+        self._instances             = True
+        self._supportScreenshots    = True
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
