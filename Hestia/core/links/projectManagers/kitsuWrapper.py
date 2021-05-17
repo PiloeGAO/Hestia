@@ -321,14 +321,14 @@ class KitsuWrapper(DefaultWrapper):
 
         return versions
     
-    def publish(self, name="", comment="", task="", taskStatus="", version="", software="", outputType="", workingFilePath="", outputFiles=[], previewFilePath=""):
+    def publish(self, name="", comment="", task="", taskStatus="TODO", version="", software="", outputType="", workingFilePath="", outputFiles=[], previewFilePath=""):
         """Publish files (working and outputs) to Kitsu. (Code from Guillaume Baratte project's called managerTools)
 
         Args:
             name (str, optional): Publish name. Defaults to "".
             comment (str, optional): Publish comment. Defaults to "".
             task (str, optional): Task dict. Defaults to "".
-            taskStatus (str, optional): Status of the publish. Defaults to "".
+            taskStatus (str, optional): Status of the publish. Defaults to "TODO".
             version (str, optional): Version. Defaults to "".
             software (str, optional): Software name. Defaults to "".
             outputType (str, optional): Output type name. Defaults to "".
@@ -413,6 +413,23 @@ class KitsuWrapper(DefaultWrapper):
             outputFilesPublishData.append(outputFilePublishData)
         
         # Add the comment.
+        taskStatusId = gazu.client.fetch_first(
+                'task-status',
+                {
+                    'short_name': taskStatus
+                }
+            )
+        
+        if(taskStatusId != None):
+            commentData = {
+                "task_status_id": taskStatusId,
+                "comment": comment,
+                "person_id": self.__userID
+            }
+
+            commentPublishData = gazu.client.post('actions/tasks/%s/comment' % task["id"], commentData)
+        else:
+            self.__manager.logging.error("Couldn't find the status for publishing, comment wouldn't be available.")
 
         # Add the preview.
         return True
