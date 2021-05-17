@@ -28,6 +28,7 @@ class KitsuWrapper(DefaultWrapper):
         self.__api     = api
         self.__active  = False
         self._username = ""
+        self.__userID  = ""
 
         self.__debugKitsuData = False
 
@@ -73,6 +74,7 @@ class KitsuWrapper(DefaultWrapper):
             return False
         else:
             self._username = username + " (Online Mode: Kitsu)"
+            self.__userID = gazu.client.get_current_user()["id"]
 
             # Enable caching for faster download from online.
             gazu.cache.enable()
@@ -101,7 +103,6 @@ class KitsuWrapper(DefaultWrapper):
             class: "Project": Project generated from kitsu.
         """
         self.__manager.logging.info("Getting datas for: %s" % project["name"])
-        self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
 
         # Setup project variables.
         description             = project["description"] if project["description"] != None else ""
