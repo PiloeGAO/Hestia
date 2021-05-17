@@ -428,8 +428,20 @@ class KitsuWrapper(DefaultWrapper):
             }
 
             commentPublishData = gazu.client.post('actions/tasks/%s/comment' % task["id"], commentData)
-        else:
-            self.__manager.logging.error("Couldn't find the status for publishing, comment wouldn't be available.")
+        
+            # Add the preview.
+            previewPublishData = gazu.client.post("actions/tasks/%s/comments/%s/add-preview" % (
+                                    task["id"],
+                                    commentPublishData['id']
+                                    ), {})
 
-        # Add the preview.
+            gazu.client.upload(
+                    'pictures/preview-files/%s' % previewPublishData["id"],
+                    previewFilePath
+                )
+                
+            gazu.task.set_main_preview(previewPublishData)
+        else:
+            self.__manager.logging.error("Couldn't find the status for publishing, comment and preview wouldn't be published.")
+
         return True
