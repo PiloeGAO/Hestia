@@ -3,7 +3,7 @@
     :file:      entity.py
     :brief:     Entity base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 
 class Entity():

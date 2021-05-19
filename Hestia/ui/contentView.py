@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      contentView.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
     :brief:     Class to create the content view of the window.  
 """
 import os

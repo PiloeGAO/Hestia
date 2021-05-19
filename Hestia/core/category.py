@@ -3,7 +3,7 @@
     :file:      category.py
     :brief:     Category base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 
 class Category():
