@@ -175,6 +175,9 @@ class KitsuWrapper(DefaultWrapper):
                 if(nb_frames == 0 and 
                     shotData["frame_in"] != None and shotData["frame_out"] != None):
                     nb_frames = int(shotData["frame_out"]) - int(shotData["frame_in"])
+            
+            # Get Assets assigned in the shot.
+            assignedAssets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(shotData)]
 
             # Output versionning.
             versions = self.getVersions(shotData)
@@ -186,7 +189,8 @@ class KitsuWrapper(DefaultWrapper):
                                 description=shot["description"],
                                 icon="",
                                 versions=versions,
-                                frameNumber=nb_frames)
+                                frameNumber=nb_frames,
+                                assignedAssets=assignedAssets)
 
             shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
             shotSequence.addEntity(newShot)

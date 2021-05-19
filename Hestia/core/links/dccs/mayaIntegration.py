@@ -137,7 +137,7 @@ class MayaIntegration(DefaultIntegration):
             imported = after - before
 
             staticAsset = 1
-            groupName = asset.name
+            groupName = asset.name.replace(" ", "_").replace("-", "_")
 
             while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
                 groupName = groupName + "_bis"
