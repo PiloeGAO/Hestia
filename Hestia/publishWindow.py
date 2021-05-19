@@ -105,13 +105,22 @@ class PublishWindow(QWidget):
 
         if(self.__screenshotSupport):
             if(pysideVers == 2):
-                iconPath = self.__rootPath + "/ui/icons/camera-reels.svg"
+                iconPath = self.__rootPath + "/ui/icons/camera.svg"
             else:
-                iconPath = self.__rootPath + "/ui/icons/camera-reels.png"
+                iconPath = self.__rootPath + "/ui/icons/camera.png"
             self.screenshotButton = IconButton(name="Take screenshot", description="Take screenshot of current scene.",
                                                 iconPath=iconPath, iconScale=16,
                                                 status=1, functionToInvoke=self.takeScreenshot)
             self.previewLayout.addWidget(self.screenshotButton)
+            
+            if(pysideVers == 2):
+                iconPath = self.__rootPath + "/ui/icons/camera-reels.svg"
+            else:
+                iconPath = self.__rootPath + "/ui/icons/camera-reels.png"
+            self.playblastButton = IconButton(name="Take a video", description="Take video of current scene.",
+                                                iconPath=iconPath, iconScale=16,
+                                                status=1, functionToInvoke=self.takePlayblast)
+            self.previewLayout.addWidget(self.playblastButton)
 
         self.mainLayout.addLayout(self.previewLayout)
 
@@ -134,7 +143,7 @@ class PublishWindow(QWidget):
     def addOutput(self):
         """Add a new line in the output list.
         """
-        availableFormats = self.__manager.integration.availableFormats
+        availableFormats = [format[1:].upper() for format in self.__manager.integration.availableFormats]
         outputChoice = DropDown(name="Export Type", datas=availableFormats)
         self.outputsList.append(outputChoice)
         
@@ -150,6 +159,12 @@ class PublishWindow(QWidget):
         """
         # TODO: Implement the screenshot support inside of DCCs.
         print("Screenshot OK.")
+    
+    def takePlayblast(self):
+        """Take a playblast of the scene.
+        """
+        # TODO: Implement the screenshot support inside of DCCs.
+        print("Playblast OK.")
 
     def publish(self):
         """Publish function.
