@@ -6,34 +6,31 @@
     :brief:     Class to create the main window based on QtWidgets.  
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
-from .core.manager    import Manager
+from .core.manager          import Manager
 
-from .loginWindow       import LoginWindow
-from .preferencesWindow    import PreferencesWindow
+from .loginWindow           import LoginWindow
+from .preferencesWindow     import PreferencesWindow
 
-from .ui.header         import Header
-from .ui.folderTreeView import FolderTreeView
-from .ui.contentView    import ContentView
-from .ui.footer         import Footer
+from .ui.header             import Header
+from .ui.folderTreeView     import FolderTreeView
+from .ui.contentView        import ContentView
+from .ui.footer             import Footer
 
 class MainWindow(QWidget):
     """Main Window class.
 
     Args:
-        manager (class: "Manager", optional): Manager of Hestia. Defaults to Manager().
-        mode (str, optional): Manager mode. Defaults to "local".
-        winW (int, optional): Window width. Defaults to 640.
-        winH (int, optional): Window height. Defaults to 480.
+        manager (class: "Manager"): Manager of Hestia.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager=Manager(integration="standalone"), parent=None):
+    def __init__(self, manager, parent=None):
         super(MainWindow, self).__init__(parent=parent)
         # Defining the Manager.
         self.__manager = manager

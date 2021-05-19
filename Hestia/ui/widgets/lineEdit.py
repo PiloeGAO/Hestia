@@ -6,12 +6,12 @@
     :version:   0.0.2
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class LineEdit(QWidget):
     """Line Edit class.
@@ -20,9 +20,10 @@ class LineEdit(QWidget):
         name (str, optional): Text of the button. Defaults to "".
         description (str, optional): Tooltip. Defaults to "".
         defaultValue (str, optional): Default value ID. Defaults to "".
+        isPassword (bool, optional): Hide characters for passwords/credentials. Defaults to False.
         parent (QtWidgets, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, name="", description="", defaultValue="", isPassword= False, parent=None):
+    def __init__(self, name="", description="", defaultValue="", isPassword=False, parent=None):
         super(LineEdit, self).__init__(parent=parent)
 
         self.__name = name

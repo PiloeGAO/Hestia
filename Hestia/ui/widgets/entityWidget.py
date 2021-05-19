@@ -5,30 +5,33 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.2
 """
+from gazu import asset
+from Hestia.core.category import Category
 from os import path
 
+global pysideVers
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
+    pysideVers = 2
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
+    pysideVers = 1
 
-from .iconButton    import IconButton
-from .dropDown      import DropDown
+from .iconButton            import IconButton
+from .dropDown              import DropDown
 
 class EntityWidget(QWidget):
     """Entity widget display class.
 
         Args:
-            name (str, optional): [description]. Defaults to "".
-            description (str, optional): [description]. Defaults to "".
-            iconPath (str, optional): [description]. Defaults to "".
-            iconSize (int, optional): [description]. Defaults to 64.
-            status (int, optional): [description]. Defaults to 1.
-            versionList (list, optional): [description]. Defaults to [].
-            parent ([type], optional): [description]. Defaults to None.
+            manager (class: `Manager`): The Hestia manager.
+            asset (class: `Entity`): The entity to display.
+            iconSize (int, optional): Size of the icon to display. Defaults to 64.
+            status (int, optional): Status of the button. Defaults to 1.
+            parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
     def __init__(self, manager=None, asset=None, iconSize=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)
@@ -37,7 +40,11 @@ class EntityWidget(QWidget):
         
         self.__rootPath = path.dirname(path.abspath(__file__))
 
-        self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
+        self.__defaultIcon = ""
+        if(pysideVers == 2):
+            self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
+        else:
+            self.__defaultIcon = self.__rootPath + "/../icons/card-image.png"
 
         self.__name           = asset.name
         self.__description    = asset.description
@@ -172,8 +179,36 @@ class EntityWidget(QWidget):
         """
         currentProject = self.__manager.projects[self.__manager.currentProject]
         
+        # Setup scene.
         setupStatus = self.__manager.integration.setupShot(category=currentProject.categories[currentProject.currentCategory],
                                                             shot=self.__asset)
+
+        # Import assigned assets.
+        assets = [entity for entity in currentProject.entities if entity.type == "Assets"]
+        for assetID in self.__asset.assignedAssets:
+            # Get the asset from ID.
+            assetToImport = [asset for asset in assets if asset.id == assetID][0]
+            
+            # Get the last updated version of the asset.
+            # TODO: Filter the versions, publish branch need to be merged before to support Version Number.
+            self.assetVersions       = assetToImport.versions
+
+            versionToLoad = "Set Dressing"
+            if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+                versionToLoad = "Rigging"
+                if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+                    versionToLoad = "Modeling"
+                    if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+                        self.currentAssetVersion = None
+            
+            self.currentAssetVersion = [assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name][0] if len(self.assetVersions) > 0 else None
+
+            if self.currentAssetVersion != None:
+                # Import the version inside of the scene.
+                self.__manager.integration.loadAsset(asset = assetToImport,
+                                                    version = self.currentAssetVersion)
+            else:
+                self.__manager.logging.error("Failed to load %s" % self.assetToImport.name)
 
         if(setupStatus):
             return True

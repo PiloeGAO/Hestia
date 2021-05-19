@@ -89,6 +89,42 @@ class MayaIntegration(DefaultIntegration):
             self.__manager.logging.error("File not found.")
             return False
 
+        # Looking for asset replacement.
+        currentSelection = cmds.ls(sl=True)
+        if(len(currentSelection) > 0):
+            currentSelection = currentSelection[0]
+            if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
+                if(cmds.getAttr(currentSelection+".hestiaAssetID") == str(asset.id)):
+                    if(cmds.objectType(currentSelection) == "reference" and self.isInstanceImport(version=version)):
+                        # Updating reference is done with the file function. From: https://stackoverflow.com/a/44718215
+                        referenceToUpdate = cmds.referenceQuery(currentSelection, referenceNode=True)
+                        cmds.file(version.outputPath, loadReference=referenceToUpdate)
+                    elif(cmds.objectType(currentSelection) == "transform" and not self.isInstanceImport(version=version)):
+                        # Delete objects inside of the selected group.
+                        oldObjects = cmds.listRelatives(currentSelection, children=True)
+                        cmds.delete(oldObjects)
+
+                        # Importing the asset and getting the transform node.
+                        before = set(cmds.ls(type="transform"))
+
+                        self.importAsset(asset=asset, version=version)
+
+                        after = set(cmds.ls(type="transform"))
+                        imported = after - before
+
+                        # Reparent new objects.
+                        cmds.parent(imported, currentSelection, relative=True)
+                        
+                        #Rename each object to avoid duplication on second import.
+                        for object in imported:
+                            cmds.rename(object, "%s_%s" % (currentSelection, object))
+                    else:
+                        self.__manager.logging.warning("Reference and traditional import can't be mixed together.")
+                        return False
+                    
+                    return True
+
+        # If nothing is selected or asset isn't the same, start import procedure.
         currentAsset = None    
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
@@ -101,12 +137,18 @@ class MayaIntegration(DefaultIntegration):
             imported = after - before
 
             staticAsset = 1
-            groupName = asset.name
+            groupName = asset.name.replace(" ", "_").replace("-", "_")
 
-            while(cmds.objExists(groupName)):
+            while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
                 groupName = groupName + "_bis"
 
-            cmds.group(imported, n=groupName)
+            # Group need to be created as empty to make sure pivot is in the center of the scene.
+            cmds.group(empty=True, name=groupName, absolute=True)
+            cmds.parent(imported, groupName, relative=True)
+
+            #Rename each object to avoid duplication on second import.
+            for object in imported:
+                cmds.rename(object, "%s_%s" % (groupName, object))
 
             cmds.select(groupName, r=True)
             currentAsset = cmds.ls(sl=True)[0]
@@ -129,7 +171,6 @@ class MayaIntegration(DefaultIntegration):
             cmds.getAttr(currentAsset + ".locked")
             cmds.lockNode(currentAsset,q=1,lock=1)
             cmds.lockNode(currentAsset,lock=0)
-        
 
         # Setting needed attributes for shot assembly.
         cmds.addAttr(attributeType="bool", hidden=0,

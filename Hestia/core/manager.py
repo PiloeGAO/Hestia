@@ -35,9 +35,6 @@ class Manager():
             self.__preferences.generatePreferences()
             self.__preferences.savePreferences()
 
-        # Setting up the logging display.
-        logging.basicConfig(format="HESTIA | %(levelname)s @ %(asctime)s | %(message)s")
-
         self.__debugMode = bool(int(self.__preferences.getValue("MANAGER", "debugMode")))
 
         # Initialize the custom logging system.

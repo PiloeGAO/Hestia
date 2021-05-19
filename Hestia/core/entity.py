@@ -34,6 +34,16 @@ class Entity():
         self.__frameNumber = 0
         if("frameNumber" in kwargs):
             self.__frameNumber = int(kwargs["frameNumber"])
+        self.__assignedAssets = kwargs["assignedAssets"] if "assignedAssets" in kwargs else []
+
+    @property
+    def type(self):
+        """Get the type of entity.
+
+        Returns:
+            str: Entity type.
+        """
+        return self.__type
 
     @property
     def id(self):
@@ -131,3 +141,12 @@ class Entity():
             int: Shot duration.
         """
         return self.__frameNumber
+        
+    @property
+    def assignedAssets(self):
+        """Get assigned to the shot.
+
+        Returns:
+            list: str: Assets IDs.
+        """
+        return self.__assignedAssets

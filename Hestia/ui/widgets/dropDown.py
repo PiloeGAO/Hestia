@@ -6,12 +6,12 @@
     :version:   0.0.2
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class DropDown(QWidget):
     """Drop Down class.
@@ -24,7 +24,7 @@ class DropDown(QWidget):
         functionToInvoke (function, optional): Function to invoke on currentIndexChanged. Defaults to None.
         parent (QtWidgets, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, name="", description="", datas=[], defaultValue=0, functionToInvoke = None, parent=None):
+    def __init__(self, name="", description="", datas=[], defaultValue=0, functionToInvoke=None, parent=None):
         super(DropDown, self).__init__(parent=parent)
 
         self.__name = name

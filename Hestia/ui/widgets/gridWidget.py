@@ -6,20 +6,23 @@
     :version:   0.0.2
 """
 try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
+    from PySide2.QtCore     import *
+    from PySide2.QtGui      import *
+    from PySide2.QtWidgets  import *
 except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
-
-from .entityWidget import EntityWidget
+    from PySide.QtCore      import *
+    from PySide.QtGui       import *
 
 class GridWidget(QWidget):
     """Grid Widget class.
 
     Args:
-        parent (QtWidgets, optional): Parent widget. Defaults to None.
+        manager (class: "Manager"): The Hestia manager.
+        parentGeometry (class: `QRect`): The parent widget size in pixels.
+        xSize (int, optional): Number of items on width. Defaults to 2.
+        itemList (list: class: `QWidget`): Items to display in the grid.
+        emptyLabel (str, optional): Message to display if the grid is empty. Defaults to "Grid empty".
+        parent (class: `QWidgets`, optional): Parent widget. Defaults to None.
     """
     def __init__(self, manager, parentGeometry, xSize=2, itemList=[], emptyLabel="Grid empty", parent=None):
         super(GridWidget, self).__init__(parent=parent)
