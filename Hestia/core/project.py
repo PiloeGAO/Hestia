@@ -404,6 +404,8 @@ class Project():
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
 
         return filename
+
+    @property
     def entities(self):
         """Get all entities stored in the project.
 
@@ -413,7 +415,7 @@ class Project():
         # TODO: Move to comprehensive list.
         entities = []
         if(len(self.categories) > 0):
-            for category in self.categories:
+            for category in self.__categories:
                 for entity in category.entities:
                     entities.append(entity)
         return entities

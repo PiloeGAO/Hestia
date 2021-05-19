@@ -37,6 +37,14 @@ class Entity():
         self.__assignedAssets = kwargs["assignedAssets"] if "assignedAssets" in kwargs else []
 
     @property
+    def type(self):
+        """Get the type of entity.
+        Returns:
+            str: Entity type.
+        """
+        return self.__type
+
+    @property
     def id(self):
         """Get the id of the entity.
 
