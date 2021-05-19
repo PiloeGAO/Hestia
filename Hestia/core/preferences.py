@@ -3,7 +3,7 @@
     :file:      preferences.py
     :brief:     Preference class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 try:
     import configparser

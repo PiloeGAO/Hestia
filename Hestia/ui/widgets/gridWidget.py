@@ -3,7 +3,7 @@
     :file:      gridWidget.py
     :brief:     Custom grid system for PyQt.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 try:
     from PySide2.QtCore     import *

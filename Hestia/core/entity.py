@@ -3,7 +3,7 @@
     :file:      entity.py
     :brief:     Entity base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 
 class Entity():
@@ -34,6 +34,7 @@ class Entity():
         
         # Shot specific datas.
         self.__frameNumber = int(kwargs["frameNumber"]) if "frameNumber" in kwargs else 0
+        self.__assignedAssets = kwargs["assignedAssets"] if "assignedAssets" in kwargs else []
 
     @property
     def id(self):
@@ -140,3 +141,12 @@ class Entity():
             int: Shot duration.
         """
         return self.__frameNumber
+        
+    @property
+    def assignedAssets(self):
+        """Get assigned to the shot.
+
+        Returns:
+            list: str: Assets IDs.
+        """
+        return self.__assignedAssets

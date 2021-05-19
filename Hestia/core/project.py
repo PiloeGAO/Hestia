@@ -3,7 +3,7 @@
     :file:      project.py
     :brief:     Project class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.3
 """
 
 from Hestia.core.version import Version
@@ -404,3 +404,16 @@ class Project():
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
 
         return filename
+    def entities(self):
+        """Get all entities stored in the project.
+
+        Returns:
+            list:`class:Entity`: Entities from the project.
+        """
+        # TODO: Move to comprehensive list.
+        entities = []
+        if(len(self.categories) > 0):
+            for category in self.categories:
+                for entity in category.entities:
+                    entities.append(entity)
+        return entities
