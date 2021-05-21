@@ -247,7 +247,7 @@ class Project():
         Returns:
             str: Output folder path for assets.
         """
-        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathAsset.replace("<Project>", self.__name, 1)
+        return self.__mountPoint + self.__rootPoint + os.sep + self.__outputFolderPathAsset.replace("<Project>", self.__name, 1)
     
     @property
     def outputFolderpathShot(self):
@@ -256,7 +256,7 @@ class Project():
         Returns:
             str: Output folder path for shot.
         """
-        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__outputFolderPathShot.replace("<Project>", self.__name, 1)
+        return self.__mountPoint + self.__rootPoint + os.sep + self.__outputFolderPathShot.replace("<Project>", self.__name, 1)
     
     @property
     def workingFilenameAsset(self):
