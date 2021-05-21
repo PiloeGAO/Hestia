@@ -50,19 +50,6 @@ class Project():
         self.__workingFilenameShot = str(kwargs["workingFilenameShot"]) if "workingFilenameShot" in kwargs else ""
         self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"]) if "workingFolderPathAsset" in kwargs else ""
         self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"]) if "workingFolderPathShot" in kwargs else ""
-        
-        # For debuging, clean this for final branch merge.
-        print(self.outputFilenameAsset)
-        print(self.outputFolderpathAsset)
-        print(self.outputFilenameShot)
-        print(self.outputFolderpathShot)
-
-        demoCategory = Category(id="0514641", name="SEQ01", type="Shots")
-        demoTask = Task(taskType="Shots", id="84686786", name="DemoTask")
-        demoVersion = Version(id="797465", name="Version something", task=demoTask, type=".abc", revisionNumber=1)
-        demoEntity = Entity(manager=None, entityType="Shots", id="53405140", name="SH0100", versions=[demoVersion])
-        print(self.getFolderpath(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
-        print(self.getFilename(exportType="output", category=demoCategory, entity=demoEntity, taskType=demoTask, versionNumber=-1))
     
     @property
     def id(self):
@@ -296,7 +283,7 @@ class Project():
         Returns:
             str: Output folder path for assets.
         """
-        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathAsset.replace("<Project>", self.__name, 1)
+        return self.__mountPoint + self.__rootPoint + os.sep + self.__workingFolderPathAsset.replace("<Project>", self.__name, 1)
     
     @property
     def workingFolderpathShot(self):
@@ -305,7 +292,7 @@ class Project():
         Returns:
             str: Output folder path for shots.
         """
-        return self.__mountPoint + ":" + os.sep + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
+        return self.__mountPoint + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
     
     def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0):
         """Get the folderpath for entity.
@@ -332,26 +319,26 @@ class Project():
 
         if(exportType == "output"):
             if(category.type == "Assets"):
-                path = self.outputFilenameAsset
-                path = path.replace("<Type>", category.name, 1)
+                path = self.outputFolderpathAsset
+                path = path.replace("<AssetType>", category.name, 1)
                 path = path.replace("<Asset>", entity.name, 1)
             else:
-                path = self.outputFilenameShot
+                path = self.outputFolderpathShot
                 path = path.replace("<Sequence>", category.name, 1)
                 path = path.replace("<Shot>", entity.name, 1)
         elif(exportType == "working"):
             if(category.type == "Assets"):
-                path = self.workingFilenameAsset
-                path = path.replace("<Type>", category.name, 1)
+                path = self.workingFolderpathAsset
+                path = path.replace("<AssetType>", category.name, 1)
                 path = path.replace("<Asset>", entity.name, 1)
             else:
-                path = self.workingFilenameShot
+                path = self.workingFolderpathShot
                 path = path.replace("<Sequence>", category.name, 1)
                 path = path.replace("<Shot>", entity.name, 1)
         else:
             return "./%s_%s_<TaskType>_<Version>/"
         
-        path = path.replace("<TaskType>", taskType.name, 1)
+        path = path.replace("<TaskType>", taskType.name.lower().replace(" ", ""), 1)
         path = path.replace("<Version>", "V%03d" % versionNumber)
 
         return path
@@ -381,26 +368,26 @@ class Project():
 
         if(exportType == "output"):
             if(category.type == "Assets"):
-                filename = self.outputFolderpathAsset
-                filename = filename.replace("<Type>", category.name, 1)
+                filename = self.outputFilenameAsset
+                filename = filename.replace("<AssetType>", category.name, 1)
                 filename = filename.replace("<Asset>", entity.name, 1)
             else:
-                filename = self.outputFolderpathShot
+                filename = self.outputFilenameShot
                 filename = filename.replace("<Sequence>", category.name, 1)
                 filename = filename.replace("<Shot>", entity.name, 1)
         elif(exportType == "working"):
             if(category.type == "Assets"):
-                filename = self.workingFolderpathAsset
-                filename = filename.replace("<Type>", category.name, 1)
+                filename = self.workingFilenameAsset
+                filename = filename.replace("<AssetType>", category.name, 1)
                 filename = filename.replace("<Asset>", entity.name, 1)
             else:
-                filename = self.workingFolderpathShot
+                filename = self.outputFilenameShot
                 filename = filename.replace("<Sequence>", category.name, 1)
                 filename = filename.replace("<Shot>", entity.name, 1)
         else:
             return "%s_%s_<TaskType>_<Version>" % (category.name, entity.name)
         
-        filename = filename.replace("<TaskType>", taskType.name, 1)
+        filename = filename.replace("<TaskType>", taskType.name.lower().replace(" ", "_"), 1)
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
 
         return filename

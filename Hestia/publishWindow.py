@@ -5,6 +5,7 @@
     :version:   0.0.2
     :brief:     Class to create the publish window based on QtWidgets.  
 """
+from Hestia.core.project import Project
 import os
 from datetime               import datetime
 
@@ -30,12 +31,15 @@ class PublishWindow(QWidget):
 
     Args:
         manager (class: `Manager`): Manager of Hestia.
-        manager (class: `Entity`): Entity to publish.
+        entity (class: `Entity`): Entity to publish.
         parent (class: `QtWidgets`, optional): PyQt parent. Defaults to None.
     """
     def __init__(self, manager, entity, parent=None):
         super(PublishWindow, self).__init__(parent=parent)
         self.__manager      = manager
+        
+        self.__currentProject = self.__manager.projects[self.__manager.currentProject]
+        self.__category     = self.__currentProject.categories[self.__currentProject.currentCategory]
         self.__entity       = entity
 
         self.__screenshotSupport = self.__manager.integration.supportScreenshots
@@ -171,8 +175,13 @@ class PublishWindow(QWidget):
         """
         print("Publish Name: %s" % self.publishName.currentValue)
         print("Publish Comment: %s" % self.publishComment.currentValue)
+        print("Working file path: %s" % self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
+        print("Working filename: %s" % self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
+        
         for i, widget in enumerate(self.outputsList):
-            print("%i > %s" % (i, widget.datas[widget.currentValue]))
+            outputPath = self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
+            outputFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
+            print("%i > %s" % (i, outputPath + os.sep + outputFilename))
         print("Publish preview file: %s" % self.previewPath.currentValue)
 
         self.hide()
