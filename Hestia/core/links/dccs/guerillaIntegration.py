@@ -24,6 +24,8 @@ class GuerillaIntegration(DefaultIntegration):
     def __init__(self, manager=None):
         self.__manager = manager
 
+        self._name = "Guerilla"
+
         if(not integrationActive):
             self.__manager.logging.error("Guerilla Libraries not found!")
 

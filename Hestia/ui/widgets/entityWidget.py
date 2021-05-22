@@ -158,12 +158,15 @@ class EntityWidget(QWidget):
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
 
-        # Asset management area.
-        menu.addSeparator()
-        openFileMenu = menu.addAction("Open file")
-        openFileMenu.triggered.connect(self.openFile)
-        publishEntity = menu.addAction("Publish selection")
-        publishEntity.triggered.connect(self.publishSelectionToProjectManager)
+        # Entity publish area.
+        if(self.__manager.projects[self.__manager.currentProject].supportFileTree
+            and self.__manager.integration.name != "standalone"):
+
+            menu.addSeparator()
+            openFileMenu = menu.addAction("Open file")
+            openFileMenu.triggered.connect(self.openFile)
+            publishEntity = menu.addAction("Publish selection")
+            publishEntity.triggered.connect(self.publishSelectionToProjectManager)
 
         menu.exec_(event.globalPos())
     

@@ -40,6 +40,7 @@ class Project():
         self.__currentCategory = 0
 
         # Project file management.
+        self.__supportFileTree = False
         self.__mountPoint = str(kwargs["mountPoint"]) if "mountPoint" in kwargs else ""
         self.__rootPoint = str(kwargs["rootPoint"]) if "rootPoint" in kwargs else ""
         self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"]) if "outputFilenameAsset" in kwargs else ""
@@ -50,6 +51,13 @@ class Project():
         self.__workingFilenameShot = str(kwargs["workingFilenameShot"]) if "workingFilenameShot" in kwargs else ""
         self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"]) if "workingFolderPathAsset" in kwargs else ""
         self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"]) if "workingFolderPathShot" in kwargs else ""
+
+        if(os.path.isdir(self.__mountPoint) and self.__rootPoint != ""
+            and self.__outputFilenameAsset != "" and self.__outputFilenameShot !=""
+            and self.__outputFolderPathAsset != "" and self.__outputFolderPathShot != ""
+            and self.__workingFilenameAsset != "" and self.__workingFilenameShot != ""
+            and self.__workingFolderPathAsset != "" and self.__workingFolderPathShot != ""):
+            self.__supportFileTree = True
     
     @property
     def id(self):
@@ -223,6 +231,21 @@ class Project():
         self.__categories.append(newCategory)
     
     @property
+    def entities(self):
+        """Get all entities stored in the project.
+
+        Returns:
+            list:`class:Entity`: Entities from the project.
+        """
+        # TODO: Move to comprehensive list.
+        entities = []
+        if(len(self.categories) > 0):
+            for category in self.__categories:
+                for entity in category.entities:
+                    entities.append(entity)
+        return entities
+
+    @property
     def outputFilenameAsset(self):
         """Get the filename structure (output only) for assets.
 
@@ -393,16 +416,10 @@ class Project():
         return filename
 
     @property
-    def entities(self):
-        """Get all entities stored in the project.
+    def supportFileTree(self):
+        """Get filetree support status.
 
         Returns:
-            list:`class:Entity`: Entities from the project.
+            bool: Filetree support status.
         """
-        # TODO: Move to comprehensive list.
-        entities = []
-        if(len(self.categories) > 0):
-            for category in self.__categories:
-                for entity in category.entities:
-                    entities.append(entity)
-        return entities
+        return self.__supportFileTree

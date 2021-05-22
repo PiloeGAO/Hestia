@@ -12,6 +12,8 @@ class DefaultIntegration(object):
     def __init__(self, manager=None):
         self.__manager = manager
         
+        self._name = "standalone"
+
         self._active = False
 
         self._availableFormats = []
@@ -20,6 +22,15 @@ class DefaultIntegration(object):
         self._instances = False
         self._supportScreenshots = False
     
+    @property
+    def name(self):
+        """Get the name of the integration.
+
+        Returns:
+            str: Integration name
+        """
+        return self._name
+
     @property
     def availableFormats(self):
         """Get the available formats.

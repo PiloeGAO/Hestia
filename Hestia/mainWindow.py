@@ -94,7 +94,7 @@ class MainWindow(QWidget):
             if(self.preferencesWindow != None): self.preferencesWindow.hide()
             if(self.publishWindow != None): self.publishWindow.hide()
 
-            if(self.__manager.integration != "standalone"):
+            if(self.__manager.integration.name != "standalone"):
                 # This is needed for embedded Python versions
                 # that won't support *atexit* lib.
                 self.__manager.preferences.savePreferences()

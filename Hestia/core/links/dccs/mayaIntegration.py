@@ -25,6 +25,8 @@ class MayaIntegration(DefaultIntegration):
     def __init__(self, manager=None):
         self.__manager = manager
 
+        self._name = "Maya"
+
         if(not integrationActive):
             self.__manager.logging.error("Maya Libraries not found!")
 
