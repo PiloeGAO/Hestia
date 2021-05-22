@@ -147,8 +147,9 @@ class EntityWidget(QWidget):
         currentProject = self.__manager.projects[self.__manager.currentProject]
         if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
             # Assign shader to asset button.
-            assignShader = menu.addAction("Assign shader to current object")
-            assignShader.triggered.connect(self.assignShaderToSelectedAsset)
+            if(len(self.__versions) > 0 and self.__manager.integration.name != "standalone"):
+                assignShader = menu.addAction("Assign shader to current object")
+                assignShader.triggered.connect(self.assignShaderToSelectedAsset)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
@@ -163,8 +164,10 @@ class EntityWidget(QWidget):
             and self.__manager.integration.name != "standalone"):
 
             menu.addSeparator()
-            openFileMenu = menu.addAction("Open file")
-            openFileMenu.triggered.connect(self.openFile)
+            if(len(self.__versions) > 0):
+                openFileMenu = menu.addAction("Open file")
+                openFileMenu.triggered.connect(self.openFile)
+            
             publishEntity = menu.addAction("Publish selection")
             publishEntity.triggered.connect(self.publishSelectionToProjectManager)
 
