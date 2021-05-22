@@ -58,6 +58,8 @@ class Project():
             and self.__workingFilenameAsset != "" and self.__workingFilenameShot != ""
             and self.__workingFolderPathAsset != "" and self.__workingFolderPathShot != ""):
             self.__supportFileTree = True
+        
+        self.__specialCharactersList = [" ", "-", "'", "\"", "`", "^"]
     
     @property
     def id(self):
@@ -330,6 +332,15 @@ class Project():
         Returns:
             str: Folder path.
         """
+        categoryName = category.name.lower()
+        entityName = entity.name
+        taskName = taskType.name.lower()
+
+        for specialCharacter in self.__specialCharactersList:
+            categoryName = categoryName.replace(specialCharacter, "_")
+            entityName = entityName.replace(specialCharacter, "_")
+            taskName = taskName.replace(specialCharacter, "_")
+
         path = ""
 
         if(versionNumber == -1):
@@ -343,25 +354,25 @@ class Project():
         if(exportType == "output"):
             if(category.type == "Assets"):
                 path = self.outputFolderpathAsset
-                path = path.replace("<AssetType>", category.name, 1)
-                path = path.replace("<Asset>", entity.name, 1)
+                path = path.replace("<AssetType>", categoryName)
+                path = path.replace("<Asset>", entityName)
             else:
                 path = self.outputFolderpathShot
-                path = path.replace("<Sequence>", category.name, 1)
-                path = path.replace("<Shot>", entity.name, 1)
+                path = path.replace("<Sequence>", categoryName)
+                path = path.replace("<Shot>", entityName)
         elif(exportType == "working"):
             if(category.type == "Assets"):
                 path = self.workingFolderpathAsset
-                path = path.replace("<AssetType>", category.name, 1)
-                path = path.replace("<Asset>", entity.name, 1)
+                path = path.replace("<AssetType>", categoryName)
+                path = path.replace("<Asset>", entityName)
             else:
                 path = self.workingFolderpathShot
-                path = path.replace("<Sequence>", category.name, 1)
-                path = path.replace("<Shot>", entity.name, 1)
+                path = path.replace("<Sequence>", categoryName)
+                path = path.replace("<Shot>", entityName)
         else:
-            return "./%s_%s_<TaskType>_<Version>/"
+            return "%s_%s_%s_V%03d/" % (categoryName, entityName, taskName, versionNumber)
         
-        path = path.replace("<TaskType>", taskType.name.lower().replace(" ", ""), 1)
+        path = path.replace("<TaskType>", taskName)
         path = path.replace("<Version>", "V%03d" % versionNumber)
 
         return path
@@ -379,6 +390,15 @@ class Project():
         Returns:
             str: File name.
         """
+        categoryName = category.name.lower()
+        entityName = entity.name
+        taskName = taskType.name.lower()
+
+        for specialCharacter in self.__specialCharactersList:
+            categoryName = categoryName.replace(specialCharacter, "_")
+            entityName = entityName.replace(specialCharacter, "_")
+            taskName = taskName.replace(specialCharacter, "_")
+
         filename = ""
 
         if(versionNumber == -1):
@@ -392,25 +412,25 @@ class Project():
         if(exportType == "output"):
             if(category.type == "Assets"):
                 filename = self.outputFilenameAsset
-                filename = filename.replace("<AssetType>", category.name, 1)
-                filename = filename.replace("<Asset>", entity.name, 1)
+                filename = filename.replace("<AssetType>", categoryName)
+                filename = filename.replace("<Asset>", entityName)
             else:
                 filename = self.outputFilenameShot
-                filename = filename.replace("<Sequence>", category.name, 1)
-                filename = filename.replace("<Shot>", entity.name, 1)
+                filename = filename.replace("<Sequence>", categoryName)
+                filename = filename.replace("<Shot>", entityName)
         elif(exportType == "working"):
             if(category.type == "Assets"):
                 filename = self.workingFilenameAsset
-                filename = filename.replace("<AssetType>", category.name, 1)
-                filename = filename.replace("<Asset>", entity.name, 1)
+                filename = filename.replace("<AssetType>", categoryName)
+                filename = filename.replace("<Asset>", entityName)
             else:
                 filename = self.outputFilenameShot
-                filename = filename.replace("<Sequence>", category.name, 1)
-                filename = filename.replace("<Shot>", entity.name, 1)
+                filename = filename.replace("<Sequence>", categoryName)
+                filename = filename.replace("<Shot>", entityName)
         else:
-            return "%s_%s_<TaskType>_<Version>" % (category.name, entity.name)
+            return "%s_%s_%s_V%03d" % (categoryName, entityName, taskName, versionNumber)
         
-        filename = filename.replace("<TaskType>", taskType.name.lower().replace(" ", "_"), 1)
+        filename = filename.replace("<TaskType>", taskName)
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
 
         return filename
