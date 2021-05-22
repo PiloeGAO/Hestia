@@ -158,3 +158,37 @@ class GuerillaIntegration(DefaultIntegration):
         """Extracts assets for shot building file.
         """
         return NotImplemented
+    
+    def openFile(self, path):
+        """Open the file in the DCC.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplemented
+    
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        return NotImplemented
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplemented

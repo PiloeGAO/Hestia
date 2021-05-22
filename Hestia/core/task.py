@@ -21,6 +21,7 @@ class Task():
         self.__id           = id
         self.__name         = name
 
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
     @property
     def id(self):
         """Get the id of the entity.
@@ -47,3 +48,12 @@ class Task():
             str: Task type.
         """
         return self.__type
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas

@@ -8,13 +8,17 @@
 from os import path
 
 class Version():
-    def __init__(self, id="", name="", description="", task=None, workingPath="", outputPath="", type="", revisionNumber=0):
+    def __init__(self, id="", name="", description="", task=None, workingPath="", outputPath="", type="", revisionNumber=0, **kwargs):
         self.__id               = id
         self.__name             = name
         self.__description      = description
         self.__task             = task
+        
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
+
         self.__workingPath      = workingPath
         self.__outputPath       = outputPath
+
         self.__revisionNumber   = revisionNumber
         self.__type = path.splitext(self.__outputPath)[1] if type == "" else type
     
@@ -74,6 +78,15 @@ class Version():
             class:`Task`: The task of the version.
         """
         return self.__task
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
         
     @property
     def workingPath(self):

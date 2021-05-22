@@ -30,7 +30,7 @@ class KitsuWrapper(DefaultWrapper):
         self._username = ""
         self.__userID  = ""
 
-        self.__debugKitsuData = False
+        self.__debugKitsuData = True
 
         self._loadPreviews = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
     
@@ -132,7 +132,8 @@ class KitsuWrapper(DefaultWrapper):
                             workingFilenameAsset=workingFilenameAsset,
                             workingFilenameShot=workingFilenameShot,
                             workingFolderPathAsset=workingFolderPathAsset,
-                            workingFolderPathShot=workingFolderPathShot)
+                            workingFolderPathShot=workingFolderPathShot,
+                            rawDatas=project)
 
         if(self.__manager.debug and self.__debugKitsuData):
             self.__manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
@@ -142,7 +143,7 @@ class KitsuWrapper(DefaultWrapper):
 
         for task in tasks:
             taskType = "Assets" if task["for_shots"] == "false" else "Shots"
-            newTask = Task(taskType=taskType, id=task["id"], name=task["name"])
+            newTask = Task(taskType=taskType, id=task["id"], name=task["name"], rawDatas=task)
             newProject.addTask(newTask)
 
         if(self.__manager.debug and self.__debugKitsuData):
@@ -154,7 +155,7 @@ class KitsuWrapper(DefaultWrapper):
         categories = gazu.asset.all_asset_types_for_project(project)
 
         for category in categories:
-            newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets")
+            newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets", rawDatas=category)
             newProject.addCategory(newCategory)
         
         if(self.__manager.debug and self.__debugKitsuData):
@@ -188,7 +189,8 @@ class KitsuWrapper(DefaultWrapper):
                                 description=asset["description"],
                                 icon="",
                                 tasks=assetTasks,
-                                versions=versions)
+                                versions=versions,
+                                rawDatas=asset)
             
             assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
             assetCategory.addEntity(newAsset)
@@ -202,7 +204,8 @@ class KitsuWrapper(DefaultWrapper):
             newCategory = Category(id=sequence["id"],
                                     name=sequence["name"],
                                     description=sequence["description"],
-                                    type="Shots")
+                                    type="Shots",
+                                    rawDatas=sequence)
             
             newProject.addCategory(newCategory)
         
@@ -248,7 +251,8 @@ class KitsuWrapper(DefaultWrapper):
                                 tasks=shotTasks,
                                 versions=versions,
                                 frameNumber=nb_frames,
-                                assignedAssets=assignedAssets)
+                                assignedAssets=assignedAssets,
+                                rawDatas=shot)
 
             shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
             shotSequence.addEntity(newShot)
@@ -319,19 +323,21 @@ class KitsuWrapper(DefaultWrapper):
                                     task=task,
                                     workingPath=output["source_file"]["path"],
                                     outputPath=output["path"],
-                                    revisionNumber=output["revision"])
+                                    revisionNumber=output["revision"],
+                                    rawDatas=output)
 
             versions.append(newVersion)
 
         return versions
     
-    def publish(self, name="", comment="", task="", taskStatus="TODO", version="", software="", outputType="", workingFilePath="", outputFiles=[], previewFilePath=""):
+    def publish(self, entity=None, name="", comment="", taskTypeID="", taskStatus="TODO", version="", software="", outputType="", workingFilePath="", outputFiles=[], previewFilePath=""):
         """Publish files (working and outputs) to Kitsu. (Code from Guillaume Baratte project's called managerTools)
 
         Args:
+            entity (class: `Entity`): Entity targeted.
             name (str, optional): Publish name. Defaults to "".
             comment (str, optional): Publish comment. Defaults to "".
-            task (str, optional): Task dict. Defaults to "".
+            taskTypeID (str, optional): Tasktype ID. Defaults to "".
             taskStatus (str, optional): Status of the publish. Defaults to "TODO".
             version (str, optional): Version. Defaults to "".
             software (str, optional): Software name. Defaults to "".
@@ -343,6 +349,7 @@ class KitsuWrapper(DefaultWrapper):
         Returns:
             bool: Publish status.
         """
+        task = gazu.task.get_task_by_entity(entity.id, taskTypeID)
 
         # Add working file.
         workingFileData = {
@@ -356,14 +363,14 @@ class KitsuWrapper(DefaultWrapper):
 
         # Assigning softwate.
         if(software != ""):
-            softwareId = gazu.client.fetch_first(
+            softwareData = gazu.client.fetch_first(
                             "softwares",
                             {
                                 "name": name
-                            })["id"]
+                            })
 
-            if(softwareId != None):
-                workingFileData["software_id"] = softwareId
+            if(softwareData != None):
+                workingFileData["software_id"] = softwareData["id"]
         
         # Create the working file entry on Zou.
         workingFilePublishData = gazu.client.post(
@@ -382,7 +389,27 @@ class KitsuWrapper(DefaultWrapper):
         outputFilesPublishData = []
         for outputFilePath in outputFiles:
             filename = os.path.split(outputFilePath)[1]
+            extension = os.path.splitext(outputFilePath)[1]
+
+            outputTypeName = ""
+            if(extension == ".ma"):
+                outputTypeName = "Maya Rig"
+            elif(extension == ".abc" and entity.type == "Assets"):
+                outputTypeName = "ABC Modeling"
+            elif(extension == ".abc" and entity.type == "Shots"):
+                outputTypeName = "ABC Animation"
+            else:
+                outputTypeName = outputType
+
+            outputTypeData = gazu.client.fetch_first(
+                                    "output-types",
+                                    {
+                                        "name": outputTypeName
+                                    }
+                                )
+
             ouputFileData = {
+                "output_type_id": outputTypeData["id"],
                 "task_type_id": task["task_type_id"],
                 "comment": comment,
                 "revision": version,
@@ -393,16 +420,6 @@ class KitsuWrapper(DefaultWrapper):
                 "working_file_id": workingFilePublishData["id"],
                 "person_id": self.__userID
             }
-
-            if(outputType != ""):
-                outputTypeId = gazu.client.fetch_first(
-                                    "output-types",
-                                    {
-                                        "name": name
-                                    }
-                                )["id"]
-                if(outputType != None):
-                    ouputFileData["output_type_id"] = outputTypeId
             
             outputFilePublishData = gazu.client.post(
                                         "data/entities/%s/output-files/new" % task["entity_id"],
@@ -418,16 +435,11 @@ class KitsuWrapper(DefaultWrapper):
             outputFilesPublishData.append(outputFilePublishData)
         
         # Add the comment.
-        taskStatusId = gazu.client.fetch_first(
-                'task-status',
-                {
-                    'short_name': taskStatus
-                }
-            )
+        taskStatusData = gazu.task.get_task_status_by_short_name(taskStatus.lower())
         
-        if(taskStatusId != None):
+        if(taskStatusData != None):
             commentData = {
-                "task_status_id": taskStatusId,
+                "task_status_id": taskStatusData["id"],
                 "comment": comment,
                 "person_id": self.__userID
             }

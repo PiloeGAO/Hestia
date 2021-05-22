@@ -193,3 +193,26 @@ class DefaultIntegration(object):
             bool: Function status.
         """
         return NotImplementedError
+
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        return NotImplementedError
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError

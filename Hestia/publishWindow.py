@@ -5,8 +5,6 @@
     :version:   0.0.2
     :brief:     Class to create the publish window based on QtWidgets.  
 """
-from genericpath import isfile
-from Hestia.core.project import Project
 import os
 from datetime               import datetime
 
@@ -20,6 +18,8 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
     pysideVers = 1
+
+from .core import IOUtils
 
 from .ui.widgets.iconButton import IconButton
 from .ui.widgets.dropDown   import DropDown
@@ -99,16 +99,26 @@ class PublishWindow(QWidget):
                                     emptyLabel="No outputs in list")
         self.outputScrollArea.setWidget(self.outputGrid)
         self.mainLayout.addWidget(self.outputScrollArea)
+        
+        self.outputButtonsLayout = QHBoxLayout()
 
         self.addOutputButton = QPushButton("Add output")
         self.addOutputButton.clicked.connect(self.addOutput)
-        self.mainLayout.addWidget(self.addOutputButton)
+        self.outputButtonsLayout.addWidget(self.addOutputButton)
+
+        self.removeOutputButton = QPushButton("Remove last output")
+        self.removeOutputButton.clicked.connect(self.removeOutput)
+        self.outputButtonsLayout.addWidget(self.removeOutputButton)
+
+        self.mainLayout.addLayout(self.outputButtonsLayout)
 
         # Preview path.
         self.previewLayout = QHBoxLayout()
 
-        self.previewTitle = QLabel("Preview: ")
+        self.previewTitle = QLabel("Preview: None")
         self.previewLayout.addWidget(self.previewTitle)
+
+        self.previewLayout.addStretch()
 
         if(pysideVers == 2):
             iconPath = self.__rootPath + "/ui/icons/folder2-open.svg"
@@ -160,15 +170,29 @@ class PublishWindow(QWidget):
         """Add a new line in the output list.
         """
         availableFormats = [format[1:].upper() for format in self.__manager.integration.availableFormats]
-        outputChoice = DropDown(name="Export Type", datas=availableFormats)
-        self.outputsList.append(outputChoice)
-        
-        self.outputGrid = GridWidget(manager=self.__manager,
-                                    parentGeometry=self.outputScrollArea.geometry(),
-                                    xSize=1,
-                                    itemList=self.outputsList,
-                                    emptyLabel="No outputs in list")
-        self.outputScrollArea.setWidget(self.outputGrid)
+        if(len(self.outputsList) < len(availableFormats)):
+            outputChoice = DropDown(name="Export Type", datas=availableFormats)
+            self.outputsList.append(outputChoice)
+            
+            self.outputGrid = GridWidget(manager=self.__manager,
+                                        parentGeometry=self.outputScrollArea.geometry(),
+                                        xSize=1,
+                                        itemList=self.outputsList,
+                                        emptyLabel="No outputs in list")
+            self.outputScrollArea.setWidget(self.outputGrid)
+    
+    def removeOutput(self):
+        """Remove the last line of the output list.
+        """
+        if(len(self.outputsList) > 0):
+            del self.outputsList[-1]
+            
+            self.outputGrid = GridWidget(manager=self.__manager,
+                                        parentGeometry=self.outputScrollArea.geometry(),
+                                        xSize=1,
+                                        itemList=self.outputsList,
+                                        emptyLabel="No outputs in list")
+            self.outputScrollArea.setWidget(self.outputGrid)
 
     def openScreenshotExplorer(self):
         """Open file explorer to set screenshot path.
@@ -177,12 +201,16 @@ class PublishWindow(QWidget):
         dialog.setFileMode(QFileDialog.AnyFile)
         if dialog.exec_():
             self.__screenshotPath = dialog.selectedFiles()[0]
+        
+        self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
 
     def takeScreenshot(self):
         """Take a screenshot of the scene.
         """
         # TODO: Implement the screenshot support inside of DCCs.
         self.__screenshotPath = "SCREENSHOT"
+
+        self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
         print("Screenshot OK.")
     
     def takePlayblast(self):
@@ -190,35 +218,72 @@ class PublishWindow(QWidget):
         """
         # TODO: Implement the screenshot support inside of DCCs.
         self.__screenshotPath = "PLAYBLAST"
+        
+        self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
         print("Playblast OK.")
 
     def publish(self):
         """Publish function.
         """
+        publishTask = self.__entity.tasks[self.taskDropBox.currentValue]
+        publishTaskStatus = self.taskStatusDropDown.datas[self.taskStatusDropDown.currentValue]
+
         publishName = self.publishName.currentValue
         publishComment = self.publishComment.currentValue
-        workingPath = self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
-        workingFileName = self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.defaultFormat
-        outputPaths = []
+        publishVersion = int(self.__currentProject.getLastVersion(entity=self.__entity, taskType=publishTask))
+        workingPath = self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion)
+        workingFileName = self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + self.__manager.integration.defaultFormat
+        outputPath = self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion)
         outputFileNames = []
+        previewFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + "_preview"
 
         for i, widget in enumerate(self.outputsList):
-            outputPaths.append(self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
-            outputFileNames.append(self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.availableFormats[widget.currentValue])
+            outputFileNames.append(self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + self.__manager.integration.availableFormats[widget.currentValue])
 
         if(publishName != "" and publishComment != ""
             and workingPath != "" and workingFileName != ""
-            and len(outputPaths) > 0 and os.path.isfile(self.__screenshotPath)):
+            and outputPath != "" and os.path.isfile(self.__screenshotPath)):
 
-            print("Publish Name: %s" % publishName)
-            print("Publish Comment: %s" % publishComment)
-            print("Working file path: %s" % workingPath)
-            print("Working filename: %s" % workingFileName)
+            # Create the working and output directories.
+            IOUtils.makeFolder(workingPath)
+            IOUtils.makeFolder(outputPath)
+
+            # Export files from DCC.
+            publishWorkingFilePath = ""
+            workingSaveStatus = self.__manager.integration.saveFile(workingPath + os.sep + workingFileName)
+            if(workingSaveStatus):
+                publishWorkingFilePath = workingPath + os.sep + workingFileName
             
-            for i, outputPath in enumerate(outputPaths):
-                print("%i > %s" % (i, outputPath + os.sep + outputFileNames[i]))
-            print("Publish preview file: %s" % self.__screenshotPath)
+            publishOutputFilePaths = []
+            for i, outputFilename in enumerate(outputFileNames):
+                path = outputPath + os.sep + outputFilename
+                extension = os.path.splitext(outputFilename)[1]
+                exportStatus = self.__manager.integration.exportSelection(path=path, extension=extension)
+
+                # If export failed for current export (example: file already exist),
+                # remove the unnecessary file.
+                if(exportStatus):
+                    publishOutputFilePaths.append(path)
             
+            # Copy the preview to output folder.
+            IOUtils.copyFile(self.__screenshotPath, outputPath, newName=previewFilename)
+            publishPreviewFilePath = outputPath + os.sep + previewFilename + os.path.splitext(self.__screenshotPath)[1]
+
+            # Publishing files to the project manager.
+            self.__manager.link.publish(
+                entity=self.__entity,
+                name=publishName,
+                comment=publishComment,
+                taskTypeID=publishTask.id,
+                taskStatus=publishTaskStatus,
+                version=publishVersion,
+                software=self.__manager.integration.name,
+                outputType="", # TODO: Ouput type need to be a list (sometimes ABC and PNG can be published simultaneously)
+                workingFilePath=publishWorkingFilePath,
+                outputFiles=publishOutputFilePaths,
+                previewFilePath=publishPreviewFilePath
+            )
+
             self.hide()
         else:
             # Show information message.

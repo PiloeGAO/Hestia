@@ -393,3 +393,60 @@ class MayaIntegration(DefaultIntegration):
             return True
         else:
             return False
+    
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        if(not os.path.isfile(path)):
+            cmds.file(rename=path)
+            cmds.file(save=True, type="mayaAscii")
+            return True
+        
+        return False
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
+        """
+        if(os.path.isfile(path)):
+            self.__manager.logging.error("File \"%s\" already exist, skipping export." % path)
+            return False
+        
+        if(len(cmds.ls(sl=True)) == 0):
+            self.__manager.logging.error("Nothing selected, skipping export.")
+            return False
+        
+        extension = extension.lower()
+
+        if(extension == ".ma"):
+            cmds.file(path, type='mayaAscii', exportSelected=True)
+        elif(extension == ".mb"):
+            cmds.file(path, type='mayaBinary', exportSelected=True)
+        elif(extension == ".abc"):
+            oldSelection = cmds.ls(sl=True)
+
+            # Select hierarchy.
+            cmds.select(hierarchy=True)
+            command = "-uvWrite -worldSpace " + "-selection -file " + path
+            cmds.AbcExport ( j = command )
+
+            # Reset selection
+            cmds.select(oldSelection)
+        elif(extension == ".obj"):
+            cmds.file(path, type='OBJexport', exportSelected=True)
+        else:
+            return False
+        
+        return True

@@ -26,6 +26,8 @@ class Project():
         self.__name         = name
         self.__description  = description
         self.__tasks        = tasks
+        
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
 
         # Project technical datas.
         self.__framerate = int(float(kwargs["fps"])) if "fps" in kwargs else 0
@@ -131,6 +133,15 @@ class Project():
             newTask (class: "Task"): New task to add.
         """
         self.__tasks.append(newTask)
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
     
     @property
     def framerate(self):
@@ -319,7 +330,25 @@ class Project():
         """
         return self.__mountPoint + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
     
-    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0):
+    def getLastVersion(self, entity, taskType):
+        """Find the next version for publishing
+
+        Args:
+            entity (class: `Entity`): Entity.
+            taskType (class: `Task`): Task.
+
+        Returns:
+            int: Version number.
+        """
+        versionNumber = 0
+        for version in entity.versions:
+            if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
+                versionNumber = version.revisionNumber
+        versionNumber = versionNumber + 1
+
+        return versionNumber
+
+    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1):
         """Get the folderpath for entity.
 
         Args:
@@ -345,11 +374,7 @@ class Project():
 
         if(versionNumber == -1):
             # Find the last version number automaticly.
-            versionNumber = 1
-            for version in entity.versions:
-                if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
-                    versionNumber = version.revisionNumber
-            versionNumber = versionNumber + 1
+            versionNumber = self.getLastVersion(entity=entity, taskType=taskType)
 
         if(exportType == "output"):
             if(category.type == "Assets"):
@@ -377,7 +402,7 @@ class Project():
 
         return path
 
-    def getFilename(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=0):
+    def getFilename(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1):
         """Get the filename for the entity.
 
         Args:
@@ -403,11 +428,7 @@ class Project():
 
         if(versionNumber == -1):
             # Find the last version number automaticly.
-            versionNumber = 1
-            for version in entity.versions:
-                if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
-                    versionNumber = version.revisionNumber
-            versionNumber = versionNumber + 1
+            versionNumber = self.getLastVersion(entity=entity, taskType=taskType)
 
         if(exportType == "output"):
             if(category.type == "Assets"):

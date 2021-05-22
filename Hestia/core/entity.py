@@ -27,6 +27,8 @@ class Entity():
         self.__name         = name
         self.__description  = description
 
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
+
         self.__iconDownloaded = False
         self.__icon         = icon
         self.__tasks        = tasks
@@ -88,6 +90,15 @@ class Entity():
             description (str): The description of the entity
         """
         self.__description = description
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
         
     @property
     def icon(self):
