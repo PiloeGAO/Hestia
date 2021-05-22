@@ -16,6 +16,7 @@ class DefaultIntegration(object):
 
         self._active = False
 
+        self._defaultFormat = ""
         self._availableFormats = []
 
         self._supportInstances = False
@@ -30,6 +31,15 @@ class DefaultIntegration(object):
             str: Integration name
         """
         return self._name
+
+    @property
+    def defaultFormat(self):
+        """Get the default format.
+
+        Returns:
+            str: Default format/extension.
+        """
+        return self._defaultFormat
 
     @property
     def availableFormats(self):

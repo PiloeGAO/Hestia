@@ -30,6 +30,8 @@ class GuerillaIntegration(DefaultIntegration):
             self.__manager.logging.error("Guerilla Libraries not found!")
 
         self._active = integrationActive
+
+        self._defaultFormat = ".gproject"
         self.initializeFileFormats()
 
         # Guerilla Render support instance by using "References". 

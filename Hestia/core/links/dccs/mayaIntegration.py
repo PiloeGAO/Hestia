@@ -31,6 +31,8 @@ class MayaIntegration(DefaultIntegration):
             self.__manager.logging.error("Maya Libraries not found!")
 
         self._active = integrationActive
+
+        self._defaultFormat = ".ma"
         self.initializeFileFormats()
 
         # Autodesk Maya support instance by using "References". 

@@ -176,11 +176,11 @@ class PublishWindow(QWidget):
         print("Publish Name: %s" % self.publishName.currentValue)
         print("Publish Comment: %s" % self.publishComment.currentValue)
         print("Working file path: %s" % self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
-        print("Working filename: %s" % self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
+        print("Working filename: %s" % self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)) + self.__manager.integration.defaultFormat
         
         for i, widget in enumerate(self.outputsList):
             outputPath = self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
-            outputFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
+            outputFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.availableFormats[widget.currentValue]
             print("%i > %s" % (i, outputPath + os.sep + outputFilename))
         print("Publish preview file: %s" % self.previewPath.currentValue)
 
