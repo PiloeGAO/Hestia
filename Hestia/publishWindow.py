@@ -5,6 +5,7 @@
     :version:   0.0.2
     :brief:     Class to create the publish window based on QtWidgets.  
 """
+from genericpath import isfile
 from Hestia.core.project import Project
 import os
 from datetime               import datetime
@@ -42,6 +43,7 @@ class PublishWindow(QWidget):
         self.__category     = self.__currentProject.categories[self.__currentProject.currentCategory]
         self.__entity       = entity
 
+        self.__screenshotPath = ""
         self.__screenshotSupport = self.__manager.integration.supportScreenshots
         
         self.__rootPath = os.path.dirname(os.path.abspath(__file__))
@@ -104,8 +106,18 @@ class PublishWindow(QWidget):
 
         # Preview path.
         self.previewLayout = QHBoxLayout()
-        self.previewPath = LineEdit(name="Preview file", description="Preview file path", defaultValue="//")
-        self.previewLayout.addWidget(self.previewPath)
+
+        self.previewTitle = QLabel("Preview: ")
+        self.previewLayout.addWidget(self.previewTitle)
+
+        if(pysideVers == 2):
+            iconPath = self.__rootPath + "/ui/icons/folder2-open.svg"
+        else:
+            iconPath = self.__rootPath + "/ui/icons/folder2-open.png"
+        self.previewButton = IconButton(name="Open file browser",description="Locate the screenshot",
+                                            iconPath=iconPath, iconScale=16,
+                                            functionToInvoke=self.openScreenshotExplorer)
+        self.previewLayout.addWidget(self.previewButton)
 
         if(self.__screenshotSupport):
             if(pysideVers == 2):
@@ -158,30 +170,59 @@ class PublishWindow(QWidget):
                                     emptyLabel="No outputs in list")
         self.outputScrollArea.setWidget(self.outputGrid)
 
+    def openScreenshotExplorer(self):
+        """Open file explorer to set screenshot path.
+        """
+        dialog = QFileDialog(self)
+        dialog.setFileMode(QFileDialog.AnyFile)
+        if dialog.exec_():
+            self.__screenshotPath = dialog.selectedFiles()[0]
+
     def takeScreenshot(self):
         """Take a screenshot of the scene.
         """
         # TODO: Implement the screenshot support inside of DCCs.
+        self.__screenshotPath = "SCREENSHOT"
         print("Screenshot OK.")
     
     def takePlayblast(self):
         """Take a playblast of the scene.
         """
         # TODO: Implement the screenshot support inside of DCCs.
+        self.__screenshotPath = "PLAYBLAST"
         print("Playblast OK.")
 
     def publish(self):
         """Publish function.
         """
-        print("Publish Name: %s" % self.publishName.currentValue)
-        print("Publish Comment: %s" % self.publishComment.currentValue)
-        print("Working file path: %s" % self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
-        print("Working filename: %s" % self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)) + self.__manager.integration.defaultFormat
-        
-        for i, widget in enumerate(self.outputsList):
-            outputPath = self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
-            outputFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.availableFormats[widget.currentValue]
-            print("%i > %s" % (i, outputPath + os.sep + outputFilename))
-        print("Publish preview file: %s" % self.previewPath.currentValue)
+        publishName = self.publishName.currentValue
+        publishComment = self.publishComment.currentValue
+        workingPath = self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0)
+        workingFileName = self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.defaultFormat
+        outputPaths = []
+        outputFileNames = []
 
-        self.hide()
+        for i, widget in enumerate(self.outputsList):
+            outputPaths.append(self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0))
+            outputFileNames.append(self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=self.__entity.tasks[self.taskDropBox.currentValue], versionNumber=0) + self.__manager.integration.availableFormats[widget.currentValue])
+
+        if(publishName != "" and publishComment != ""
+            and workingPath != "" and workingFileName != ""
+            and len(outputPaths) > 0 and os.path.isfile(self.__screenshotPath)):
+
+            print("Publish Name: %s" % publishName)
+            print("Publish Comment: %s" % publishComment)
+            print("Working file path: %s" % workingPath)
+            print("Working filename: %s" % workingFileName)
+            
+            for i, outputPath in enumerate(outputPaths):
+                print("%i > %s" % (i, outputPath + os.sep + outputFileNames[i]))
+            print("Publish preview file: %s" % self.__screenshotPath)
+            
+            self.hide()
+        else:
+            # Show information message.
+            QMessageBox.warning(self, self.tr("Hestia"),
+                                self.tr("Some datas are missing."),
+                                QMessageBox.NoButton,
+                                QMessageBox.Ok)
