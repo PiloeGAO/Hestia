@@ -3,7 +3,7 @@
     :file:      defaultIntegration.py
     :brief:     Default integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 class DefaultIntegration(object):

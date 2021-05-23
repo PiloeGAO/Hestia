@@ -3,7 +3,7 @@
     :file:      mayaIntegration.py
     :brief:     Maya integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 import os
 

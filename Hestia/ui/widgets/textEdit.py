@@ -3,7 +3,7 @@
     :file:      textEdit.py
     :brief:     Text Edit field with title.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.4
 """
 try:
     from PySide2.QtCore     import *

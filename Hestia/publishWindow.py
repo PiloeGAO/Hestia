@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      publishWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.4
     :brief:     Class to create the publish window based on QtWidgets.  
 """
 import os

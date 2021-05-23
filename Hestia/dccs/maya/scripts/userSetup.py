@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      userSetup.py
     :author:    ldepoix
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Autodesk Maya user setup script.
 '''
 

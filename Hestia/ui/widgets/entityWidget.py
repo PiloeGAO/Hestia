@@ -3,7 +3,7 @@
     :file:      entityWidget.py
     :brief:     Entity widget.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 from gazu import asset
 from Hestia.core.category import Category

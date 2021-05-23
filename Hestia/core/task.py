@@ -3,7 +3,7 @@
     :file:      task.py
     :brief:     Task base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.2
+    :version:   0.0.4
 """
 
 class Task():

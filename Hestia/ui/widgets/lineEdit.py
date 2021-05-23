@@ -3,7 +3,7 @@
     :file:      lineEdit.py
     :brief:     Drop down field with text.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 try:
     from PySide2.QtCore     import *

@@ -3,7 +3,7 @@
     :file:      pathSelector.py
     :brief:     Path field with search button.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 try:
     from PySide2.QtCore     import *

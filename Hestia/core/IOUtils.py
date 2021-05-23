@@ -3,7 +3,7 @@
     :file:      IOUtils.py
     :brief:     IO functions.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 import sys, os, shutil, subprocess
 

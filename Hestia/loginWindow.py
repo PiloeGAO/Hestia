@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      loginWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to create the login window based on QtWidgets.  
 """
 import os
