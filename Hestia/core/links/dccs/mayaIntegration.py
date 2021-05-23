@@ -405,7 +405,7 @@ class MayaIntegration(DefaultIntegration):
         """
         if(not os.path.isfile(path)):
             cmds.file(rename=path)
-            cmds.file(save=True, type="mayaAscii")
+            cmds.file(force=True, save=True, type="mayaAscii")
             return True
         
         return False

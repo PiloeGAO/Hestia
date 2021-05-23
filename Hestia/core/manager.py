@@ -23,7 +23,7 @@ class Manager():
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
     def __init__(self, integration = "standalone", projects = [Project(name="local", description="Local file system.")], **kwargs):
-        self.__version  = "0.0.3"
+        self.__version  = "0.0.4Dev"
 
         # Loading preferences.
         self.__preferences = Preferences(manager=self)
