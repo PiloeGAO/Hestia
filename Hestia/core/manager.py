@@ -241,3 +241,8 @@ class Manager():
 
             return False
         return False
+    
+    def cleanTemporaryFolder(self):
+        """Force cleaning temporary folder.
+        """
+        shutil.rmtree(self.__tempFolder)

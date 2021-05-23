@@ -98,6 +98,7 @@ class MainWindow(QWidget):
                 # This is needed for embedded Python versions
                 # that won't support *atexit* lib.
                 self.__manager.preferences.savePreferences()
+                self.__manager.cleanTemporaryFolder()
             
             event.accept()
         else:
