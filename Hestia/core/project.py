@@ -5,12 +5,14 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.3
 """
+import os
+
+from . import IOUtils
 
 from Hestia.core.version import Version
 from Hestia.core.task import Task
 from Hestia.core.category import Category
 from Hestia.core.entity import Entity
-import os
 
 class Project():
     """Project class.
@@ -348,7 +350,7 @@ class Project():
 
         return versionNumber
 
-    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1):
+    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1, **kwargs):
         """Get the folderpath for entity.
 
         Args:
@@ -398,7 +400,11 @@ class Project():
             return "%s_%s_%s_V%03d/" % (categoryName, entityName, taskName, versionNumber)
         
         path = path.replace("<TaskType>", taskName)
-        path = path.replace("<Version>", "V%03d" % versionNumber)
+
+        if("withoutVersion" in kwargs):
+            path = path.replace("/<Version>", "")
+        else:
+            path = path.replace("<Version>", "V%03d" % versionNumber)
 
         return path
 
@@ -455,6 +461,20 @@ class Project():
         filename = filename.replace("<Version>", "V%03d" % versionNumber)
 
         return filename
+    
+    def buildFolderTree(self):
+        """Build the foldertree for the project.
+
+        Returns:
+            bool: Status.
+        """
+        for category in self.__categories:
+            for entity in category.entities:
+                for task in self.__tasks:
+                    IOUtils.makeFolder(self.getFolderpath(exportType="working", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
+                    IOUtils.makeFolder(self.getFolderpath(exportType="output", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
+        
+        return True
 
     @property
     def supportFileTree(self):
