@@ -153,7 +153,7 @@ class MainWindow(QWidget):
         Args:
             entity (class:`Entity`): Entity datas to publish.
         """
-        self.publishWindow = PublishWindow(manager=self.__manager, entity=entity)
+        self.publishWindow = PublishWindow(manager=self.__manager, mainWindow=self, entity=entity)
         self.publishWindow.show()
 
     def updateLog(self, text=""):

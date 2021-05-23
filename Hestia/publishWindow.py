@@ -35,9 +35,10 @@ class PublishWindow(QWidget):
         entity (class: `Entity`): Entity to publish.
         parent (class: `QtWidgets`, optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, entity, parent=None):
+    def __init__(self, manager, mainWindow, entity, parent=None):
         super(PublishWindow, self).__init__(parent=parent)
         self.__manager      = manager
+        self.__mainWindow   = mainWindow
         
         self.__currentProject = self.__manager.projects[self.__manager.currentProject]
         self.__category     = self.__currentProject.categories[self.__currentProject.currentCategory]
@@ -243,12 +244,16 @@ class PublishWindow(QWidget):
         if(publishName != "" and publishComment != ""
             and workingPath != "" and workingFileName != ""
             and outputPath != "" and os.path.isfile(self.__screenshotPath)):
+            
+            self.hide()
+            self.__mainWindow.hide()
 
             # Create the working and output directories.
             IOUtils.makeFolder(workingPath)
             IOUtils.makeFolder(outputPath)
 
             # Export files from DCC.
+            self.__manager.logging.info("Writing the working file.")
             publishWorkingFilePath = ""
             workingSaveStatus = self.__manager.integration.saveFile(workingPath + os.sep + workingFileName)
             if(workingSaveStatus):
@@ -256,6 +261,7 @@ class PublishWindow(QWidget):
             
             publishOutputFilePaths = []
             for i, outputFilename in enumerate(outputFileNames):
+                self.__manager.logging.info("Writing output file %s/%s." % (i, len(outputFileNames)))
                 path = outputPath + os.sep + outputFilename
                 extension = os.path.splitext(outputFilename)[1]
                 exportStatus = self.__manager.integration.exportSelection(path=path, extension=extension)
@@ -266,9 +272,11 @@ class PublishWindow(QWidget):
                     publishOutputFilePaths.append(path)
             
             # Copy the preview to output folder.
+            self.__manager.logging.info("Writing the preview file.")
             IOUtils.copyFile(self.__screenshotPath, outputPath, newName=previewFilename)
             publishPreviewFilePath = outputPath + os.sep + previewFilename + os.path.splitext(self.__screenshotPath)[1]
 
+            self.__manager.logging.info("Publishing online.")
             # Publishing files to the project manager.
             self.__manager.link.publish(
                 entity=self.__entity,
@@ -283,8 +291,20 @@ class PublishWindow(QWidget):
                 outputFiles=publishOutputFilePaths,
                 previewFilePath=publishPreviewFilePath
             )
+            self.__manager.logging.info("Publishing done.")
 
-            self.hide()
+            # TODO: Find a way to refresh project.
+            # Refreshing the project to get last datas uploaded.
+
+            self.__mainWindow.show()
+
+            # Temporary warning message.
+            # Show information message.
+            QMessageBox.warning(self, self.tr("Hestia"),
+                                self.tr("Please close Hestia to get latest updates."),
+                                QMessageBox.NoButton,
+                                QMessageBox.Ok)
+
         else:
             # Show information message.
             QMessageBox.warning(self, self.tr("Hestia"),
