@@ -363,9 +363,13 @@ class Project():
         Returns:
             str: Folder path.
         """
-        categoryName = category.name.lower()
+        categoryName = category.name
         entityName = entity.name
         taskName = taskType.name.lower()
+
+        # This is need because our production filetree on IZES isn't correctly setup.
+        if(entity.type == "Assets"):
+            categoryName = categoryName.lower()
 
         for specialCharacter in self.__specialCharactersList:
             categoryName = categoryName.replace(specialCharacter, "_")
