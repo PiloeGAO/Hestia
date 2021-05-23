@@ -182,6 +182,19 @@ class DefaultIntegration(object):
         """Extracts assets for shot building file.
         """
         return NotImplementedError
+    
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
+
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError
         
     def openFile(self, path):
         """Open the file in the DCC.

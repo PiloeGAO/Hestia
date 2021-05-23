@@ -138,3 +138,6 @@ dmypy.json
 
 # VSCode files
 .vscode/
+
+# FFMEPG install folder
+Hestia/core/ffmpeg/*

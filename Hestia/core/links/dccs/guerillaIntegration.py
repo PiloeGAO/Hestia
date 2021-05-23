@@ -159,6 +159,20 @@ class GuerillaIntegration(DefaultIntegration):
         """
         return NotImplemented
     
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
+
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplemented
+        
+    
     def openFile(self, path):
         """Open the file in the DCC.
 

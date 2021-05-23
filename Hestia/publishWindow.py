@@ -7,6 +7,8 @@
 """
 import os
 from datetime               import datetime
+import shutil
+import sys
 
 global pysideVers
 try:
@@ -208,21 +210,35 @@ class PublishWindow(QWidget):
     def takeScreenshot(self):
         """Take a screenshot of the scene.
         """
-        # TODO: Implement the screenshot support inside of DCCs.
-        self.__screenshotPath = "SCREENSHOT"
+        path = self.__manager.tempFolder + os.sep + "preview.PNG"
+        self.__manager.integration.takePlayblast(startFrame=-1, endFrame=-1, path=path)
+        self.__screenshotPath = path
 
         self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
-        print("Screenshot OK.")
     
     def takePlayblast(self):
         """Take a playblast of the scene.
         """
-        # TODO: Implement the screenshot support inside of DCCs.
-        self.__screenshotPath = "PLAYBLAST"
+        if(sys.platform.startswith('win32')):
+            format = "avi"
+        elif(sys.platform.startswith('darwin')):
+            format = "mov"
+        else:
+            return False
         
-        self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
-        print("Playblast OK.")
+        path_raw = self.__manager.tempFolder + os.sep + "preview_raw." + format
+        self.__manager.integration.takePlayblast(startFrame=-2, endFrame=0, path=path_raw)
 
+        path = self.__manager.tempFolder + os.sep + "preview.mp4"
+        conversionStatus = IOUtils.videoConverter(path_raw, path)
+        os.remove(path_raw)
+
+        if(conversionStatus and os.path.isfile(path)):
+            self.__screenshotPath = path
+            self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
+        else:
+            self.__manager.logging.error("Conversion failed, aborting.")
+        
     def publish(self):
         """Publish function.
         """

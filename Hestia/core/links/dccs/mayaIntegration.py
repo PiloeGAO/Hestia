@@ -376,6 +376,37 @@ class MayaIntegration(DefaultIntegration):
 
         return False
     
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
+
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        # set screenshot dimensions
+        width = 1920
+        height = 1080
+
+        if(startFrame == endFrame):
+            # From: https://gist.github.com/gfxhacks/f3e750f416f94952d7c9894ed8f78a71
+            # Take a single image.
+            currentFrame = startFrame
+            if(startFrame == -1):
+                currentFrame = int(cmds.currentTime(query=True))
+
+            cmds.playblast(fr=currentFrame, v=False, fmt="image", c="png", orn=False, cf=path, wh=[width,height], p=100)
+        else:
+            # TODO: Use framerange from inputs.
+            # Take a video.
+            cmds.playblast(v=False, orn=False, f=path, wh=[width,height], p=100)
+
+        return True
+        
+    
     def openFile(self, version):
         """Open the file in the DCC.
 
