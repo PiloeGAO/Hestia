@@ -3,7 +3,7 @@
     :file:      entity.py
     :brief:     Entity base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 class Entity():
@@ -16,9 +16,10 @@ class Entity():
         name (str, optional): Entity's name. Defaults to "".
         description (str, optional): Entity's description. Defaults to "".
         icon (str, optional): Entity's icon. Defaults to "".
+        tasks (list: class: "Task"): Entity's tasks. Defaults to [].
         versions (list: class: "Version"): Entity's version. Defaults to [].
     """
-    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", versions=[], **kwargs):
+    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", tasks=[], versions=[], **kwargs):
         self.__manager      = manager
         # Common datas.
         self.__type         = entityType
@@ -26,20 +27,20 @@ class Entity():
         self.__name         = name
         self.__description  = description
 
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
+
         self.__iconDownloaded = False
         self.__icon         = icon
+        self.__tasks        = tasks
         self.__versions     = versions
         
         # Shot specific datas.
-        self.__frameNumber = 0
-        if("frameNumber" in kwargs):
-            self.__frameNumber = int(kwargs["frameNumber"])
+        self.__frameNumber = int(kwargs["frameNumber"]) if "frameNumber" in kwargs else 0
         self.__assignedAssets = kwargs["assignedAssets"] if "assignedAssets" in kwargs else []
 
     @property
     def type(self):
         """Get the type of entity.
-
         Returns:
             str: Entity type.
         """
@@ -89,6 +90,15 @@ class Entity():
             description (str): The description of the entity
         """
         self.__description = description
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
         
     @property
     def icon(self):
@@ -113,6 +123,15 @@ class Entity():
         """
         self.__icon = icon
         self.__iconDownloaded = True
+    
+    @property
+    def tasks(self):
+        """Get tasks of the entity.
+
+        Returns:
+            list: class:`Task`: Task of the entity.
+        """
+        return self.__tasks
     
     @property
     def versions(self):

@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      contentView.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to create the content view of the window.  
 """
 import os
@@ -112,6 +112,7 @@ class ContentView(QWidget):
 
         for entity in range(len(self.__entities)):
             newEntity = EntityWidget(manager=self.__manager,
+                                    mainWindow=self.__mainWindow,
                                     asset=self.__entities[entity],
                                     iconSize=100,
                                     status=1)

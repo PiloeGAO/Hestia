@@ -3,7 +3,7 @@
     :file:      guerillaIntegration.py
     :brief:     Guerilla Render integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 import os
 
@@ -24,10 +24,14 @@ class GuerillaIntegration(DefaultIntegration):
     def __init__(self, manager=None):
         self.__manager = manager
 
+        self._name = "Guerilla"
+
         if(not integrationActive):
             self.__manager.logging.error("Guerilla Libraries not found!")
 
         self._active = integrationActive
+
+        self._defaultFormat = ".gproject"
         self.initializeFileFormats()
 
         # Guerilla Render support instance by using "References". 
@@ -152,5 +156,53 @@ class GuerillaIntegration(DefaultIntegration):
 
     def extractAssets(self):
         """Extracts assets for shot building file.
+        """
+        return NotImplemented
+    
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
+
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplemented
+        
+    
+    def openFile(self, path):
+        """Open the file in the DCC.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplemented
+    
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        return NotImplemented
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
         """
         return NotImplemented

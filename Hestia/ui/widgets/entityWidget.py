@@ -3,11 +3,12 @@
     :file:      entityWidget.py
     :brief:     Entity widget.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 from gazu import asset
 from Hestia.core.category import Category
 from os import path
+import time
 
 global pysideVers
 try:
@@ -33,10 +34,11 @@ class EntityWidget(QWidget):
             status (int, optional): Status of the button. Defaults to 1.
             parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager=None, asset=None, iconSize=64, status=1, parent=None):
+    def __init__(self, manager=None, mainWindow=None, asset=None, iconSize=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)
-        self.__manager  = manager
-        self.__asset    = asset
+        self.__manager      = manager
+        self.__mainWindow   = mainWindow
+        self.__asset        = asset
         
         self.__rootPath = path.dirname(path.abspath(__file__))
 
@@ -145,15 +147,29 @@ class EntityWidget(QWidget):
         currentProject = self.__manager.projects[self.__manager.currentProject]
         if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
             # Assign shader to asset button.
-            assignShader = menu.addAction("Assign shader to current object")
-            assignShader.triggered.connect(self.assignShaderToSelectedAsset)
+            if(len(self.__versions) > 0 and self.__manager.integration.name != "standalone"):
+                assignShader = menu.addAction("Assign shader to current object")
+                assignShader.triggered.connect(self.assignShaderToSelectedAsset)
         elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
             # Export to HSHOT button.
+            menu.addSeparator()
             extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
             extractAssets.triggered.connect(self.exportShotToHSHOT)
+
+        # Entity publish area.
+        if(self.__manager.projects[self.__manager.currentProject].supportFileTree
+            and self.__manager.integration.name != "standalone"):
+
+            menu.addSeparator()
+            if(len(self.__versions) > 0):
+                openFileMenu = menu.addAction("Open file")
+                openFileMenu.triggered.connect(self.openFile)
+            
+            publishEntity = menu.addAction("Publish selection")
+            publishEntity.triggered.connect(self.publishSelectionToProjectManager)
 
         menu.exec_(event.globalPos())
     
@@ -235,4 +251,37 @@ class EntityWidget(QWidget):
 
         self.__manager.integration.extractAssets()
         
+        return True
+    
+    def openFile(self):
+        """Function to open file.
+
+        Returns:
+            bool: Function status.
+        """
+        # Show information message.
+        warningPopup = QMessageBox.warning(self, self.tr("Hestia"),
+                            self.tr("Openning a new file will loose the current datas.\n" + \
+                                "Please save before."),
+                            QMessageBox.Cancel,
+                            QMessageBox.Ok)
+        
+        if(warningPopup == QMessageBox.Ok):
+            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
+            openStatus = self.__manager.integration.openFile(self.__currentVersion)
+
+            if(not openStatus):
+                self.__manager.logging.error("Open failed.")
+
+            return openStatus
+        else:
+            return False
+
+    def publishSelectionToProjectManager(self):
+        """Function to publish entity to project manager.
+
+        Returns:
+            bool: Function status.
+        """
+        self.__mainWindow.openPublishWindow(entity=self.__asset)
         return True

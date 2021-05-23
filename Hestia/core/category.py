@@ -3,7 +3,7 @@
     :file:      category.py
     :brief:     Category base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 class Category():
@@ -13,13 +13,15 @@ class Category():
         id (str, optional): Category's ID. Defaults to "".
         name (str, optional): Catgeory's name. Defaults to "".
         description (str, optional): Category's description. Defaults to "".
-        type (str, optional): Category's type (must be "Asset" or "Shot"). Defaults to "".
+        type (str, optional): Category's type (must be "Assets" or "Shots"). Defaults to "".
     """
-    def __init__(self, id="", name="", description="", type=""):
+    def __init__(self, id="", name="", description="", type="", **kwargs):
         self.__id               = id
         self.__name             = name
         self.__description      = description
         self.__type             = type
+        
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
 
         self.__entities         = []
 
@@ -76,6 +78,15 @@ class Category():
             str: Category's type.
         """
         return self.__type
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
     
     @property
     def entities(self):

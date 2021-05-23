@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      launchHestiaBrowser.py
     :author:    ldepoix
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to start UI from Guerilla Render.
 """
 from guerilla   import Modifier, Document, pwarning

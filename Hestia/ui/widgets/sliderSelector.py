@@ -3,7 +3,7 @@
     :file:      sliderSelector.py
     :brief:     Slider with labels under it.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 try:

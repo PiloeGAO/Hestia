@@ -3,7 +3,7 @@
     :file:      mayaIntegration.py
     :brief:     Maya integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 import os
 
@@ -25,15 +25,20 @@ class MayaIntegration(DefaultIntegration):
     def __init__(self, manager=None):
         self.__manager = manager
 
+        self._name = "Maya"
+
         if(not integrationActive):
             self.__manager.logging.error("Maya Libraries not found!")
 
         self._active = integrationActive
+
+        self._defaultFormat = ".ma"
         self.initializeFileFormats()
 
         # Autodesk Maya support instance by using "References". 
-        self._supportInstances  = True
-        self._instances         = True
+        self._supportInstances      = True
+        self._instances             = True
+        self._supportScreenshots    = True
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -346,6 +351,9 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Function status.
         """
+        if(len(cmds.ls(sl=True)) == 0):
+            return False
+        
         currentAsset = cmds.ls(sl=True)[0]
 
         if(cmds.attributeQuery("isHestiaAsset", node=currentAsset, exists=True)
@@ -367,3 +375,109 @@ class MayaIntegration(DefaultIntegration):
                 print(cmds.xform(t, query=True, matrix=True, worldSpace=True))
 
         return False
+    
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
+
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        # set screenshot dimensions
+        width = 1920
+        height = 1080
+
+        if(startFrame == endFrame):
+            # From: https://gist.github.com/gfxhacks/f3e750f416f94952d7c9894ed8f78a71
+            # Take a single image.
+            currentFrame = startFrame
+            if(startFrame == -1):
+                currentFrame = int(cmds.currentTime(query=True))
+
+            cmds.playblast(fr=currentFrame, v=False, fmt="image", c="png", orn=False, cf=path, wh=[width,height], p=100)
+        else:
+            # TODO: Use framerange from inputs.
+            # Take a video.
+            cmds.playblast(v=False, orn=False, f=path, wh=[width,height], p=100)
+
+        return True
+        
+    
+    def openFile(self, version):
+        """Open the file in the DCC.
+
+        Args:
+            version (class:`Version`): Version of the asset.
+
+        Returns:
+            bool: Function status.
+        """
+        filePath = str(version.workingPath)
+        if(os.path.isfile(filePath) and
+            (os.path.splitext(filePath)[1] == ".ma" or os.path.splitext(filePath)[1] == ".mb")):
+            cmds.file(new=True, force=True)
+            cmds.file(version.workingPath, o=True)
+            return True
+        else:
+            return False
+    
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        if(not os.path.isfile(path)):
+            cmds.file(rename=path)
+            cmds.file(force=True, save=True, type="mayaAscii")
+            return True
+        
+        return False
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
+        """
+        if(os.path.isfile(path)):
+            self.__manager.logging.error("File \"%s\" already exist, skipping export." % path)
+            return False
+        
+        if(len(cmds.ls(sl=True)) == 0):
+            self.__manager.logging.error("Nothing selected, skipping export.")
+            return False
+        
+        extension = extension.lower()
+
+        if(extension == ".ma"):
+            cmds.file(path, type='mayaAscii', exportSelected=True)
+        elif(extension == ".mb"):
+            cmds.file(path, type='mayaBinary', exportSelected=True)
+        elif(extension == ".abc"):
+            oldSelection = cmds.ls(sl=True)
+
+            # Select hierarchy.
+            cmds.select(hierarchy=True)
+            command = "-uvWrite -worldSpace " + "-selection -file " + path
+            cmds.AbcExport ( j = command )
+
+            # Reset selection
+            cmds.select(oldSelection)
+        elif(extension == ".obj"):
+            cmds.file(path, type='OBJexport', exportSelected=True)
+        else:
+            return False
+        
+        return True

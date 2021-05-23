@@ -3,7 +3,7 @@
     :file:      defaultIntegration.py
     :brief:     Default integration class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 class DefaultIntegration(object):
@@ -12,13 +12,35 @@ class DefaultIntegration(object):
     def __init__(self, manager=None):
         self.__manager = manager
         
+        self._name = "standalone"
+
         self._active = False
 
+        self._defaultFormat = ""
         self._availableFormats = []
 
         self._supportInstances = False
         self._instances = False
+        self._supportScreenshots = False
     
+    @property
+    def name(self):
+        """Get the name of the integration.
+
+        Returns:
+            str: Integration name
+        """
+        return self._name
+
+    @property
+    def defaultFormat(self):
+        """Get the default format.
+
+        Returns:
+            str: Default format/extension.
+        """
+        return self._defaultFormat
+
     @property
     def availableFormats(self):
         """Get the available formats.
@@ -55,6 +77,15 @@ class DefaultIntegration(object):
         """
         print("Instances new status" + str(newStatus))
         self._instances = newStatus
+    
+    @property
+    def supportScreenshots(self):
+        """Get the screenshots support.
+
+        Returns:
+            bool: Is screenshot support is available.
+        """
+        return self._supportScreenshots
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -150,5 +181,51 @@ class DefaultIntegration(object):
     def extractAssets(self):
         """Extracts assets for shot building file.
         """
+        return NotImplementedError
+    
+    def takePlayblast(self, startFrame, endFrame, path):
+        """Take a playblast of the scene.
 
+        Args:
+            startFrame (int): Start frame.
+            endFrame (int): End frame.
+            path (sty): Ouput path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError
+        
+    def openFile(self, path):
+        """Open the file in the DCC.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Function status.
+        """
+        return NotImplementedError
+
+    def saveFile(self, path):
+        """Save current file to the given path.
+
+        Args:
+            path (str): File path.
+
+        Returns:
+            bool: Functions status.
+        """
+        return NotImplementedError
+
+    def exportSelection(self, path, extension):
+        """Export selection to the path with the correct format.
+
+        Args:
+            path (str): Output path.
+            extension (str): Extensionof the file.
+
+        Returns:
+            bool: Function status.
+        """
         return NotImplementedError

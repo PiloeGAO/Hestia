@@ -1,15 +1,16 @@
 # Hestia
 **Project in active development! Please don't use it in production.**
 
-An assets browser and a shot assembly system for CGI/VFX productions.
+A production management system for CGI/VFX productions.
 
-![Hestia (Asset Browser - V0.0.2)](./Hestia_0.0.2.png)
+![Hestia (Asset Browser - V0.0.4)](./Hestia_0.0.4.png)
 
 ## FEATURES
 - [x] Mostly implemented Kitsu link.
 - [x] Preferences system to store login credentials.
 - [x] Maya integration with Asset import/reference system.
 - [x] Maya scene setup.
+- [x] Basic publish system.
 
 ## Getting Started
 
@@ -22,6 +23,8 @@ You can download stable versions in github release or clone the repository.
 ```
 git clone https://github.com/PiloeGAO/Hestia.git
 ```
+
+Download pre-build binaries for [FFMPEG](https://www.ffmpeg.org/) (Needed for playblast publishing - Only available for Windows).
 
 ## Installation
 
@@ -38,6 +41,8 @@ For Python 3.8:
 ```bash
 pip install -r requirements3.txt
 ```
+
+3. Create a folder "ffmpeg" inside of "./Hestia/core" and copy ffmpeg files inside.
 
 ## Usage
 
@@ -70,7 +75,9 @@ Trello Board (with releases notes): https://trello.com/b/90POyZZC/hestia-dev-boa
     - [x] Designing the main system
     - [ ] Building the HSHOT file exporter
     - [ ] Building the HSHOT file importer
-
+- Publish System:
+    - [x] Basic publish system to Kitsu.
+    - [x] Take screenshot/playblast directly inside of Maya.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
