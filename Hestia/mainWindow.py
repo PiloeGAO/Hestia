@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      mainWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to create the main window based on QtWidgets.  
 """
 try:
@@ -16,6 +16,7 @@ except:
 from .core.manager          import Manager
 
 from .loginWindow           import LoginWindow
+from .publishWindow         import PublishWindow
 from .preferencesWindow     import PreferencesWindow
 
 from .ui.header             import Header
@@ -51,13 +52,17 @@ class MainWindow(QWidget):
         # Initialize UI.
         self.initUI()
 
+        # Initialize the publish window.
+        self.publishWindow = None
+
         # Initialize the preference window.
-        self.preferencesWindow = PreferencesWindow(manager=self.__manager)
+        self.preferencesWindow = None
 
         # Show online login modal if not set to local.
+        self.loginWindow = None
         if(self.__manager.mode != "local" and not self.__manager.link.connected):
-            login = LoginWindow(manager=self.__manager, mainWindow=self)
-            login.show()
+            self.loginWindow = LoginWindow(manager=self.__manager, mainWindow=self)
+            self.loginWindow.show()
     
     def resizeEvent(self, event):
         """Get the size of the window on window resize.
@@ -84,10 +89,16 @@ class MainWindow(QWidget):
             event (class: 'QtEvent'): Event.
         """
         if(True):
-            if(self.__manager.integration != "standalone"):
+            # Closing other window if Main Window is closed.
+            if(self.loginWindow != None): self.loginWindow.hide()
+            if(self.preferencesWindow != None): self.preferencesWindow.hide()
+            if(self.publishWindow != None): self.publishWindow.hide()
+
+            if(self.__manager.integration.name != "standalone"):
                 # This is needed for embedded Python versions
                 # that won't support *atexit* lib.
                 self.__manager.preferences.savePreferences()
+                self.__manager.cleanTemporaryFolder()
             
             event.accept()
         else:
@@ -134,7 +145,17 @@ class MainWindow(QWidget):
     def openPreferencesWindow(self):
         """Display the preferences window.
         """
+        self.preferencesWindow = PreferencesWindow(manager=self.__manager)
         self.preferencesWindow.show()
+    
+    def openPublishWindow(self, entity):
+        """Display the publish window.
+
+        Args:
+            entity (class:`Entity`): Entity datas to publish.
+        """
+        self.publishWindow = PublishWindow(manager=self.__manager, mainWindow=self, entity=entity)
+        self.publishWindow.show()
 
     def updateLog(self, text=""):
         """Update log in the footer.

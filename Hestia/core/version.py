@@ -3,22 +3,24 @@
     :file:      version.py
     :brief:     Version base class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 from os import path
 
 class Version():
-    def __init__(self, id="", name="", description="", workingPath="", outputPath="", type=""):
-        self.__id           = id
-        self.__name         = name
-        self.__description  = description
-        self.__workingPath  = workingPath
-        self.__outputPath   = outputPath
+    def __init__(self, id="", name="", description="", task=None, workingPath="", outputPath="", type="", revisionNumber=0, **kwargs):
+        self.__id               = id
+        self.__name             = name
+        self.__description      = description
+        self.__task             = task
+        
+        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
 
-        if(type == ""):
-            self.__type = path.splitext(self.__outputPath)[1]
-        else:
-            self.__type = type
+        self.__workingPath      = workingPath
+        self.__outputPath       = outputPath
+
+        self.__revisionNumber   = revisionNumber
+        self.__type = path.splitext(self.__outputPath)[1] if type == "" else type
     
     @property
     def id(self):
@@ -36,7 +38,10 @@ class Version():
         Returns:
             str : The name of the version.
         """
-        return self.__name
+        if(self.__name == ""):
+            return "%s: Revision %s" % (self.__task.name, self.__revisionNumber)
+        else:
+            return self.__name
     
     @name.setter
     def name(self, name):
@@ -64,6 +69,24 @@ class Version():
             description (str): The description of the version
         """
         self.__description = description
+    
+    @property
+    def task(self):
+        """Get the task of the version.
+
+        Returns:
+            class:`Task`: The task of the version.
+        """
+        return self.__task
+    
+    @property
+    def rawDatas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self.__rawDatas
         
     @property
     def workingPath(self):
@@ -118,3 +141,12 @@ class Version():
             type (str): The output type of the version
         """
         self.__type = type
+        
+    @property
+    def revisionNumber(self):
+        """Get the revision number of the version.
+
+        Returns:
+            int : The revision number of the version.
+        """
+        return self.__revisionNumber

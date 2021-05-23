@@ -3,7 +3,7 @@
     :file:      __init__.py
     :brief:     Initialize file.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
 """
 
 from os import sys, path

@@ -1,7 +1,7 @@
 """
     :package:   Hestia
-    :file:      lineEdit.py
-    :brief:     Drop down field with text.
+    :file:      textEdit.py
+    :brief:     Text Edit field with title.
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
@@ -13,30 +13,27 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
-class LineEdit(QWidget):
-    """Line Edit class.
+class TextEdit(QWidget):
+    """Text Edit class.
 
     Args:
         name (str, optional): Text of the button. Defaults to "".
         description (str, optional): Tooltip. Defaults to "".
         defaultValue (str, optional): Default value ID. Defaults to "".
-        isPassword (bool, optional): Hide characters for passwords/credentials. Defaults to False.
         parent (QtWidgets, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, name="", description="", defaultValue="", isPassword=False, parent=None):
-        super(LineEdit, self).__init__(parent=parent)
+    def __init__(self, name="", description="", defaultValue="", parent=None):
+        super(TextEdit, self).__init__(parent=parent)
 
         self.__name = name
         self.__description = description
         self.__currentValue = defaultValue
 
-        self.__isPassword = isPassword
-
         self.initUI()
     
     @property
     def currentValue(self):
-        """Return value of the selected value in lineEdit.
+        """Return value of the selected value in textEdit.
 
         Returns:
             str: value.
@@ -47,7 +44,7 @@ class LineEdit(QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QHBoxLayout()
+        self.mainLayout = QVBoxLayout()
 
         # Create title.
         self.title = QLabel(self.__name + " : ")
@@ -58,19 +55,15 @@ class LineEdit(QWidget):
         # Add title to main layout.
         self.mainLayout.addWidget(self.title)
 
-        # Create the line edit.
-        self.lineEdit = QLineEdit()
-        self.lineEdit.setText(self.__currentValue)
+        # Create the text edit.
+        self.textEdit = QTextEdit()
+        self.textEdit.setText(self.__currentValue)
 
-        if(self.__isPassword):
-            self.lineEdit.setEchoMode(QLineEdit.Password)
+        # Connect text edit with update method.
+        self.textEdit.textChanged.connect(self.changeCurrentValue)
 
-        # Connect line edit with update method.
-        self.lineEdit.textChanged.connect(self.changeCurrentValue)
-        self.lineEdit.returnPressed.connect(self.changeCurrentValue)
-
-        # Add line edit to main layout.
-        self.mainLayout.addWidget(self.lineEdit)
+        # Add text edit to main layout.
+        self.mainLayout.addWidget(self.textEdit)
 
         # Add the main layout to the window.
         self.setLayout(self.mainLayout)
@@ -78,4 +71,4 @@ class LineEdit(QWidget):
     def changeCurrentValue(self):
         """Set current value from drop down.
         """
-        self.__currentValue = self.lineEdit.text()
+        self.__currentValue = self.textEdit.toPlainText()

@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      folderTreeView.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to create the folder tree of the window.  
 """
 try:
@@ -81,14 +81,22 @@ class FolderTreeView(QWidget):
     
     def changeCurrentCategoryType(self):
         """Updating the current selected category when type change.
+
+        Returns:
+            bool: Status.
         """
-        category = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]][0]
+        category = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]]
+        if(len(category) > 0):
+            category = category[0]
+        else:
+            return False
         
         if category != None:
             self.__project.currentCategory = self.__project.categories.index(category)
         
         self.__mainWindow.refreshCategory()
         self.refresh()
+        return True
     
     def refresh(self):
         """Force refresh of the widget.

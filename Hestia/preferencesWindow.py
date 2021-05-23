@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      preferencesWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.3
+    :version:   0.0.4
     :brief:     Class to create the preferences window based on QtWidgets.  
 """
 try:
@@ -13,6 +13,7 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
+from .ui.widgets.gridWidget import GridWidget
 from .ui.widgets.dropDown   import DropDown
 
 class PreferencesWindow(QWidget):
@@ -53,34 +54,59 @@ class PreferencesWindow(QWidget):
         # Set the window style.
         self.setStyle(QStyleFactory.create("Fusion"))
 
-        # Set the main layout component.
-        self.mainLayout = QGridLayout()
-        self.mainLayout.setSpacing(10)
+        # Tab manager initializer.
+        self.mainLayout = QVBoxLayout()
+        self.tabWidget = QTabWidget()
 
-        # Set window size.
-
+        # Set the main settings layout component.
         # Set service.
         self.serviceButton = DropDown(name="Service",
                                         description="Service used.",
                                         datas=self.__servicesAvailables,
                                         defaultValue=self.__currentService,
                                         functionToInvoke=None)
-        
-        self.mainLayout.addWidget(self.serviceButton, 0, 0)
 
         # Load previews.
         self.loadPreviews = QCheckBox("Download previews")
         self.loadPreviews.setToolTip("Warning: This can slowdown the GUI.")
         self.loadPreviews.setChecked(self.__loadPreviewStatus)
-        self.mainLayout.addWidget(self.loadPreviews, 1, 0)
 
+
+        self.mainSettingsWidget = GridWidget(self.__manager, self, xSize=1, itemList=[
+            self.serviceButton,
+            self.loadPreviews
+        ])
+        self.tabWidget.addTab(self.mainSettingsWidget, "Main Settings")
+
+        # Project manager settings.
+        self.projectManagerSettingsWidget = QWidget()
+
+        self.projectManagerSettingsLayout = QVBoxLayout()
+
+        if(self.__manager.projects[self.__manager.currentProject].supportFileTree):
+            self.buildProjectFolderTreeButton = QPushButton("Build folder tree")
+            self.buildProjectFolderTreeButton.clicked.connect(self.buildProjectFolderTree)
+            self.projectManagerSettingsLayout.addWidget(self.buildProjectFolderTreeButton)
+
+        self.projectManagerSettingsWidget.setLayout(self.projectManagerSettingsLayout)
+        self.tabWidget.addTab(self.projectManagerSettingsWidget, "Project Manager Settings")
+
+        # Set main layout to the window.
+        self.mainLayout.addWidget(self.tabWidget)
+        
         # Save button.
         self.saveButton = QPushButton("Save")
         self.saveButton.clicked.connect(self.savePreferences)
-        self.mainLayout.addWidget(self.saveButton, 2, 1)
+        self.mainLayout.addWidget(self.saveButton)
 
-        # Set main layout to the window.
         self.setLayout(self.mainLayout)
+    
+    def buildProjectFolderTree(self):
+        """Build project foldertree.
+        """
+        self.__manager.logging.info("Folder tree generation started.")
+        self.__manager.projects[self.__manager.currentProject].buildFolderTree()
+        self.__manager.logging.info("Folder tree successfully generated.")
     
     def savePreferences(self):
         """Save preferences.
