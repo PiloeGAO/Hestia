@@ -42,9 +42,10 @@ def copyFile(filePath, targetPath, **kwargs):
         shutil.copy(filePath, targetPath)
 
         if(kwargs["newName"] != None):
-            src = targetPath + os.sep + oldFilename
             dst = targetPath + os.sep + kwargs["newName"] + os.path.splitext(oldFilename)[1]
-            os.rename(src, dst)
+            if(os.path.isfile(dst) != True):
+                src = targetPath + os.sep + oldFilename
+                os.rename(src, dst)
 
         return True
     return False

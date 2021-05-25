@@ -398,11 +398,11 @@ class MayaIntegration(DefaultIntegration):
             if(startFrame == -1):
                 currentFrame = int(cmds.currentTime(query=True))
 
-            cmds.playblast(fr=currentFrame, v=False, fmt="image", c="png", orn=False, cf=path, wh=[width,height], p=100)
+            cmds.playblast(fr=currentFrame, v=False, fmt="image", c="png", orn=False, cf=path, wh=[width,height], p=100, forceOverwrite=True)
         else:
             # TODO: Use framerange from inputs.
             # Take a video.
-            cmds.playblast(v=False, orn=False, f=path, wh=[width,height], p=100)
+            cmds.playblast(v=False, orn=False, f=path, wh=[width,height], p=100, forceOverwrite=True)
 
         return True
         
@@ -439,6 +439,7 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(force=True, save=True, type="mayaAscii")
             return True
         
+        self.__manager.logging.error("Failed to save the file : %s" % path)
         return False
 
     def exportSelection(self, path, extension):
