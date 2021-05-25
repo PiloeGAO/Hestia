@@ -270,21 +270,28 @@ class PublishWindow(QWidget):
 
             # Export files from DCC.
             self.__manager.logging.info("Writing the working file.")
-            publishWorkingFilePath = ""
-            workingSaveStatus = self.__manager.integration.saveFile(workingPath + os.sep + workingFileName)
-            if(workingSaveStatus):
-                publishWorkingFilePath = workingPath + os.sep + workingFileName
+            
+            publishWorkingFilePath = workingPath + os.sep + workingFileName
+            if(os.path.isfile(publishWorkingFilePath) != True):
+                workingSaveStatus = self.__manager.integration.saveFile(workingPath + os.sep + workingFileName)
+                if(workingSaveStatus):
+                    self.__manager.logging.error("Couldn't save the working file")
             
             publishOutputFilePaths = []
             for i, outputFilename in enumerate(outputFileNames):
-                self.__manager.logging.info("Writing output file %s/%s." % (i, len(outputFileNames)))
+                self.__manager.logging.info("Writing output file %s/%s." % (i+1, len(outputFileNames)))
                 path = outputPath + os.sep + outputFilename
-                extension = os.path.splitext(outputFilename)[1]
-                exportStatus = self.__manager.integration.exportSelection(path=path, extension=extension)
+                if(os.path.isfile(path) != True):
+                    extension = os.path.splitext(outputFilename)[1]
+                    exportStatus = self.__manager.integration.exportSelection(path=path, extension=extension)
 
-                # If export failed for current export (example: file already exist),
-                # remove the unnecessary file.
-                if(exportStatus):
+                    # If export failed for current export (example: file already exist),
+                    # remove the unnecessary file.
+                    if(exportStatus):
+                        publishOutputFilePaths.append(path)
+                    else:
+                        self.__manager.logging.warning("Export failed.")
+                else:
                     publishOutputFilePaths.append(path)
             
             # Copy the preview to output folder.
