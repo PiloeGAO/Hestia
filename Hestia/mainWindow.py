@@ -40,14 +40,16 @@ class MainWindow(QWidget):
         self.__windowWidth, self.__windowHeight = [int(coord) for coord in self.__manager.preferences.getValue("MANAGER", "windowSize").split("x")]
         self.__posX, self.__posY                = [int(coord) for coord in self.__manager.preferences.getValue("MANAGER", "windowPos").split("x")]
 
-        if(self.__windowWidth == -1):
-            self.__windowWidth = QDesktopWidget().screenGeometry(-1).width() / 4
-        if(self.__windowHeight == -1):
-            self.__windowHeight = QDesktopWidget().screenGeometry(-1).height() / 4
-        if(self.__posX == -1):
-            self.__posX = QDesktopWidget().screenGeometry(-1).width() / 2 - self.__windowWidth / 2
-        if(self.__posY == -1):
-            self.__posY = QDesktopWidget().screenGeometry(-1).height() / 2 - self.__windowHeight / 2
+        desktopGeometry = QDesktopWidget().screenGeometry(-1)
+        titleBarHeigth = 10
+        if(self.__windowWidth < 0 or self.__windowWidth > desktopGeometry.width()):
+            self.__windowWidth = desktopGeometry.width() / 4
+        if(self.__windowHeight < 0 or self.__windowHeight > desktopGeometry.height()):
+            self.__windowHeight = desktopGeometry.height() / 4
+        if(self.__posX < 0 or self.__posX > (desktopGeometry.width() - self.__windowWidth)):
+            self.__posX = desktopGeometry.width() / 2 - self.__windowWidth / 2
+        if(self.__posY < 0 or self.__posY > (desktopGeometry.height() - self.__windowHeight - titleBarHeigth)):
+            self.__posY = desktopGeometry.height() / 2 - self.__windowHeight / 2 - titleBarHeigth
 
         # Initialize UI.
         self.initUI()
