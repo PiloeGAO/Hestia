@@ -38,9 +38,9 @@ class LoginWindow(QWidget):
         self.__service      = self.__manager.mode
 
         # Getting data from preferences.
-        self.api            = self.__manager.link.api
-        self.username       = self.__manager.preferences.getValue("MANAGER", "onlineUsername")
-        self.isRememberLogin = bool(int(self.__manager.preferences.getValue("MANAGER", "rememberLogin")))
+        self.__api            = self.__manager.link.api
+        self.__username       = self.__manager.preferences.getValue("MANAGER", "onlineUsername")
+        self.__isRememberLogin = bool(int(self.__manager.preferences.getValue("MANAGER", "rememberLogin")))
 
         # Set window preferences.
         self.__windowWidth = winW
@@ -79,11 +79,11 @@ class LoginWindow(QWidget):
         self.mainLayout.setSpacing(10)
 
         # Create the api input.
-        self.api = LineEdit(name="API", description="Api to connect", defaultValue=self.api)
+        self.api = LineEdit(name="API", description="Api to connect", defaultValue=self.__api)
         self.mainLayout.addWidget(self.api, 0, 0)
 
         # Create the username input.
-        self.username = LineEdit(name="Username", description="Username", defaultValue=self.username)
+        self.username = LineEdit(name="Username", description="Username", defaultValue=self.__username)
         self.mainLayout.addWidget(self.username, 1, 0)
 
         # Create the password input.
@@ -92,7 +92,7 @@ class LoginWindow(QWidget):
 
         # Create the save checkbox.
         self.rememberLogin = QCheckBox("Remember login")
-        self.rememberLogin.setChecked(self.isRememberLogin)
+        self.rememberLogin.setChecked(self.__isRememberLogin)
         self.mainLayout.addWidget(self.rememberLogin, 3, 0)
 
         # Create the error window label.
@@ -114,20 +114,21 @@ class LoginWindow(QWidget):
     def login(self):
         """Login to service.
         """
+        # Fix the api URL if "/api" isn't at the end.
+        if(self.api.currentValue[-1:] == "/" and not "/api" in self.api.currentValue):
+            self.__api = self.api.currentValue + "api"
+        elif(self.api.currentValue[-4:] != "/api"):
+            self.__api = self.api.currentValue + "/api"
+        
         # Save user preferences.
-        if(self.rememberLogin.checkState() == Qt.Checked):
-            self.__manager.preferences.setValue("MANAGER", "onlineHost", self.api.currentValue)
-            self.__manager.preferences.setValue("MANAGER", "onlineUsername", self.username.currentValue)
-            self.__manager.preferences.setValue("MANAGER", "rememberLogin", 1)
-        else:
-            self.__manager.preferences.setValue("MANAGER", "onlineHost", "")
-            self.__manager.preferences.setValue("MANAGER", "onlineUsername", "")
-            self.__manager.preferences.setValue("MANAGER", "rememberLogin", 0)
+        self.__manager.preferences.setValue("MANAGER", "onlineHost",        self.api.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
+        self.__manager.preferences.setValue("MANAGER", "onlineUsername",    self.username.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
+        self.__manager.preferences.setValue("MANAGER", "rememberLogin",     1 if self.rememberLogin.checkState() == Qt.Checked else 0)
         
         self.__manager.preferences.savePreferences()
 
         # Connecting to online service.
-        self.__connection = self.__manager.connectToOnline(api=self.api.currentValue, username=self.username.currentValue, password=self.password.currentValue)
+        self.__connection = self.__manager.connectToOnline(api=self.__api, username=self.username.currentValue, password=self.password.currentValue)
 
         if (self.__connection):
             # Close this window.
