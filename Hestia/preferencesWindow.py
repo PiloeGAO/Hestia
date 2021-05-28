@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
     :package:   Hestia
     :file:      preferencesWindow.py
@@ -5,6 +6,8 @@
     :version:   0.0.4
     :brief:     Class to create the preferences window based on QtWidgets.  
 """
+import sys
+
 try:
     from PySide2.QtCore     import *
     from PySide2.QtGui      import *
@@ -60,36 +63,71 @@ class PreferencesWindow(QWidget):
 
         # Set the main settings layout component.
         # Set service.
+        self.generalSettingsWidget = QWidget()
+        self.generalSettingsLayout = QVBoxLayout()
+        
+        # Load previews.
+        self.loadPreviews = QCheckBox("Download previews")
+        self.loadPreviews.setToolTip("Warning: This can slowdown the GUI.")
+        self.loadPreviews.setChecked(self.__loadPreviewStatus)
+
+        self.generalSettingsLayout.addWidget(self.loadPreviews)
+
+        self.generalSettingsLayout.addStretch()
+
+        self.generalSettingsWidget.setLayout(self.generalSettingsLayout)
+        self.tabWidget.addTab(self.generalSettingsWidget, "Main Settings")
+
+        # Project manager settings.
+        self.projectManagerSettingsWidget = QWidget()
+        self.projectManagerSettingsLayout = QVBoxLayout()
+
         self.serviceButton = DropDown(name="Service",
                                         description="Service used.",
                                         datas=self.__servicesAvailables,
                                         defaultValue=self.__currentService,
                                         functionToInvoke=None)
 
-        # Load previews.
-        self.loadPreviews = QCheckBox("Download previews")
-        self.loadPreviews.setToolTip("Warning: This can slowdown the GUI.")
-        self.loadPreviews.setChecked(self.__loadPreviewStatus)
-
-
-        self.mainSettingsWidget = GridWidget(self.__manager, self, xSize=1, itemList=[
-            self.serviceButton,
-            self.loadPreviews
-        ])
-        self.tabWidget.addTab(self.mainSettingsWidget, "Main Settings")
-
-        # Project manager settings.
-        self.projectManagerSettingsWidget = QWidget()
-
-        self.projectManagerSettingsLayout = QVBoxLayout()
+        self.projectManagerSettingsLayout.addWidget(self.serviceButton)
 
         if(self.__manager.projects[self.__manager.currentProject].supportFileTree):
             self.buildProjectFolderTreeButton = QPushButton("Build folder tree")
             self.buildProjectFolderTreeButton.clicked.connect(self.buildProjectFolderTree)
             self.projectManagerSettingsLayout.addWidget(self.buildProjectFolderTreeButton)
 
+        self.projectManagerSettingsLayout.addStretch()
+
         self.projectManagerSettingsWidget.setLayout(self.projectManagerSettingsLayout)
         self.tabWidget.addTab(self.projectManagerSettingsWidget, "Project Manager Settings")
+
+        # Informations tab.
+        self.informationsWidget = QWidget()
+        self.informationsLayout = QVBoxLayout()
+
+        aboutText = """
+            Hestia - A production management system for CGI/VFX productions.
+            Version: %s - %s
+            Current integration: %s
+
+            Made by:
+                - Leo Depoix (pilegao)
+            
+            Acknowledgments:
+                - Pole 3D
+                - Guillaume Baratte
+                - Manon Berardengo
+                - Audrey Defonte
+                - Denis Koessler
+
+            Powered by: Python - PySide - Gazu (Kitsu API)
+        """ % (self.__manager.version, sys.platform, self.__manager.integration.name)
+
+        self.aboutTextWidget = QLabel(aboutText)
+        self.informationsLayout.addWidget(self.aboutTextWidget)
+
+        self.informationsWidget.setLayout(self.informationsLayout)
+        self.tabWidget.addTab(self.informationsWidget, "About")
+
 
         # Set main layout to the window.
         self.mainLayout.addWidget(self.tabWidget)
