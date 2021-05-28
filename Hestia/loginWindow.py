@@ -95,11 +95,6 @@ class LoginWindow(QWidget):
         self.rememberLogin.setChecked(self.__isRememberLogin)
         self.mainLayout.addWidget(self.rememberLogin, 3, 0)
 
-        # Create the error window label.
-        self.errorLabel = QLabel("Login failed, please verify your login informations.")
-        self.errorLabel.hide()
-        self.mainLayout.addWidget(self.errorLabel, 4, 0)
-
         # Create the login button.
         if(pysideVers == 2):
             iconPath = self.__rootPath + "/ui/icons/check-square.svg"
@@ -137,4 +132,8 @@ class LoginWindow(QWidget):
             self.__mainWindow.refresh()
             self.close()
         else:
-            self.errorLabel.show()
+            # Display error popup.
+            QMessageBox.critical(self, self.tr("Hestia - Login"),
+                                self.tr("Login failed, please check your credentials."),
+                                QMessageBox.NoButton,
+                                QMessageBox.Ok)
