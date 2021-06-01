@@ -276,7 +276,7 @@ class KitsuWrapper(DefaultWrapper):
         if(entityType == "Assets"):
             entityData = gazu.asset.get_asset(entityId)
         elif(entityType == "Shots"):
-            # Shots not supported for now.
+            # Shots not supported for now (because "preview_file_id" is set to null in the DB).
             entityData = gazu.shot.get_shot(entityId)
             return ""
         else:
@@ -291,8 +291,8 @@ class KitsuWrapper(DefaultWrapper):
         except gazu.exception.NotAllowedException:
             self.__manager.logging.debug("%s : Acces refused to preview." % entityData["name"])
         else:
-            if(preview_file["is_movie"]):
-                self.__manager.logging.debug("%s : Preview file is a movie, can't be loaded in Hestia." % entityData["name"])
+            if(preview_file["extension"] == "mp4" or bool(preview_file["is_movie"])):
+                self.__manager.logging.debug("%s : Loading movie thumbnail." % entityData["name"])
                 icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
                 gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
             else:

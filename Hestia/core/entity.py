@@ -109,6 +109,7 @@ class Entity():
         """
         # Download the preview if not local.
         if(not self.__iconDownloaded):
+            # TODO: Move this to versions instead, this should fix the problem with shots and improve UX. 
             self.__icon = self.__manager.link.downloadPreview(entityType=self.__type, entityId=self.__id)
             self.__iconDownloaded = True
         
