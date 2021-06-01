@@ -234,7 +234,7 @@ class Project():
         Args:
             id (int): Category ID.
         """
-        if(id > 0 and id < len(self.__categories)):
+        if(id >= 0 and id < len(self.__categories)):
             self.__currentCategory = id
     
     def addCategory(self, newCategory):

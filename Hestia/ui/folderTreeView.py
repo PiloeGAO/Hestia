@@ -56,12 +56,12 @@ class FolderTreeView(QWidget):
         self.mainLayout.setContentsMargins(0, 0, 0, 0)
 
         # Add type dropdown.
-        self.type = DropDown(name="Type",
+        self.typeDropDown = DropDown(name="Type",
                                 description="The type of category",
                                 datas=self.__availableTypes,
                                 defaultValue=0,
                                 functionToInvoke=self.changeCurrentCategoryType)
-        self.mainLayout.addWidget(self.type)
+        self.mainLayout.addWidget(self.typeDropDown)
 
         # Creating the base of the TreeView (ScrollArea).
         self.scrollArea = QScrollArea()
@@ -85,14 +85,17 @@ class FolderTreeView(QWidget):
         Returns:
             bool: Status.
         """
-        category = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]]
-        if(len(category) > 0):
-            category = category[0]
+        if(len(self.__project.categories) > 0):
+            category = [category for category in self.__project.categories if category.type == self.__availableTypes[self.typeDropDown.currentValue]][0]
         else:
+            self.__manager.logging.error("No category available.")
             return False
         
         if category != None:
             self.__project.currentCategory = self.__project.categories.index(category)
+        else:
+            self.__manager.logging.error("Category invalid.")
+            return False
         
         self.__mainWindow.refreshCategory()
         self.refresh()
@@ -103,7 +106,7 @@ class FolderTreeView(QWidget):
         """
         # Updating variables.
         self.__project    = self.__manager.projects[self.__manager.currentProject]
-        self.__categories = [category for category in self.__project.categories if category.type == self.__availableTypes[self.type.currentValue]]
+        self.__categories = [category for category in self.__project.categories if category.type == self.__project.categories[self.__project.currentCategory].type]
 
         # Updating the grid with a new grid.
         self.grid = GridWidget(manager=self.__manager,
