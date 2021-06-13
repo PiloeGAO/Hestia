@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
-import os, json, sys
+import os, json
 import gazu
 
 from .defaultWrapper    import DefaultWrapper
@@ -154,110 +154,103 @@ class KitsuWrapper(DefaultWrapper):
         # Get, create and add categories to project.
         categories = gazu.asset.all_asset_types_for_project(project)
 
+        if(self.__manager.debug and self.__debugKitsuData):
+            self.__manager.logging.debug(json.dumps(categories, sort_keys=True, indent=4))
+
         for category in categories:
             newCategory = Category(id=category["id"], name=category["name"], description="", type="Assets", rawDatas=category)
             newProject.addCategory(newCategory)
-        
-        if(self.__manager.debug and self.__debugKitsuData):
-            self.__manager.logging.debug(json.dumps(categories, sort_keys=True, indent=4))
-        
-        self.__manager.logging.info("Categories loaded.")
 
-        # Get, create and add assets to categories.
-        assets = gazu.asset.all_assets_for_project(project)
+            # Get, create and add assets to categories.
+            assets = gazu.asset.all_assets_for_project_and_type(project, category)
 
-        for asset in assets:
-            # Get all datas for asset.
-            assetData = gazu.asset.get_asset(asset["id"])
-            
-            if(self.__manager.debug and self.__debugKitsuData):
-                self.__manager.logging.debug(json.dumps(assetData, sort_keys=True, indent=4))
-            
-            # Get tasks for asset.
-            assetTasks = []
-            for assetTask in gazu.task.all_task_types_for_asset(assetData):
-                assetTasks.append([task for task in newProject.tasks if task.id == assetTask["id"]][0])
-            
-            # Output versionning.
-            versions = self.getVersions(newProject, assetData)
+            for asset in assets:
+                
+                if(self.__manager.debug and self.__debugKitsuData):
+                    self.__manager.logging.debug(json.dumps(asset, sort_keys=True, indent=4))
+                
+                # Get tasks for asset.
+                assetTasks = []
+                for assetTask in gazu.task.all_task_types_for_asset(asset["id"]):
+                    assetTasks.append([task for task in newProject.tasks if task.id == assetTask["id"]][0])
+                
+                # Output versionning.
+                versions = self.getVersions(newProject, asset)
 
-            # Buildint the Entity with all datas.
-            newAsset = Entity(manager=self.__manager,
-                                entityType="Assets",
-                                id=asset["id"],
-                                name=asset["name"],
-                                description=asset["description"],
-                                icon="",
-                                tasks=assetTasks,
-                                versions=versions,
-                                rawDatas=asset)
+                # Buildint the Entity with all datas.
+                newAsset = Entity(manager=self.__manager,
+                                    entityType="Assets",
+                                    id=asset["id"],
+                                    name=asset["name"],
+                                    description=asset["description"],
+                                    icon="",
+                                    tasks=assetTasks,
+                                    versions=versions,
+                                    rawDatas=asset)
+                
+                newCategory.addEntity(newAsset)
             
-            assetCategory = [category for category in newProject.categories if category.name == assetData["asset_type_name"]][0]
-            assetCategory.addEntity(newAsset)
-        
-        self.__manager.logging.info("Assets loaded.")
+        self.__manager.logging.info("Categories and assets loaded.")
 
         # Get, create and add sequences to project.
         sequences = gazu.shot.all_sequences_for_project(project)
 
+        if(self.__manager.debug and self.__debugKitsuData):
+            self.__manager.logging.debug(json.dumps(sequences, sort_keys=True, indent=4))
+
         for sequence in sequences:
-            newCategory = Category(id=sequence["id"],
+            newSequence = Category(id=sequence["id"],
                                     name=sequence["name"],
                                     description=sequence["description"],
                                     type="Shots",
                                     rawDatas=sequence)
             
-            newProject.addCategory(newCategory)
-        
-        self.__manager.logging.info("Sequences loaded.")
+            newProject.addCategory(newSequence)
 
-        # Get, create and add shots to sequences.
-        shots = gazu.shot.all_shots_for_project(project)
+            # Get, create and add shots to sequences.
+            shots = gazu.shot.all_shots_for_sequence(sequence)
 
-        for shot in shots:
-            shotData = gazu.shot.get_shot(shot["id"])
+            for shot in shots:
 
-            if(self.__manager.debug and self.__debugKitsuData):
-                self.__manager.logging.debug(json.dumps(shotData, sort_keys=True, indent=4))
+                if(self.__manager.debug and self.__debugKitsuData):
+                    self.__manager.logging.debug(json.dumps(shot, sort_keys=True, indent=4))
 
-            # Get technical datas.
-            nb_frames = 0
+                # Get technical datas.
+                nb_frames = 0
 
-            if(shotData["nb_frames"] != None):
-                nb_frames = shotData["nb_frames"]
+                if(shot["nb_frames"] != None):
+                    nb_frames = shot["nb_frames"]
 
-                if(nb_frames == 0 and 
-                    shotData["frame_in"] != None and shotData["frame_out"] != None):
-                    nb_frames = int(shotData["frame_out"]) - int(shotData["frame_in"])
-            
-            # Get Assets assigned in the shot.
-            assignedAssets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(shotData)]
+                    if(nb_frames == 0 and 
+                        shot["data"]["frame_in"] != None and shot["data"]["frame_out"] != None):
+                        nb_frames = int(shot["data"]["frame_out"]) - int(shot["data"]["frame_in"])
+                
+                # Get Assets assigned in the shot.
+                assignedAssets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(shot["id"])]
 
-            
-            # Get tasks for shot.
-            shotTasks = []
-            for shotTask in gazu.task.all_task_types_for_shot(shotData):
-                shotTasks.append([task for task in newProject.tasks if task.id == shotTask["id"]][0])
+                # Get tasks for shot.
+                shotTasks = []
+                for shotTask in gazu.task.all_task_types_for_shot(shot["id"]):
+                    shotTasks.append([task for task in newProject.tasks if task.id == shotTask["id"]][0])
 
-            # Output versionning.
-            versions = self.getVersions(newProject, shotData)
+                # Output versionning.
+                versions = self.getVersions(newProject, shot)
 
-            newShot = Entity(manager=self.__manager,
-                                entityType="Shots",
-                                id=shot["id"],
-                                name=shot["name"],
-                                description=shot["description"],
-                                icon="",
-                                tasks=shotTasks,
-                                versions=versions,
-                                frameNumber=nb_frames,
-                                assignedAssets=assignedAssets,
-                                rawDatas=shot)
+                newShot = Entity(manager=self.__manager,
+                                    entityType="Shots",
+                                    id=shot["id"],
+                                    name=shot["name"],
+                                    description=shot["description"],
+                                    icon="",
+                                    tasks=shotTasks,
+                                    versions=versions,
+                                    frameNumber=nb_frames,
+                                    assignedAssets=assignedAssets,
+                                    rawDatas=shot)
 
-            shotSequence = [sequence for sequence in newProject.categories if sequence.name == shotData["sequence_name"]][0]
-            shotSequence.addEntity(newShot)
+                newSequence.addEntity(newShot)
 
-        self.__manager.logging.info("Shots loaded.")
+        self.__manager.logging.info("Sequences and shots loaded.")
 
         return newProject
     
@@ -302,7 +295,7 @@ class KitsuWrapper(DefaultWrapper):
         
         return icon_path
     
-    def getVersions(self, project=None, entityData=None):
+    def getVersions(self, project=None, entity=None):
         """Get versions for entity.
 
         Args:
@@ -312,7 +305,7 @@ class KitsuWrapper(DefaultWrapper):
             list:"Version": List of versions.
         """
         versions = []
-        outputs = gazu.files.all_output_files_for_entity(entityData)
+        outputs = gazu.files.all_output_files_for_entity(entity["id"])
 
         for output in outputs:
             task = [task for task in project.tasks if task.id == output["task_type_id"]][0]
