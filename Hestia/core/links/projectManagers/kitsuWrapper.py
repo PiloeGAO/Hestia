@@ -271,20 +271,23 @@ class KitsuWrapper(DefaultWrapper):
         elif(entityType == "Shots"):
             # Shots not supported for now (because "preview_file_id" is set to null in the DB).
             entityData = gazu.shot.get_shot(entityId)
-            return ""
         else:
+            return ""
+        
+        if(entityData["preview_file_id"] == None):
             return ""
         
         # Getting the preview picture.
         icon_path = ""
         tempPath = self.__manager.tempFolder
+        movies_exts = ["avi", "mov", "mkv", "mp4", "m4v"]
 
         try:
             preview_file = gazu.files.get_preview_file(entityData["preview_file_id"])
         except gazu.exception.NotAllowedException:
             self.__manager.logging.debug("%s : Acces refused to preview." % entityData["name"])
         else:
-            if(preview_file["extension"] == "mp4" or bool(preview_file["is_movie"])):
+            if(preview_file["extension"] in movies_exts and not bool(int(self.__manager.preferences.getValue("MANAGER", "downloadVideos")))):
                 self.__manager.logging.debug("%s : Loading movie thumbnail." % entityData["name"])
                 icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
                 gazu.files.download_preview_file_thumbnail(preview_file, icon_path)

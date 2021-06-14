@@ -88,6 +88,7 @@ class Preferences():
         self.__config.set("MANAGER", "onlineUsername", "")
         self.__config.set("MANAGER", "rememberLogin", 1)
         self.__config.set("MANAGER", "loadPreviews", 1)
+        self.__config.set("MANAGER", "downloadVideos", 1)
     
     def loadPreferences(self):
         """Load local preferences.

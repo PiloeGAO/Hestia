@@ -40,6 +40,7 @@ class PreferencesWindow(QWidget):
         self.__currentService       = [i for i,x in enumerate(self.__servicesAvailables) if x.lower() == serviceFromPreferences][0]
 
         self.__loadPreviewStatus    = bool(int(self.__manager.preferences.getValue("MANAGER", "loadPreviews")))
+        self.__downloadVideosStatus = bool(int(self.__manager.preferences.getValue("MANAGER", "downloadVideos")))
         self.__debugMode            = bool(int(self.__manager.preferences.getValue("MANAGER", "debugMode")))
 
         # Initialize UI.
@@ -73,6 +74,12 @@ class PreferencesWindow(QWidget):
         self.loadPreviews.setChecked(self.__loadPreviewStatus)
 
         self.generalSettingsLayout.addWidget(self.loadPreviews)
+
+        self.downloadVideos = QCheckBox("Download videos")
+        self.downloadVideos.setToolTip("Warning: This can slowdown the GUI.")
+        self.downloadVideos.setChecked(self.__downloadVideosStatus)
+
+        self.generalSettingsLayout.addWidget(self.downloadVideos)
 
         self.debugMode = QCheckBox("Debug Mode")
         self.debugMode.setToolTip("Usefull in case of crashes.")
@@ -158,6 +165,7 @@ class PreferencesWindow(QWidget):
         """
         self.__manager.preferences.setValue("MANAGER", "service", self.__servicesAvailables[self.serviceButton.currentValue].lower())
         self.__manager.preferences.setValue("MANAGER", "loadPreviews", str(int(self.loadPreviews.isChecked())))
+        self.__manager.preferences.setValue("MANAGER", "downloadVideos", str(int(self.downloadVideos.isChecked())))
         self.__manager.preferences.setValue("MANAGER", "debugMode", str(int(self.debugMode.isChecked())))
         self.__manager.preferences.savePreferences()
 
