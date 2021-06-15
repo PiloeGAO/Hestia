@@ -5,10 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
-from gazu import asset
-from Hestia.core.category import Category
 from os import path
-import time
 
 global pysideVers
 try:
@@ -22,6 +19,7 @@ except:
     pysideVers = 1
 
 from .iconButton            import IconButton
+from .videoButton           import VideoButton
 from .dropDown              import DropDown
 
 class EntityWidget(QWidget):
@@ -41,6 +39,8 @@ class EntityWidget(QWidget):
         self.__asset        = asset
         
         self.__rootPath = path.dirname(path.abspath(__file__))
+
+        self.__movies_exts = ["avi", "mov", "mkv", "mp4", "m4v"]
 
         self.__defaultIcon = ""
         if(pysideVers == 2):
@@ -74,7 +74,11 @@ class EntityWidget(QWidget):
         self.verticalLayout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
-        self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
+        if(self.__icon.split(".")[len(self.__icon.split("."))-1] in self.__movies_exts):
+            # Video Button.
+            self.iconButton = VideoButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
+        else:
+            self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
         # Version. > Refresh bug here.
