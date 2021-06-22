@@ -74,7 +74,7 @@ class EntityWidget(QWidget):
         self.verticalLayout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
-        if(self.__icon.split(".")[len(self.__icon.split("."))-1] in self.__movies_exts):
+        if(self.__icon.split(".")[len(self.__icon.split("."))-1] in self.__movies_exts and pysideVers != 1):
             # Video Button.
             self.iconButton = VideoButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         else:
