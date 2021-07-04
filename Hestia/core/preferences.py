@@ -89,6 +89,9 @@ class Preferences():
         self.__config.set("MANAGER", "rememberLogin", 1)
         self.__config.set("MANAGER", "loadPreviews", 1)
         self.__config.set("MANAGER", "downloadVideos", 1)
+        
+        self.__config.add_section("MAYA")
+        self.__config.set("MAYA", "useGPUCache", 1)
     
     def loadPreferences(self):
         """Load local preferences.

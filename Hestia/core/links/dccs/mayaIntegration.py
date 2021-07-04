@@ -7,8 +7,6 @@
 """
 import os
 
-import maya
-
 global integrationActive
 
 try:
@@ -40,7 +38,7 @@ class MayaIntegration(DefaultIntegration):
         self._supportInstances      = True # Autodesk Maya support instance by using "References". 
         self._instances             = True
         self._supportScreenshots    = True
-        self.__useGPUCache          = False
+        self.__useGPUCache          = bool(int(self.__manager.preferences.getValue("MAYA", "useGPUCache")))
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -52,7 +50,7 @@ class MayaIntegration(DefaultIntegration):
         self._availableFormats = [".ma", ".mb"]
 
         # Enabling plugins for additional formats
-        pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll"]}
+        pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll", "gpuCache.mll"]}
         for plugin in pluginFormats:
             for subPlugin in pluginFormats[plugin]:
                 loadPluginStatus = self.loadExternalPlugin(pluginName=subPlugin)
@@ -82,7 +80,7 @@ class MayaIntegration(DefaultIntegration):
 
         return pluginActive
     
-    def loadAsset(self, asset=None, version=None):
+    def loadAsset(self, asset=None, version=None, staticAsset=None):
         """Load the selected asset inside of the scene.
 
         Args:
@@ -134,11 +132,28 @@ class MayaIntegration(DefaultIntegration):
         # If nothing is selected or asset isn't the same, start import procedure.
         currentAsset = None    
         # Create a group that will contain asset except for instances.
-        if(not self.isInstanceImport(version=version)):
-            if(self.__useGPUCache):
-                # TODO: ADD GPU CACHE SUPPORT.
-                pass
+        if(not self.isInstanceImport(version=version) or staticAsset == True):
+            # Parse a maya compatible name.
+            groupName = asset.name.replace(" ", "_").replace("-", "_")
+            while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
+                groupName = groupName + "_bis"
+            
+            staticAsset = 1
+
+            if(self.__useGPUCache and version.type == ".abc"):
+                # GPU Caches can only be added throught custom node creation.
+                # source: https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2019/ENU/Maya-ManagingScenes/files/GUID-738736C6-F8D9-4E7F-BB3E-12DE06CD3303-htm.html
+                gpuCacheName = groupName
+                parentName = gpuCacheName + "_transform"
+
+                cmds.createNode("transform", n=parentName)
+                cmds.createNode("gpuCache", n=gpuCacheName, p=parentName)
+                cmds.setAttr(gpuCacheName + ".cacheFileName", str(version.outputPath), type="string")
+                cmds.setAttr(gpuCacheName + ".cacheGeomPath", "|", type="string")
+
+                currentAsset = parentName
             else:
+                self.__manager.logging.warning("Static objects should be ABC files, using legacy mode for importing asset (errors can be added by legacy mode).")
                 # DEPRECATED FUNCTION, ONLY HERE FOR COMPATIBILITY.
                 # Importing the asset and getting the transform node.
                 before = set(cmds.ls(type="transform"))
@@ -147,12 +162,6 @@ class MayaIntegration(DefaultIntegration):
 
                 after = set(cmds.ls(type="transform"))
                 imported = after - before
-
-                staticAsset = 1
-                groupName = asset.name.replace(" ", "_").replace("-", "_")
-
-                while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
-                    groupName = groupName + "_bis"
 
                 # Group need to be created as empty to make sure pivot is in the center of the scene.
                 cmds.group(empty=True, name=groupName, absolute=True)

@@ -259,6 +259,7 @@ class EntityWidget(QWidget):
         # Import assigned assets.
         assets = [entity for entity in currentProject.entities if entity.type == "Assets"]
         for assetID in self.__asset.assignedAssets:
+            staticAsset = True
             # Get the asset from ID.
             assetToImport = [asset for asset in assets if asset.id == assetID][0]
             
@@ -267,19 +268,22 @@ class EntityWidget(QWidget):
             self.assetVersions       = assetToImport.versions
 
             versionToLoad = "Set Dressing"
-            if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+            if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
                 versionToLoad = "Rigging"
-                if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+                staticAsset = False
+                if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
                     versionToLoad = "Modeling"
-                    if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name]) == 0):
+                    staticAsset = True
+                    if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
                         self.currentAssetVersion = None
             
-            self.currentAssetVersion = [assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.name][0] if len(self.assetVersions) > 0 else None
+            self.currentAssetVersion = [assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name][0] if len(self.assetVersions) > 0 else None
 
             if self.currentAssetVersion != None:
                 # Import the version inside of the scene.
                 self.__manager.integration.loadAsset(asset = assetToImport,
-                                                    version = self.currentAssetVersion)
+                                                    version = self.currentAssetVersion,
+                                                    staticAsset = staticAsset)
             else:
                 self.__manager.logging.error("Failed to load %s" % self.assetToImport.name)
 
