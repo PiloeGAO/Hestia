@@ -7,6 +7,8 @@
 """
 import os
 
+import maya
+
 global integrationActive
 
 try:
@@ -35,10 +37,10 @@ class MayaIntegration(DefaultIntegration):
         self._defaultFormat = ".ma"
         self.initializeFileFormats()
 
-        # Autodesk Maya support instance by using "References". 
-        self._supportInstances      = True
+        self._supportInstances      = True # Autodesk Maya support instance by using "References". 
         self._instances             = True
         self._supportScreenshots    = True
+        self.__useGPUCache          = False
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -133,30 +135,48 @@ class MayaIntegration(DefaultIntegration):
         currentAsset = None    
         # Create a group that will contain asset except for instances.
         if(not self.isInstanceImport(version=version)):
-            # Importing the asset and getting the transform node.
-            before = set(cmds.ls(type="transform"))
+            if(self.__useGPUCache):
+                # TODO: ADD GPU CACHE SUPPORT.
+                pass
+            else:
+                # DEPRECATED FUNCTION, ONLY HERE FOR COMPATIBILITY.
+                # Importing the asset and getting the transform node.
+                before = set(cmds.ls(type="transform"))
 
-            self.importAsset(asset=asset, version=version)
+                self.importAsset(asset=asset, version=version)
 
-            after = set(cmds.ls(type="transform"))
-            imported = after - before
+                after = set(cmds.ls(type="transform"))
+                imported = after - before
 
-            staticAsset = 1
-            groupName = asset.name.replace(" ", "_").replace("-", "_")
+                staticAsset = 1
+                groupName = asset.name.replace(" ", "_").replace("-", "_")
 
-            while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
-                groupName = groupName + "_bis"
+                while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
+                    groupName = groupName + "_bis"
 
-            # Group need to be created as empty to make sure pivot is in the center of the scene.
-            cmds.group(empty=True, name=groupName, absolute=True)
-            cmds.parent(imported, groupName, relative=True)
+                # Group need to be created as empty to make sure pivot is in the center of the scene.
+                cmds.group(empty=True, name=groupName, absolute=True)
+                cmds.parent(imported, groupName, relative=True)
 
-            #Rename each object to avoid duplication on second import.
-            for object in imported:
-                cmds.rename(object, "%s_%s" % (groupName, object))
+                #Rename each object to avoid duplication on second import.
+                """
+                for object in imported:
+                    cmds.rename(object, "%s_%s" % (groupName, object))
+                """
 
-            cmds.select(groupName, r=True)
-            currentAsset = cmds.ls(sl=True)[0]
+                cmds.select(groupName, r=True)
+                currentAsset = cmds.ls(sl=True)[0]
+
+            # Make statis assets not keyable.
+            cmds.setAttr(currentAsset + ".translateX",  keyable=False)
+            cmds.setAttr(currentAsset + ".translateY",  keyable=False)
+            cmds.setAttr(currentAsset + ".translateZ",  keyable=False)
+            cmds.setAttr(currentAsset + ".rotateX",     keyable=False)
+            cmds.setAttr(currentAsset + ".rotateY",     keyable=False)
+            cmds.setAttr(currentAsset + ".rotateZ",     keyable=False)
+            cmds.setAttr(currentAsset + ".scaleX",      keyable=False)
+            cmds.setAttr(currentAsset + ".scaleY",      keyable=False)
+            cmds.setAttr(currentAsset + ".scaleZ",      keyable=False)
         else:
             # Importing the asset and getting the reference node.
             before = set(cmds.ls(type="reference"))
