@@ -53,6 +53,8 @@ class EntityWidget(QWidget):
         self.__icon           = asset.icon if path.exists(asset.icon) else self.__defaultIcon
         self.__iconSize       = iconSize
         self.__versions       = asset.versions
+        self.__tasks          = self.getTasks()
+        self.__currentTask    = self.__versions[0].task if len(self.__versions) > 0 else None
         self.__currentVersion = self.__versions[0] if len(self.__versions) > 0 else None
 
         if(len(self.__versions) > 0):
@@ -81,14 +83,34 @@ class EntityWidget(QWidget):
             self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
-        # Version. > Refresh bug here.
-        self.versionDropDown = DropDown(name="Version",
-                                        description="Current version of the asset",
-                                        datas=self.getVersionsNames(),
-                                        defaultValue=0,
-                                        functionToInvoke=self.updateEntity)
-        self.verticalLayout.addWidget(self.versionDropDown)
+        # Task and verisons layout.
+        self.taskAndVersionLayout = QHBoxLayout()
 
+        if(len(self.__versions)>0):
+            # Tasks.
+            self.taskDropDown = DropDown(
+                name="Tasks",
+                description="List of tasks available for the asset.",
+                datas=self.getTasksNames(),
+                defaultValue=0,
+                functionToInvoke=self.updateEntity
+            )
+            self.taskAndVersionLayout.addWidget(self.taskDropDown)
+
+            # Versions.
+            self.versionDropDown = DropDown(
+                name="Version",
+                description="Current version of the asset.",
+                datas=self.getVersionsNames(),
+                defaultValue=0,
+                functionToInvoke=self.updateEntity
+            )
+            self.taskAndVersionLayout.addWidget(self.versionDropDown)
+        else:
+            self.noVersionsLabel = QLabel("No versions availables")
+            self.taskAndVersionLayout.addWidget(self.noVersionsLabel)
+
+        self.verticalLayout.addLayout(self.taskAndVersionLayout)
         self.verticalLayout.addStretch(1)
 
         # Add the main layout to the window.
@@ -119,6 +141,28 @@ class EntityWidget(QWidget):
         else:
             self.__manager.logging.error("Load failed: not supported type.")
     
+    def getTasks(self):
+        tasks = []
+        for version in self.__versions:
+            task = version.task
+            if(task not in tasks):
+                tasks.append(task)
+
+        return tasks
+
+    def getTasksNames(self):
+        """Getting tasks names from version class.
+
+        Returns:
+            list:str: Names.
+        """
+        tasksNames = [task.name for task in self.__tasks]
+
+        if(len(tasksNames) == 0):
+            return ["No tasks available."]
+
+        return tasksNames
+
     def getVersionsNames(self):
         """Getting versions names from version class.
 
@@ -127,7 +171,8 @@ class EntityWidget(QWidget):
         """
         versionsNames = []
         for version in self.__versions:
-            versionsNames.append("%s (%s)" % (version.name, version.type))
+            if(version.task == self.__currentTask):
+                versionsNames.append("%s (%s)" % (version.name, version.type))
         
         if(len(versionsNames) == 0):
             return ["No versions available."]
@@ -138,7 +183,15 @@ class EntityWidget(QWidget):
         """Update the entity widget with the new selected version.
         """
         if(len(self.__versions) > 0):
-            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
+            if(self.__currentTask != self.__tasks[self.taskDropDown.currentValue]):
+                self.__currentTask = self.__tasks[self.taskDropDown.currentValue]
+
+                self.versionDropDown.datas = self.getVersionsNames()
+                self.versionDropDown.currentValue = 0
+
+                self.__currentVersion = [version for version in self.__versions if version.task == self.__currentTask][0]
+            else:
+                self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
 
             self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
             self.iconButton.changeButtonStatus(self.__status)

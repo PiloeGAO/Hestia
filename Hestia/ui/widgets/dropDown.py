@@ -45,6 +45,17 @@ class DropDown(QWidget):
         """
         return self.__currentValue
     
+    @currentValue.setter
+    def currentValue(self, newValue):
+        """Set index of the selected value in dropdown.
+
+        Args:
+            newValue (int): New current value.
+        """
+        self.__currentValue = newValue
+        self.dropDown.setCurrentIndex(newValue)
+        self.update()
+    
     @property
     def datas(self):
         """Returnt the datas stored in the dropdown.

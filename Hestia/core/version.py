@@ -39,7 +39,7 @@ class Version():
             str : The name of the version.
         """
         if(self.__name == ""):
-            return "%s: Revision %s" % (self.__task.name, self.__revisionNumber)
+            return "Revision %s" % self.__revisionNumber
         else:
             return self.__name
     
