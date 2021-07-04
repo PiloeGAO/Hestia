@@ -5,8 +5,10 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
-import shutil, logging
+import shutil
 import tempfile, atexit
+
+from .logger import get_logging
 
 from .preferences                           import Preferences
 
@@ -38,8 +40,7 @@ class Manager():
         self.__debugMode = bool(int(self.__preferences.getValue("MANAGER", "debugMode")))
 
         # Initialize the custom logging system.
-        self.__logging = None
-        self.initializeLogging()
+        self.__logging = get_logging(__name__, self.__debugMode)
 
         # Managing integrations.
         if(integration == "Maya"):
@@ -177,21 +178,6 @@ class Manager():
             str: Manager version.
         """
         return self.__version
-    
-    def initializeLogging(self):
-        """Setup the logging system.
-        """
-        self.__logging = logging.getLogger(__name__)
-        streamHandler = logging.StreamHandler()
-        formatter = logging.Formatter("HESTIA | %(levelname)s @ %(asctime)s | %(message)s")
-        streamHandler.setFormatter(formatter)
-        self.__logging.addHandler(streamHandler)
-        if(self.__debugMode):
-            self.__logging.setLevel(logging.DEBUG)
-        else:
-            self.__logging.setLevel(logging.INFO)
-
-        self.__logging.debug("Logging system setup successfully.")
     
     def addProject(self, project):
         """Add a new project to the projects list.
