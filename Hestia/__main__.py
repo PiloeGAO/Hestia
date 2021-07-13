@@ -21,14 +21,11 @@ if __name__ == "__main__":
         print("Not executed in package.")
         sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-    from Hestia.core.manager    import *
     from Hestia.mainWindow      import MainWindow
 
     app = QApplication(sys.argv)
 
-    manager = start_manager(integration="standalone")
-
-    window = MainWindow(manager=manager)
+    window = MainWindow()
     window.show()
 
     sys.exit(app.exec_()) 

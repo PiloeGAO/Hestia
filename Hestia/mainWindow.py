@@ -18,7 +18,7 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
-from .core.manager          import Manager
+from .core.manager          import *
 
 from .loginWindow           import LoginWindow
 from .publishWindow         import PublishWindow
@@ -36,10 +36,15 @@ class MainWindow(QWidget):
         manager (class: "Manager"): Manager of Hestia.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager, parent=None):
+    def __init__(self, manager=None, integration="standalone",parent=None):
         super(MainWindow, self).__init__(parent=parent)
         # Defining the Manager.
         self.__manager = manager
+        if(self.__manager == None):
+            try:
+                self.__manager = start_manager(integration=integration)
+            except RuntimeError:
+                self.__manager = current_manager()
 
         # TODO: Test this with the correct versions.
         # Display warning message when PySide1 or Python 2 is used.

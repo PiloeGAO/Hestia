@@ -19,14 +19,7 @@ def launchBrowser():
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
     mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
 
-    manager = None
-
-    try:
-        manager = start_manager(integration="Maya")
-    except RuntimeError:
-        manager = current_manager()
-
-    browser = MainWindow(manager=manager, parent=mainWindow)
+    browser = MainWindow(integration="Maya", parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)
     browser.show()
     browser = None
