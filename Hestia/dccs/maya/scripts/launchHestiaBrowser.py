@@ -24,10 +24,7 @@ def launchBrowser():
     try:
         manager = start_manager(integration="Maya")
     except RuntimeError:
-        print("Manager already running.")
         manager = current_manager()
-
-    print("Is manager connected: %s" % manager.link.connected)
 
     browser = MainWindow(manager=manager, parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)

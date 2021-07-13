@@ -19,16 +19,20 @@ class LaunchHestiaBrowser(command):
         import os, sys
         from PySide                 import QtGui
         from Hestia.mainWindow      import MainWindow
-        from Hestia.core.manager    import Manager
+        from Hestia.core.manager    import *
 
-        hestiaManager = Manager(integration="Guerilla")
+        manager = None
+        try:
+            manager = start_manager(integration="Guerilla")
+        except RuntimeError:
+            manager = current_manager()
         
         app = QtGui.QApplication.instance()
         if(app is None):
             app = QtGui.QApplication(sys.argv)
         app.setStyle('Plastique')
 
-        globals()['qtHestiaBrowserWindow'] = MainWindow(manager=hestiaManager)
+        globals()['qtHestiaBrowserWindow'] = MainWindow(manager=manager)
         globals()['qtHestiaBrowserWindow'].show()
 
 cmd = LaunchHestiaBrowser('Hestia Browser')
