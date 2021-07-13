@@ -24,7 +24,7 @@ class Manager():
     Args:
         projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, integration = "standalone", projects = [Project(name="local", description="Local file system.")], **kwargs):
+    def __init__(self, integration = "standalone", projects = None, **kwargs):
         self.__version  = "0.0.5Dev"
 
         # Loading preferences.
@@ -65,7 +65,7 @@ class Manager():
             self.__mode = "local"
             self.__link = DefaultWrapper()
 
-        self.__projects = projects
+        self.__projects = projects if projects != None else [Project(name="local", description="Local file system.")]
         self.__currentProject = 0
     
     @property
@@ -232,3 +232,46 @@ class Manager():
         """Force cleaning temporary folder.
         """
         shutil.rmtree(self.__tempFolder)
+
+#################################################################################
+# Manager management
+#################################################################################
+CURRENT_MANAGER = None
+
+def set_current_manager(manager):
+    """Set the current manager.
+
+    Args:
+        manager (class:`Manager`): Manager instance.
+    """
+    global CURRENT_MANAGER
+    CURRENT_MANAGER = manager
+
+def current_manager():
+    """Get current manager.
+
+    Returns:
+        class:`Manager`: Manager instance.
+    """
+    global CURRENT_MANAGER
+    return CURRENT_MANAGER
+
+def start_manager(*args, **kwargs):
+    """Start a manager.
+
+    Raises:
+        RuntimeError: Manager already started.
+
+    Returns:
+        class:`Manager`: Manager initialized.
+    """
+    if(current_manager()):
+        raise RuntimeError("Manager already stated.")
+    
+    integration = kwargs["integration"] if "integration" in kwargs  else "standalone"
+    projects    = kwargs["projects"]    if "projects"    in kwargs  else None
+
+    manager = Manager(integration, projects)
+    set_current_manager(manager)
+
+    return manager

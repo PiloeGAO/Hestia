@@ -11,7 +11,7 @@ from    shiboken2                       import wrapInstance
 from    PySide2                         import QtWidgets, QtCore
 
 from    Hestia.mainWindow               import MainWindow
-from    Hestia.core.manager             import Manager
+from    Hestia.core.manager             import *
 
 def launchBrowser():
     """ This function load UI in Maya.
@@ -19,7 +19,14 @@ def launchBrowser():
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
     mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
 
-    browser = MainWindow(manager=Manager(integration="Maya"), parent=mainWindow)
+    try:
+        manager = start_manager(integration="Maya")
+    except RuntimeError:
+        print("Manager already running.")
+    else:
+        manager = current_manager()
+
+    browser = MainWindow(manager=manager, parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)
     browser.show()
     browser = None
