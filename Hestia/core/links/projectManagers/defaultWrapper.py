@@ -12,7 +12,7 @@ class DefaultWrapper(object):
     """
     def __init__(self):
         self._username  = getpass.getuser() + "(Local Mode)"
-        self.__active   = False
+        self._active   = False
     
     @property
     def connected(self):
@@ -21,7 +21,7 @@ class DefaultWrapper(object):
         Returns:
             bool: Connection status.
         """
-        return self.__active
+        return self._active
     
     @property
     def username(self):

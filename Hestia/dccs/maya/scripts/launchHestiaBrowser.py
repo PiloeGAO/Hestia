@@ -19,12 +19,15 @@ def launchBrowser():
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
     mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
 
+    manager = None
+
     try:
         manager = start_manager(integration="Maya")
     except RuntimeError:
         print("Manager already running.")
-    else:
         manager = current_manager()
+
+    print("Is manager connected: %s" % manager.link.connected)
 
     browser = MainWindow(manager=manager, parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)

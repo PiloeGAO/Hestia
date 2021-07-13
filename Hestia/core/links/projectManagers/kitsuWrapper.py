@@ -26,7 +26,6 @@ class KitsuWrapper(DefaultWrapper):
         super(KitsuWrapper, self).__init__()
         self.__manager = manager
         self.__api     = api
-        self.__active  = False
         self._username = ""
         self.__userID  = ""
 
@@ -65,7 +64,7 @@ class KitsuWrapper(DefaultWrapper):
             self.__manager.logging.error("API address is incorrect.")
             return False
         else:
-            self.__active = True
+            self._active = True
 
         try:
             gazu.log_in(username, password)
@@ -88,7 +87,7 @@ class KitsuWrapper(DefaultWrapper):
             list: Projects datas.
         """
         self.__manager.logging.info("Getting users open projects.")
-        if(self.__active == False):
+        if(self._active == False):
             return ConnectionError
         
         return gazu.project.all_open_projects()
