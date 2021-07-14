@@ -65,6 +65,7 @@ class Manager():
             self.__mode = "local"
             self.__link = DefaultWrapper()
 
+        # Setup projects.
         self.__projects = projects if projects != None else [Project(name="local", description="Local file system.")]
         self.__currentProject = 0
     

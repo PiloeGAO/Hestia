@@ -10,7 +10,7 @@ from maya import utils
 from maya import cmds
 
 def initHestiaToolsMenu():
-    print("Loading Hestia Menu.")
+    print("Load Hestia.")
 
     # Add a menu to the main window.
     cmds.menu("hestiaToolsMenu", label="Hestia", parent="MayaWindow", tearOff=False)

@@ -66,7 +66,7 @@ Trello Board (with releases notes): https://trello.com/b/90POyZZC/hestia-dev-boa
     - [ ] Local Folders
     - [x] Kitsu (Only for the Asset Browser - Shot assembly is WIP)
 - Assets Browser:
-    - [x] Maya 2020+ [Currently in development]
+    - [x] Maya 2022+ [Currently in development]
     - [ ] Houdini 
     - [ ] Blender 2.93+
     - [ ] Guerilla Render [Currently in development]

@@ -5,8 +5,9 @@
     :version:   0.0.4
     :brief:     Class to start UI from Autodesk Maya.
 '''
+import os
 
-from    maya                            import OpenMayaUI
+from    maya                            import OpenMayaUI, cmds
 from    shiboken2                       import wrapInstance
 from    PySide2                         import QtWidgets, QtCore
 
@@ -17,7 +18,7 @@ def launchBrowser():
     """ This function load UI in Maya.
     """
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
-    mainWindow      = wrapInstance(long(ptr), QtWidgets.QWidget)
+    mainWindow      = wrapInstance(ptr, QtWidgets.QWidget)
 
     browser = MainWindow(integration="Maya", parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)
