@@ -5,9 +5,7 @@
     :version:   0.0.4
     :brief:     Class to start UI from Autodesk Maya.
 '''
-import os
-
-from    maya                            import OpenMayaUI, cmds
+from    maya                            import OpenMayaUI
 from    shiboken2                       import wrapInstance
 from    PySide2                         import QtWidgets, QtCore
 
