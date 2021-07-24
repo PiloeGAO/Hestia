@@ -16,7 +16,6 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
-from .ui.widgets.gridWidget import GridWidget
 from .ui.widgets.dropDown   import DropDown
 
 class PreferencesWindow(QWidget):

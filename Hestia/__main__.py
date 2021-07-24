@@ -5,8 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
-
-from os import sys, path
+import os
+import sys
 
 try:
     from PySide2.QtCore import *
@@ -19,10 +19,10 @@ except:
 if __name__ == "__main__":
     if __package__ is None:
         print("Not executed in package.")
-        sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+        sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-    from Hestia.mainWindow      import MainWindow
-
+    from Hestia.mainWindow import MainWindow
+    
     app = QApplication(sys.argv)
 
     window = MainWindow()

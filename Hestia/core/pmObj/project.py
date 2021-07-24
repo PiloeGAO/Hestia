@@ -3,16 +3,11 @@
     :file:      project.py
     :brief:     Project class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.4
+    :version:   0.0.5
 """
 import os
 
-from . import IOUtils
-
-from Hestia.core.version import Version
-from Hestia.core.task import Task
-from Hestia.core.category import Category
-from Hestia.core.entity import Entity
+from ..IO.path import *
 
 class Project():
     """Project class.
@@ -475,8 +470,8 @@ class Project():
         for category in self.__categories:
             for entity in category.entities:
                 for task in self.__tasks:
-                    IOUtils.makeFolder(self.getFolderpath(exportType="working", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
-                    IOUtils.makeFolder(self.getFolderpath(exportType="output", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
+                    makeFolder(self.getFolderpath(exportType="working", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
+                    makeFolder(self.getFolderpath(exportType="output", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
         
         return True
 

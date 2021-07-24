@@ -7,7 +7,6 @@
 """
 import os
 from datetime               import datetime
-import shutil
 import sys
 
 global pysideVers
@@ -21,7 +20,8 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
-from .core import IOUtils
+from .core.IO.path import *
+from .core.IO.encoding import *
 
 from .ui.widgets.iconButton import IconButton
 from .ui.widgets.dropDown   import DropDown
@@ -230,7 +230,7 @@ class PublishWindow(QWidget):
         self.__manager.integration.takePlayblast(startFrame=-2, endFrame=0, path=path_raw)
 
         path = self.__manager.tempFolder + os.sep + "preview.mp4"
-        conversionStatus = IOUtils.videoConverter(path_raw, path)
+        conversionStatus = videoConverter(path_raw, path)
         os.remove(path_raw)
 
         if(conversionStatus and os.path.isfile(path)):
@@ -265,8 +265,8 @@ class PublishWindow(QWidget):
             self.__mainWindow.hide()
 
             # Create the working and output directories.
-            IOUtils.makeFolder(workingPath)
-            IOUtils.makeFolder(outputPath)
+            makeFolder(workingPath)
+            makeFolder(outputPath)
 
             # Export files from DCC.
             self.__manager.logging.info("Writing the working file.")
@@ -296,7 +296,7 @@ class PublishWindow(QWidget):
             
             # Copy the preview to output folder.
             self.__manager.logging.info("Writing the preview file.")
-            IOUtils.copyFile(self.__screenshotPath, outputPath, newName=previewFilename)
+            copyFile(self.__screenshotPath, outputPath, newName=previewFilename)
             publishPreviewFilePath = outputPath + os.sep + previewFilename + os.path.splitext(self.__screenshotPath)[1]
 
             self.__manager.logging.info("Publishing online.")

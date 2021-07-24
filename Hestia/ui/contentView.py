@@ -15,7 +15,7 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
-from ..core.category        import Category
+from ..core.pmObj.category        import Category
 
 from .widgets.gridWidget    import GridWidget
 from .widgets.entityWidget  import EntityWidget

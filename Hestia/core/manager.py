@@ -3,20 +3,21 @@
     :file:      manager.py
     :brief:     Manager class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.4
+    :version:   0.0.5
 """
 import shutil
-import tempfile, atexit
+import tempfile
+import atexit
 
 from .logger import get_logging
 
-from .preferences                           import Preferences
+from .preferences               import Preferences
 
-from .links.dccs.defaultIntegration         import DefaultIntegration
+from .dccs.defaultIntegration   import DefaultIntegration
 
-from .links.projectManagers.defaultWrapper  import DefaultWrapper
+from .links.defaultWrapper      import DefaultWrapper
 
-from .project                               import Project
+from .pmObj.project             import Project
 
 class Manager():
     """Manager class.
@@ -44,10 +45,10 @@ class Manager():
 
         # Managing integrations.
         if(integration == "Maya"):
-            from .links.dccs.mayaIntegration import MayaIntegration
+            from .dccs.mayaIntegration import MayaIntegration
             self.__integration = MayaIntegration(manager=self)
         elif(integration == "Guerilla"):
-            from .links.dccs.guerillaIntegration import GuerillaIntegration
+            from .dccs.guerillaIntegration import GuerillaIntegration
             self.__integration = GuerillaIntegration(manager=self)
         else:
             self.__integration = DefaultIntegration()
@@ -58,7 +59,7 @@ class Manager():
         
         # Setting up the service.
         if(self.__preferences.getValue("MANAGER", "service") == "kitsu"):
-            from .links.projectManagers.kitsuWrapper    import KitsuWrapper
+            from .links.kitsuWrapper    import KitsuWrapper
             self.__mode = "kitsu"
             self.__link = KitsuWrapper(manager=self, api=self.__preferences.getValue("MANAGER", "onlineHost"))
         else:

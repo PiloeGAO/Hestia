@@ -3,17 +3,18 @@
     :file:      kitsuWrapper.py
     :brief:     Kitsu wrapper class.
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.4
+    :version:   0.0.5
 """
-import os, json
+import os
+import json
 import gazu
 
-from .defaultWrapper    import DefaultWrapper
-from ....core.project   import Project
-from ....core.task      import Task
-from ....core.category  import Category
-from ....core.entity    import Entity
-from ....core.version   import Version
+from .defaultWrapper         import DefaultWrapper
+from ...core.pmObj.project   import Project
+from ...core.pmObj.task      import Task
+from ...core.pmObj.category  import Category
+from ...core.pmObj.entity    import Entity
+from ...core.pmObj.version   import Version
 
 class KitsuWrapper(DefaultWrapper):
     """Kitsu wrapper class.

@@ -1,3 +1,10 @@
+"""
+    :package:   Hestia
+    :file:      manager.py
+    :brief:     Manager class.
+    :author:    PiloeGAO (Leo DEPOIX)
+    :version:   0.0.5
+"""
 import logging
 
 def get_logging(module_name, debug=True):

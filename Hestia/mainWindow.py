@@ -36,7 +36,7 @@ class MainWindow(QWidget):
         manager (class: "Manager"): Manager of Hestia.
         parent (class: "QtWidgets", optional): PyQt parent. Defaults to None.
     """
-    def __init__(self, manager=None, integration="standalone",parent=None):
+    def __init__(self, manager=None, integration="standalone", parent=None):
         super(MainWindow, self).__init__(parent=parent)
         # Defining the Manager.
         self.__manager = manager
