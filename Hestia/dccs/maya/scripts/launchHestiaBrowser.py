@@ -16,7 +16,7 @@ def launchBrowser():
     """ This function load UI in Maya.
     """
     ptr             = OpenMayaUI.MQtUtil.mainWindow()
-    mainWindow      = wrapInstance(ptr, QtWidgets.QWidget)
+    mainWindow      = wrapInstance(int(ptr), QtWidgets.QWidget)
 
     browser = MainWindow(integration="Maya", parent=mainWindow)
     browser.setWindowFlags(QtCore.Qt.Window)
