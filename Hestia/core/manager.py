@@ -10,6 +10,7 @@ import tempfile
 import atexit
 
 from .logger import get_logging
+from .exceptions import CoreError
 
 from .preferences               import Preferences
 
@@ -268,7 +269,7 @@ def start_manager(*args, **kwargs):
         class:`Manager`: Manager initialized.
     """
     if(current_manager()):
-        raise RuntimeError("Manager already stated.")
+        raise CoreError("Manager already started.")
     
     integration = kwargs["integration"] if "integration" in kwargs  else "standalone"
     projects    = kwargs["projects"]    if "projects"    in kwargs  else None
