@@ -36,11 +36,11 @@ class CategoryWidget(QWidget):
         self.__category     = category
         self.__categoryID   = self.__project.categories.index(self.__category)
 
-        self.__currentCategoryID = self.__project.currentCategory
-        self.__currentCategory = self.__project.categories[self.__currentCategoryID]
+        self.__current_categoryID = self.__project.current_category
+        self.__current_category = self.__project.categories[self.__current_categoryID]
 
         self.active = 1
-        if(self.__currentCategory == self.__category):
+        if(self.__current_category == self.__category):
             self.active = 0
 
         self.initUI()
@@ -54,15 +54,15 @@ class CategoryWidget(QWidget):
         self.categoryButton = IconButton(name=self.__category.name,
                                          description=self.__category.description,
                                          status=self.active,
-                                         functionToInvoke=self.setCurrentCategory)
+                                         functionToInvoke=self.set_current_category)
         
         self.mainLayout.addWidget(self.categoryButton)
 
         self.setLayout(self.mainLayout)
     
-    def setCurrentCategory(self):
+    def set_current_category(self):
         """Change the current category of the project.
         """
-        self.__manager.projects[self.__manager.currentProject].currentCategory = self.__categoryID
+        self.__manager.projects[self.__manager.currentProject].current_category = self.__categoryID
         self.__parent.refresh()
         self.__mainWindow.refreshCategory()

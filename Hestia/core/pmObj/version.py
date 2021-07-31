@@ -7,68 +7,27 @@
 """
 from os import path
 
-class Version():
-    def __init__(self, id="", name="", description="", task=None, workingPath="", outputPath="", type="", revisionNumber=0, **kwargs):
-        self.__id               = id
-        self.__name             = name
-        self.__description      = description
-        self.__task             = task
-        
-        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
+from .entity import Entity
 
-        self.__workingPath      = workingPath
-        self.__outputPath       = outputPath
+class Version(Entity):
+    """Version class.
 
-        self.__revisionNumber   = revisionNumber
-        self.__type = path.splitext(self.__outputPath)[1] if type == "" else type
-    
-    @property
-    def id(self):
-        """Get the id of the version.
+    Args:
+        task (class:`Task`, optional): Task assigned to this version. Defaults to None.
+        working_path (str, optional): Path to working file. Defaults to "".
+        output_path (str, optional): Path to output file. Defaults to "".
+        type (str, optional): Output filetype. Defaults to "".
+        revision_number (int, optional): Current version number. Defaults to 0.
+    """
+    def __init__(self, task=None, working_path="", output_path="", type="", revision_number=0, *args, **kwargs):
+        super(Version, self).__init__(*args, **kwargs)
+        self._task             = task
 
-        Returns:
-            str: Version's ID.
-        """
-        return self.__id
-    
-    @property
-    def name(self):
-        """Get the name of the version.
+        self._working_path     = working_path
+        self._output_path      = output_path
 
-        Returns:
-            str : The name of the version.
-        """
-        if(self.__name == ""):
-            return "Revision %s" % self.__revisionNumber
-        else:
-            return self.__name
-    
-    @name.setter
-    def name(self, name):
-        """Set the name of the version.
-
-        Args:
-            name (str): The name of the version
-        """
-        self.__name = name
-    
-    @property
-    def description(self):
-        """Get the description of the version.
-
-        Returns:
-            str : The description of the version.
-        """
-        return self.__description
-    
-    @description.setter
-    def description(self, description):
-        """Set the description of the version.
-
-        Args:
-            description (str): The description of the version
-        """
-        self.__description = description
+        self._revision_number  = revision_number
+        self._type = path.splitext(self._output_path)[1] if type == "" else type
     
     @property
     def task(self):
@@ -77,52 +36,43 @@ class Version():
         Returns:
             class:`Task`: The task of the version.
         """
-        return self.__task
-    
-    @property
-    def rawDatas(self):
-        """Get the raw datas of the class.
-
-        Returns:
-            dict: Raw datas
-        """
-        return self.__rawDatas
+        return self._task
         
     @property
-    def workingPath(self):
+    def working_path(self):
         """Get the working path of the version.
 
         Returns:
             str : The working path of the version.
         """
-        return self.__workingPath
+        return self._working_path
     
-    @workingPath.setter
-    def workingPath(self, workingPath):
+    @working_path.setter
+    def working_path(self, working_path):
         """Set the working path of the version.
 
         Args:
-            workingPath (str): The working path of the version
+            working_path (str): The working path of the version
         """
-        self.__workingPath = workingPath
+        self._working_path = working_path
         
     @property
-    def outputPath(self):
+    def output_path(self):
         """Get the output path of the version.
 
         Returns:
             str : The output path of the version.
         """
-        return self.__outputPath
+        return self._output_path
     
-    @outputPath.setter
-    def outputPath(self, outputPath):
+    @output_path.setter
+    def output_path(self, output_path):
         """Set the output path of the version.
 
         Args:
-            outputPath (str): The output path of the version
+            output_path (str): The output path of the version
         """
-        self.__outputPath = outputPath
+        self._output_path = output_path
         
     @property
     def type(self):
@@ -131,7 +81,7 @@ class Version():
         Returns:
             str : The output type of the version.
         """
-        return self.__type
+        return self._type
     
     @type.setter
     def type(self, type):
@@ -140,13 +90,13 @@ class Version():
         Args:
             type (str): The output type of the version
         """
-        self.__type = type
+        self._type = type
         
     @property
-    def revisionNumber(self):
+    def revision_number(self):
         """Get the revision number of the version.
 
         Returns:
             int : The revision number of the version.
         """
-        return self.__revisionNumber
+        return self._revision_number

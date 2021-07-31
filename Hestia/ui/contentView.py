@@ -37,9 +37,9 @@ class ContentView(QWidget):
         
         self.__rootPath     = os.path.dirname(os.path.abspath(__file__))
 
-        self.__category     = Category(name="Empty", type="Assets")
+        self.__category     = Category(name="Empty")
         if(len(self.__project.categories) > 0):
-            self.__category = self.__project.categories[self.__project.currentCategory]
+            self.__category = self.__project.categories[self.__project.current_category]
 
         self.__entities = self.__category.entities
 
@@ -85,9 +85,9 @@ class ContentView(QWidget):
         # Updating variables.
         self.__project  = self.__manager.projects[self.__manager.currentProject]
 
-        self.__category = Category(name="Empty", type="Assets")
+        self.__category = Category(name="Empty")
         if(len(self.__project.categories) > 0):
-            self.__category = self.__project.categories[self.__project.currentCategory]
+            self.__category = self.__project.categories[self.__project.current_category]
 
         self.__entities = self.__category.entities
 

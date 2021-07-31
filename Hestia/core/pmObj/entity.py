@@ -6,45 +6,23 @@
     :version:   0.0.5
 """
 
-class Entity():
+class Entity(object):
     """Entity class.
 
     Args:
-        manager (class: "Manager"): The Hestia Manager.
-        entityType (str): Entity's type. Defaults to "Assets".
         id (str): Entity's ID. Defaults to "".
         name (str, optional): Entity's name. Defaults to "".
         description (str, optional): Entity's description. Defaults to "".
-        icon (str, optional): Entity's icon. Defaults to "".
         tasks (list: class: "Task"): Entity's tasks. Defaults to [].
-        versions (list: class: "Version"): Entity's version. Defaults to [].
+        raw_datas (dict): Raw datas from DB. Defaults to {}.
     """
-    def __init__(self, manager, entityType = "Assets", id = "", name = "", description = "", icon = "", tasks=[], versions=[], **kwargs):
-        self.__manager      = manager
-        # Common datas.
-        self.__type         = entityType
-        self.__id           = id
-        self.__name         = name
-        self.__description  = description
+    def __init__(self, id = "", name = "", description = "", tasks=[], raw_datas={}, *args, **kwargs):
+        self._id           = id
+        self._name         = name
+        self._description  = description
+        self._tasks        = tasks
 
-        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
-
-        self.__iconDownloaded = False
-        self.__icon         = icon
-        self.__tasks        = tasks
-        self.__versions     = versions
-        
-        # Shot specific datas.
-        self.__frameNumber = int(kwargs["frameNumber"]) if "frameNumber" in kwargs else 0
-        self.__assignedAssets = kwargs["assignedAssets"] if "assignedAssets" in kwargs else []
-
-    @property
-    def type(self):
-        """Get the type of entity.
-        Returns:
-            str: Entity type.
-        """
-        return self.__type
+        self._raw_datas     = raw_datas
 
     @property
     def id(self):
@@ -53,7 +31,7 @@ class Entity():
         Returns:
             str: Entity's ID.
         """
-        return self.__id
+        return self._id
     
     @property
     def name(self):
@@ -62,7 +40,7 @@ class Entity():
         Returns:
             str : The name of the entity.
         """
-        return self.__name
+        return self._name
     
     @name.setter
     def name(self, name):
@@ -71,7 +49,7 @@ class Entity():
         Args:
             name (str): The name of the entity
         """
-        self.__name = name
+        self._name = name
     
     @property
     def description(self):
@@ -80,7 +58,7 @@ class Entity():
         Returns:
             str : The description of the entity.
         """
-        return self.__description
+        return self._description
     
     @description.setter
     def description(self, description):
@@ -89,84 +67,51 @@ class Entity():
         Args:
             description (str): The description of the entity
         """
-        self.__description = description
+        self._description = description
     
     @property
-    def rawDatas(self):
+    def raw_datas(self):
         """Get the raw datas of the class.
 
         Returns:
             dict: Raw datas
         """
-        return self.__rawDatas
-        
-    @property
-    def icon(self):
-        """Get the icon of the entity.
-
-        Returns:
-            str : The icon of the entity.
-        """
-        # Download the preview if not local.
-        if(not self.__iconDownloaded):
-            # TODO: Move this to versions instead, this should fix the problem with shots and improve UX. 
-            self.__icon = self.__manager.link.downloadPreview(entityType=self.__type, entityId=self.__id)
-            self.__iconDownloaded = True
-        
-        return self.__icon
+        return self._raw_datas
     
-    @icon.setter
-    def icon(self, icon):
-        """Set the icon of the entity.
+    @raw_datas.setter
+    def raw_datas(self, new_datas):
+        """Set the raw datas of the entity.
 
         Args:
-            icon (str): The icon of the entity
+            new_datas (dict): Raw datas
         """
-        self.__icon = icon
-        self.__iconDownloaded = True
-    
+        self._raw_datas = new_datas
+
     @property
     def tasks(self):
         """Get tasks of the entity.
 
         Returns:
-            list: class:`Task`: Task of the entity.
+            list: class:`Task`: Tasks of the entity.
         """
-        return self.__tasks
+        return self._tasks
     
-    @property
-    def versions(self):
-        """Get versions of the entity.
-
-        Returns:
-            list : Versions of the entity.
-        """
-        return self.__versions
-    
-    @versions.setter
-    def versions(self, versions):
-        """Set versions of the entity.
+    @tasks.setter
+    def tasks(self, new_tasks):
+        """Set tasks of the entity.
 
         Args:
-            versions (list): Versions of the entity
+            new_tasks (list: class`Task`): Tasks of the entity.
         """
-        self.__versions = versions
+        self._tasks = new_tasks
     
-    # Shot specific datas.
-    @property
-    def frameNumber(self):
-        """Get the shot duration in frames.
+    def add_task(self, new_task):
+        """Add a task to entity.
 
-        Returns:
-            int: Shot duration.
+        Args:
+            new_task (class: `Task`): Task to be added.
         """
-        return self.__frameNumber
+        if(new_task in self._tasks):
+            raise CoreError("A task can't be added twice to an entity.")
         
-    @property
-    def assignedAssets(self):
-        """Get assigned to the shot.
-
-        Returns:
-            list: str: Assets IDs.
-        """
-        return self.__assignedAssets
+        self._tasks.append(new_task)

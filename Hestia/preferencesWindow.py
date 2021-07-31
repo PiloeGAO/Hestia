@@ -168,7 +168,7 @@ class PreferencesWindow(QWidget):
         """Build project foldertree.
         """
         self.__manager.logging.info("Folder tree generation started.")
-        self.__manager.projects[self.__manager.currentProject].buildFolderTree()
+        self.__manager.projects[self.__manager.currentProject].build_folder_tree()
         self.__manager.logging.info("Folder tree successfully generated.")
     
     def savePreferences(self):

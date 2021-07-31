@@ -7,12 +7,23 @@
 """
 import getpass
 
+from ..pmObj.user import User
+
+from ..exceptions import CoreError
+
 class DefaultWrapper(object):
     """Default wrapper class.
+
+    Args:
+        manager (class: `Manager`): The Hestia Manager.
     """
-    def __init__(self):
-        self._username  = getpass.getuser() + "(Local Mode)"
-        self._active   = False
+    def __init__(self, manager=None):
+        self._manager       = manager
+
+        self._current_user  = User(username=getpass.getuser() + "(Local Mode)")
+        self._active        = False
+
+        self._users         = []
     
     @property
     def connected(self):
@@ -30,17 +41,17 @@ class DefaultWrapper(object):
         Returns:
             str: Username.
         """
-        return self._username
+        return self._current_user.username
     
-    def getOpenProjects(self):
+    def get_open_projects(self):
         """Get open project.
 
         Returns:
             NotImplementedError: Projects not implemented.
         """
-        return NotImplementedError
+        raise CoreError("Not implemented in the default wrapper.")
     
-    def getDatasFromProject(self, project):
+    def get_datas_from_project(self, project):
         """Get data for the selected project.
 
         Args:
@@ -49,4 +60,15 @@ class DefaultWrapper(object):
         Returns:
             NotImplementedError: Projects not implemented.
         """
-        return NotImplementedError
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def convert_templates(self, raw_datas={}):
+        """Convert templates for project path management to Hestia.
+        
+        Args:
+            raw_datas (dict): Data from project request.
+        
+        Returns:
+            dict: Path templates
+        """
+        raise CoreError("Not implemented in the default wrapper.")

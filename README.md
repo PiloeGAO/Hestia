@@ -1,5 +1,6 @@
 # Hestia
 **Project in active development! Please don't use it in production.**
+**Python 2.7+ is no longer supported, please use Python 3.7+.**
 
 A production management system for CGI/VFX productions.
 
@@ -28,16 +29,10 @@ Download pre-build binaries for [FFMPEG](https://www.ffmpeg.org/) (Needed for pl
 
 ## Installation
 
-1. Create a virtual environment for Python2.7 or Python 3.8.
+1. Create a virtual environment for Python 3.7+.
 
 2. Use the package manager [pip](https://pip.pypa.io/en/stable/) to install libraries.
 
-For Python 2.7 [**Deprecated**]:
-```bash
-pip install -r requirements2.txt
-```
-
-For Python 3.8:
 ```bash
 pip install -r requirements3.txt
 ```

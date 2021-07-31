@@ -5,89 +5,26 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+from .entity import Entity
 
-class Category():
+class Category(Entity):
     """Category class.
-
-    Args:
-        id (str, optional): Category's ID. Defaults to "".
-        name (str, optional): Catgeory's name. Defaults to "".
-        description (str, optional): Category's description. Defaults to "".
-        type (str, optional): Category's type (must be "Assets" or "Shots"). Defaults to "".
     """
-    def __init__(self, id="", name="", description="", type="", **kwargs):
-        self.__id               = id
-        self.__name             = name
-        self.__description      = description
-        self.__type             = type
+    def __init__(self, *args, **kwargs):
+        super(Category, self).__init__(*args, **kwargs)
         
-        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
-
-        self.__entities         = []
-
-    @property
-    def id(self):
-        """Get the id of the category.
-
-        Returns:
-            str: Category's ID.
-        """
-        return self.__id
-
-    @property
-    def name(self):
-        """Get the name of the category.
-
-        Returns:
-            str: Category's name.
-        """
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        """Set the name fo the category.
-
-        Args:
-            name (str): Category's name.
-        """
-        self.__name = name
-    
-    @property
-    def description(self):
-        """Get the description of the category.
-
-        Returns:
-            str: Category's description.
-        """
-        return self.__description
-
-    @description.setter
-    def description(self, description):
-        """Set the description of the category.
-
-        Args:
-            description (str): Category's description.
-        """
-        self.__description = description
+        self._type = kwargs.get("type", "Asset")
+        self._entities = []
     
     @property
     def type(self):
         """Get the type of the category.
 
         Returns:
-            str: Category's type.
+            str: Category type.
         """
-        return self.__type
-    
-    @property
-    def rawDatas(self):
-        """Get the raw datas of the class.
+        return self._type
 
-        Returns:
-            dict: Raw datas
-        """
-        return self.__rawDatas
-    
     @property
     def entities(self):
         """Get the entities stored in the category.
@@ -95,7 +32,7 @@ class Category():
         Returns:
             list: Category's entities.
         """
-        return self.__entities
+        return self._entities
     
     @entities.setter
     def entities(self, entities):
@@ -104,12 +41,12 @@ class Category():
         Args:
             entities (list): Category's entities.
         """
-        self.__entities = entities
+        self._entities = entities
     
-    def addEntity(self, entity):
+    def add_entity(self, entity):
         """Add an entity to the category.
 
         Args:
             entity (class: "Entity"): New entity to add.
         """
-        self.__entities.append(entity)
+        self._entities.append(entity)

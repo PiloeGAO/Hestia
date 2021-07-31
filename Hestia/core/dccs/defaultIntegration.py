@@ -10,7 +10,7 @@ class DefaultIntegration(object):
     """Default integration class.
     """
     def __init__(self, manager=None):
-        self.__manager = manager
+        self._manager = manager
         
         self._name = "standalone"
 
@@ -183,11 +183,11 @@ class DefaultIntegration(object):
         """
         return NotImplementedError
     
-    def takePlayblast(self, startFrame, endFrame, path):
+    def takePlayblast(self, start_frame, endFrame, path):
         """Take a playblast of the scene.
 
         Args:
-            startFrame (int): Start frame.
+            start_frame (int): Start frame.
             endFrame (int): End frame.
             path (sty): Ouput path.
 

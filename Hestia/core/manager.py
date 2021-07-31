@@ -9,8 +9,9 @@ import shutil
 import tempfile
 import atexit
 
-from .logger import get_logging
-from .exceptions import CoreError
+from .logger                    import get_logging
+from .exceptions                import CoreError
+from .IO.path                   import FileManager
 
 from .preferences               import Preferences
 
@@ -44,6 +45,9 @@ class Manager():
         # Initialize the custom logging system.
         self.__logging = get_logging(__name__, self.__debugMode)
 
+        # Remove temp directory at exit (standalone only).
+        atexit.register(shutil.rmtree, FileManager().temp_directory)
+
         # Managing integrations.
         if(integration == "Maya"):
             from .dccs.mayaIntegration import MayaIntegration
@@ -53,10 +57,6 @@ class Manager():
             self.__integration = GuerillaIntegration(manager=self)
         else:
             self.__integration = DefaultIntegration()
-
-        # Temporary folder path.
-        self.__tempFolder = tempfile.mkdtemp()
-        atexit.register(shutil.rmtree, self.__tempFolder)
         
         # Setting up the service.
         if(self.__preferences.getValue("MANAGER", "service") == "kitsu"):
@@ -97,15 +97,6 @@ class Manager():
             class: "DefaultIntegration" : Get the integration class to communicate with the DCC.
         """
         return self.__integration
-
-    @property
-    def tempFolder(self):
-        """Get the temporary folder of this instance.
-
-        Returns:
-            str: Folder Path.
-        """
-        return self.__tempFolder
 
     @property
     def projects(self):
@@ -221,20 +212,15 @@ class Manager():
             isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
 
             if(isUserLoged):
-                openProjects = self.__link.getOpenProjects()
+                openProjects = self.__link.get_open_projects()
 
                 for project in openProjects:
-                    self.addProject(self.__link.getDatasFromProject(project))
+                    self.addProject(self.__link.get_datas_from_project(project))
                 
                 return True
 
             return False
         return False
-    
-    def cleanTemporaryFolder(self):
-        """Force cleaning temporary folder.
-        """
-        shutil.rmtree(self.__tempFolder)
 
 #################################################################################
 # Manager management

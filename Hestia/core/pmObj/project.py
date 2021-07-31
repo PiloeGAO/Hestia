@@ -7,139 +7,35 @@
 """
 import os
 
+from .entity import Entity
+
 from ..IO.path import *
 
-class Project():
+class Project(Entity):
     """Project class.
-
-    Args:
-        id (str, optional): Project's ID. Defaults to "".
-        name (str, optional): Project's name. Defaults to "".
-        description (str, optional): Project's description. Defaults to "".
     """
-    def __init__(self, id="", name="", description="", tasks=[], **kwargs):
-        # Project name.
-        self.__id           = id
-        self.__name         = name
-        self.__description  = description
-        self.__tasks        = tasks
-        
-        self.__rawDatas = kwargs["rawDatas"] if "rawDatas" in kwargs else ""
+    def __init__(self, *args, **kwargs):
+        super(Project, self).__init__(*args, **kwargs)
 
         # Project technical datas.
-        self.__framerate = int(float(kwargs["fps"])) if "fps" in kwargs else 0
-        self.__ratio = kwargs["ratio"] if "ratio" in kwargs else ""
-        self.__resolution = int(kwargs["resolution"]) if "resolution" in kwargs else 1080
-        self.__startFrame = int(kwargs["startFrame"]) if "startFrame" in kwargs else 1000
-        self.__preRoll = int(kwargs["preRoll"]) if "preRoll" in kwargs else 24
-        self.__postRoll = int(kwargs["postRoll"]) if "postRoll" in kwargs else 24
+        self._framerate         = float(kwargs.get("fps", 0))
+        self._ratio             = kwargs.get("ratio", "")
+        self._resolution        = int(kwargs.get("resolution", 1080))
+        self._start_frame       = int(kwargs.get("start_frame", 1000))
+        self._pre_roll          = int(kwargs.get("pre_roll", 24))
+        self._post_roll         = int(kwargs.get("_post_roll", 24))
+
+        # Project team.
+        self._team = []
 
         # Project categories.
-        self.__categories   = []
-        self.__currentCategory = 0
+        self._categories        = []
+        self._current_category  = 0
 
-        # Project file management.
-        self.__supportFileTree = False
-        self.__mountPoint = str(kwargs["mountPoint"]) if "mountPoint" in kwargs else ""
-        self.__rootPoint = str(kwargs["rootPoint"]) if "rootPoint" in kwargs else ""
-        self.__outputFilenameAsset = str(kwargs["outputFilenameAsset"]) if "outputFilenameAsset" in kwargs else ""
-        self.__outputFilenameShot = str(kwargs["outputFilenameShot"]) if "outputFilenameShot" in kwargs else ""
-        self.__outputFolderPathAsset = str(kwargs["outputFolderPathAsset"]) if "outputFolderPathAsset" in kwargs else ""
-        self.__outputFolderPathShot = str(kwargs["outputFolderPathShot"]) if "outputFolderPathShot" in kwargs else ""
-        self.__workingFilenameAsset = str(kwargs["workingFilenameAsset"]) if "workingFilenameAsset" in kwargs else ""
-        self.__workingFilenameShot = str(kwargs["workingFilenameShot"]) if "workingFilenameShot" in kwargs else ""
-        self.__workingFolderPathAsset = str(kwargs["workingFolderPathAsset"]) if "workingFolderPathAsset" in kwargs else ""
-        self.__workingFolderPathShot = str(kwargs["workingFolderPathShot"]) if "workingFolderPathShot" in kwargs else ""
+        # Path manager
+        self._paths_template    = kwargs.get("paths_template", {})
+        self._support_filetree  = True if self._paths_template != {} else False
 
-        if(os.path.isdir(self.__mountPoint) and self.__rootPoint != ""
-            and self.__outputFilenameAsset != "" and self.__outputFilenameShot !=""
-            and self.__outputFolderPathAsset != "" and self.__outputFolderPathShot != ""
-            and self.__workingFilenameAsset != "" and self.__workingFilenameShot != ""
-            and self.__workingFolderPathAsset != "" and self.__workingFolderPathShot != ""):
-            self.__supportFileTree = True
-        
-        self.__specialCharactersList = [" ", "-", "'", "\"", "`", "^"]
-    
-    @property
-    def id(self):
-        """Get the id of the project.
-
-        Returns:
-            str: Project's ID.
-        """
-        return self.__id
-
-    @property
-    def name(self):
-        """Get the name of the project.
-
-        Returns:
-            str: Project's name.
-        """
-        return self.__name
-
-    @name.setter
-    def name(self, name):
-        """Set the name fo the project.
-
-        Args:
-            name (str): Project's name.
-        """
-        self.__name = name
-    
-    @property
-    def description(self):
-        """Get the description of the project.
-
-        Returns:
-            str: Project's description.
-        """
-        return self.__description
-
-    @description.setter
-    def description(self, description):
-        """Set the description fo the project.
-
-        Args:
-            description (str): Project's description.
-        """
-        self.__description = description
-    
-    @property
-    def tasks(self):
-        """Get the tasks of the projects.
-
-        Returns:
-            list(class:`Task`): Tasks.
-        """
-        return self.__tasks
-    
-    @tasks.setter
-    def tasks(self, tasks):
-        """Set the tasks of the project.
-
-        Args:
-            tasks (list: class:`Tasks`): New tasks.
-        """
-        self.__tasks = tasks
-    
-    def addTask(self, newTask):
-        """Add a task to project.
-
-        Args:
-            newTask (class: "Task"): New task to add.
-        """
-        self.__tasks.append(newTask)
-    
-    @property
-    def rawDatas(self):
-        """Get the raw datas of the class.
-
-        Returns:
-            dict: Raw datas
-        """
-        return self.__rawDatas
-    
     @property
     def framerate(self):
         """Get the framerate of the project.
@@ -147,7 +43,7 @@ class Project():
         Returns:
             str: Project's framerate.
         """
-        return self.__framerate
+        return self._framerate
     
     @property
     def ratio(self):
@@ -156,7 +52,7 @@ class Project():
         Returns:
             str: Project's ratio.
         """
-        return self.__ratio
+        return self._ratio
 
     @property
     def resolution(self):
@@ -169,31 +65,31 @@ class Project():
         return 1920, 1080
     
     @property
-    def startFrame(self):
+    def start_frame(self):
         """Get the start frame value of the project.
 
         Returns:
             int: Frame number.
         """
-        return self.__startFrame
+        return self._start_frame
 
     @property
-    def preRoll(self):
+    def pre_roll(self):
         """Get the pre-roll value of the project.
 
         Returns:
             int: Frame number.
         """
-        return self.__preRoll
+        return self._pre_roll
     
     @property
-    def postRoll(self):
+    def post_roll(self):
         """Get the post-roll value of the project.
 
         Returns:
            int: Frame number
         """
-        return self.__postRoll
+        return self._post_roll
 
     @property
     def categories(self):
@@ -202,7 +98,7 @@ class Project():
         Returns:
             list: Project's categories.
         """
-        return self.__categories
+        return self._categories
     
     @categories.setter
     def categories(self, categories):
@@ -211,34 +107,60 @@ class Project():
         Args:
             categories (list): Project's categories.
         """
-        self.__categories = categories
+        self._categories = categories
     
     @property
-    def currentCategory(self):
+    def current_category(self):
         """Get the current category of the project.
 
         Returns:
             int: Category ID.
         """
-        return self.__currentCategory
+        return self._current_category
     
-    @currentCategory.setter
-    def currentCategory(self, id):
+    @current_category.setter
+    def current_category(self, id):
         """Set the current category of the project.
 
         Args:
             id (int): Category ID.
         """
-        if(id >= 0 and id < len(self.__categories)):
-            self.__currentCategory = id
+        if(id >= 0 and id < len(self._categories)):
+            self._current_category = id
     
-    def addCategory(self, newCategory):
+    def add_category(self, new_category):
         """Add a category to project.
 
         Args:
-            newCategory (class: "Category"): New category to add.
+            new_category (class: "Category"): New category to add.
         """
-        self.__categories.append(newCategory)
+        self._categories.append(new_category)
+    
+    @property
+    def team(self):
+        """Get the team working on the project.
+
+        Returns:
+            list: class:`User`: Team members.
+        """
+        return self._team
+
+    @team.setter
+    def team(self, new_team):
+        """Set the team working on the project.
+
+        Args:
+            new_team (list: class:`User`): Team members.
+        """
+        self._team = new_team
+
+    def add_team_member(self, user):
+        """Add a member to the team.
+
+        Args:
+            user (class:`User`): User to add to the team.
+        """
+        self._team.append(user)
     
     @property
     def entities(self):
@@ -250,236 +172,31 @@ class Project():
         # TODO: Move to comprehensive list.
         entities = []
         if(len(self.categories) > 0):
-            for category in self.__categories:
+            for category in self._categories:
                 for entity in category.entities:
                     entities.append(entity)
         return entities
 
     @property
-    def outputFilenameAsset(self):
-        """Get the filename structure (output only) for assets.
-
-        Returns:
-            str: Output filename for assets.
-        """
-        return self.__outputFilenameAsset
-    
-    @property
-    def outputFilenameShot(self):
-        """Get the filename structure (output only) for shots.
-
-        Returns:
-            str: Output filename for shots.
-        """
-        return self.__outputFilenameShot
-
-    @property
-    def outputFolderpathAsset(self):
-        """Get the folder path structure (output only) for assets.
-
-        Returns:
-            str: Output folder path for assets.
-        """
-        return self.__mountPoint + self.__rootPoint + os.sep + self.__outputFolderPathAsset.replace("<Project>", self.__name, 1)
-    
-    @property
-    def outputFolderpathShot(self):
-        """Get the folder path structure (output only) for shots.
-
-        Returns:
-            str: Output folder path for shot.
-        """
-        return self.__mountPoint + self.__rootPoint + os.sep + self.__outputFolderPathShot.replace("<Project>", self.__name, 1)
-    
-    @property
-    def workingFilenameAsset(self):
-        """Get the filename structure (working files only) for assets.
-
-        Returns:
-            str: Output filename for assets.
-        """
-        return self.__workingFilenameAsset
-    
-    @property
-    def workingFilenameShot(self):
-        """Get the filename structure (working files only) for assets.
-
-        Returns:
-            str: Output filename for shots.
-        """
-        return self.__workingFilenameShot
-
-    @property
-    def workingFolderpathAsset(self):
-        """Get the folder path structure (working files only) for assets.
-
-        Returns:
-            str: Output folder path for assets.
-        """
-        return self.__mountPoint + self.__rootPoint + os.sep + self.__workingFolderPathAsset.replace("<Project>", self.__name, 1)
-    
-    @property
-    def workingFolderpathShot(self):
-        """Get the folder path structure (working files only) for shots.
-
-        Returns:
-            str: Output folder path for shots.
-        """
-        return self.__mountPoint + self.__rootPoint + os.sep + self.__workingFolderPathShot.replace("<Project>", self.__name, 1)
-    
-    def getLastVersion(self, entity, taskType):
-        """Find the next version for publishing
-
-        Args:
-            entity (class: `Entity`): Entity.
-            taskType (class: `Task`): Task.
-
-        Returns:
-            int: Version number.
-        """
-        versionNumber = 0
-        for version in entity.versions:
-            if(version.task.id == taskType.id and version.revisionNumber > versionNumber):
-                versionNumber = version.revisionNumber
-        versionNumber = versionNumber + 1
-
-        return versionNumber
-
-    def getFolderpath(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1, **kwargs):
-        """Get the folderpath for entity.
-
-        Args:
-            exportType (str, optional): Export type, "output" ou "working". Defaults to "output".
-            category (class:`Category`, optional): Category of the entity. Defaults to None.
-            entity (class:`Entity`, optional): Entity. Defaults to None.
-            taskType (class:`Task`, optional): Task. Defaults to None.
-            versionNumber (int, optional): Version of the entity, use "-1" for autocount. Defaults to 0.
-
-        Returns:
-            str: Folder path.
-        """
-        categoryName = category.name
-        entityName = entity.name
-        taskName = taskType.name.lower()
-
-        # This is need because our production filetree on IZES isn't correctly setup.
-        if(entity.type == "Assets"):
-            categoryName = categoryName.lower()
-
-        for specialCharacter in self.__specialCharactersList:
-            categoryName = categoryName.replace(specialCharacter, "_")
-            entityName = entityName.replace(specialCharacter, "_")
-            taskName = taskName.replace(specialCharacter, "_")
-
-        path = ""
-
-        if(versionNumber == -1):
-            # Find the last version number automaticly.
-            versionNumber = self.getLastVersion(entity=entity, taskType=taskType)
-
-        if(exportType == "output"):
-            if(category.type == "Assets"):
-                path = self.outputFolderpathAsset
-                path = path.replace("<AssetType>", categoryName)
-                path = path.replace("<Asset>", entityName)
-            else:
-                path = self.outputFolderpathShot
-                path = path.replace("<Sequence>", categoryName)
-                path = path.replace("<Shot>", entityName)
-        elif(exportType == "working"):
-            if(category.type == "Assets"):
-                path = self.workingFolderpathAsset
-                path = path.replace("<AssetType>", categoryName)
-                path = path.replace("<Asset>", entityName)
-            else:
-                path = self.workingFolderpathShot
-                path = path.replace("<Sequence>", categoryName)
-                path = path.replace("<Shot>", entityName)
-        else:
-            return "%s_%s_%s_V%03d/" % (categoryName, entityName, taskName, versionNumber)
-        
-        path = path.replace("<TaskType>", taskName)
-
-        if("withoutVersion" in kwargs):
-            path = path.replace("/<Version>", "")
-        else:
-            path = path.replace("<Version>", "V%03d" % versionNumber)
-
-        return path
-
-    def getFilename(self, exportType="output", category=None, entity=None, taskType=None, versionNumber=-1):
-        """Get the filename for the entity.
-
-        Args:
-            exportType (str, optional): Export type, "output" ou "working". Defaults to "output".
-            category (class:`Category`, optional): Category of the entity. Defaults to None.
-            entity (class:`Entity`, optional): Entity. Defaults to None.
-            taskType (class:`Task`, optional): Task. Defaults to None.
-            versionNumber (int, optional): Version of the entity, use "-1" for autocount. Defaults to 0.
-
-        Returns:
-            str: File name.
-        """
-        categoryName = category.name.lower()
-        entityName = entity.name
-        taskName = taskType.name.lower()
-
-        for specialCharacter in self.__specialCharactersList:
-            categoryName = categoryName.replace(specialCharacter, "_")
-            entityName = entityName.replace(specialCharacter, "_")
-            taskName = taskName.replace(specialCharacter, "_")
-
-        filename = ""
-
-        if(versionNumber == -1):
-            # Find the last version number automaticly.
-            versionNumber = self.getLastVersion(entity=entity, taskType=taskType)
-
-        if(exportType == "output"):
-            if(category.type == "Assets"):
-                filename = self.outputFilenameAsset
-                filename = filename.replace("<AssetType>", categoryName)
-                filename = filename.replace("<Asset>", entityName)
-            else:
-                filename = self.outputFilenameShot
-                filename = filename.replace("<Sequence>", categoryName)
-                filename = filename.replace("<Shot>", entityName)
-        elif(exportType == "working"):
-            if(category.type == "Assets"):
-                filename = self.workingFilenameAsset
-                filename = filename.replace("<AssetType>", categoryName)
-                filename = filename.replace("<Asset>", entityName)
-            else:
-                filename = self.outputFilenameShot
-                filename = filename.replace("<Sequence>", categoryName)
-                filename = filename.replace("<Shot>", entityName)
-        else:
-            return "%s_%s_%s_V%03d" % (categoryName, entityName, taskName, versionNumber)
-        
-        filename = filename.replace("<TaskType>", taskName)
-        filename = filename.replace("<Version>", "V%03d" % versionNumber)
-
-        return filename
-    
-    def buildFolderTree(self):
-        """Build the foldertree for the project.
-
-        Returns:
-            bool: Status.
-        """
-        for category in self.__categories:
-            for entity in category.entities:
-                for task in self.__tasks:
-                    makeFolder(self.getFolderpath(exportType="working", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
-                    makeFolder(self.getFolderpath(exportType="output", category=category, entity=entity, taskType=task, versionNumber=-1, withoutVersion=True))
-        
-        return True
-
-    @property
-    def supportFileTree(self):
+    def support_filetree(self):
         """Get filetree support status.
 
         Returns:
             bool: Filetree support status.
         """
-        return self.__supportFileTree
+        return self._support_filetree
+
+    @property
+    def paths_template(self):
+        """Get the template path for current project.
+        
+        Returns:
+            dict: Template.
+        
+        Raises:
+            CoreError: Template path not supported.
+        """
+        if(not self._support_filetree):
+            raise CoreError("Current project doesn't support path management.")
+
+        return self._paths_template

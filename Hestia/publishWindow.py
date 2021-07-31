@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      publishWindow.py
     :author:    PiloeGAO (Leo DEPOIX)
-    :version:   0.0.4
+    :version:   0.0.5
     :brief:     Class to create the publish window based on QtWidgets.  
 """
 import os
@@ -20,7 +20,7 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
-from .core.IO.path import *
+from .core.IO.path import TemplateManager, FileManager
 from .core.IO.encoding import *
 
 from .ui.widgets.iconButton import IconButton
@@ -43,7 +43,7 @@ class PublishWindow(QWidget):
         self.__mainWindow   = mainWindow
         
         self.__currentProject = self.__manager.projects[self.__manager.currentProject]
-        self.__category     = self.__currentProject.categories[self.__currentProject.currentCategory]
+        self.__category     = self.__currentProject.categories[self.__currentProject.current_category]
         self.__entity       = entity
 
         self.__screenshotPath = ""
@@ -210,8 +210,8 @@ class PublishWindow(QWidget):
     def takeScreenshot(self):
         """Take a screenshot of the scene.
         """
-        path = self.__manager.tempFolder + os.sep + "preview.PNG"
-        self.__manager.integration.takePlayblast(startFrame=-1, endFrame=-1, path=path)
+        path = FileManager().temp_directory + os.sep + "preview.PNG"
+        self.__manager.integration.takePlayblast(start_frame=-1, endFrame=-1, path=path)
         self.__screenshotPath = path
 
         self.previewTitle.setText("Preview : %s" % self.__screenshotPath)
@@ -226,11 +226,11 @@ class PublishWindow(QWidget):
         else:
             return False
         
-        path_raw = self.__manager.tempFolder + os.sep + "preview_raw." + format
-        self.__manager.integration.takePlayblast(startFrame=-2, endFrame=0, path=path_raw)
+        path_raw = FileManager().temp_directory + os.sep + "preview_raw." + format
+        self.__manager.integration.takePlayblast(start_frame=-2, endFrame=0, path=path_raw)
 
-        path = self.__manager.tempFolder + os.sep + "preview.mp4"
-        conversionStatus = videoConverter(path_raw, path)
+        path = FileManager().temp_directory + os.sep + "preview.mp4"
+        conversionStatus = video_converter(path_raw, path)
         os.remove(path_raw)
 
         if(conversionStatus and os.path.isfile(path)):
@@ -247,40 +247,40 @@ class PublishWindow(QWidget):
 
         publishName = self.publishName.currentValue
         publishComment = self.publishComment.currentValue
-        publishVersion = int(self.__currentProject.getLastVersion(entity=self.__entity, taskType=publishTask))
-        workingPath = self.__currentProject.getFolderpath(exportType="working", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion)
-        workingFileName = self.__currentProject.getFilename(exportType="working", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + self.__manager.integration.defaultFormat
-        outputPath = self.__currentProject.getFolderpath(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion)
+        publishVersion = int(self.__entity.get_next_version(taskType=publishTask))
+        working_path = TemplateManager().get_folderpath(exportType="working", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
+        workingFileName = TemplateManager().get_filename(exportType="working", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.defaultFormat
+        output_path = TemplateManager().get_folderpath(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
         outputFileNames = []
-        previewFilename = self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + "_preview"
+        previewFilename = TemplateManager().get_filename(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + "_preview"
 
         for i, widget in enumerate(self.outputsList):
-            outputFileNames.append(self.__currentProject.getFilename(exportType="output", category=self.__category, entity=self.__entity, taskType=publishTask, versionNumber=publishVersion) + self.__manager.integration.availableFormats[widget.currentValue])
+            outputFileNames.append(TemplateManager().get_filename(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.availableFormats[widget.currentValue])
 
         if(publishName != "" and publishComment != ""
-            and workingPath != "" and workingFileName != ""
-            and outputPath != "" and os.path.isfile(self.__screenshotPath)):
+            and working_path != "" and workingFileName != ""
+            and output_path != "" and os.path.isfile(self.__screenshotPath)):
             
             self.hide()
             self.__mainWindow.hide()
 
             # Create the working and output directories.
-            makeFolder(workingPath)
-            makeFolder(outputPath)
+            FileManager().make_folder(working_path)
+            FileManager().make_folder(output_path)
 
             # Export files from DCC.
             self.__manager.logging.info("Writing the working file.")
             
-            publishWorkingFilePath = workingPath + os.sep + workingFileName
+            publishWorkingFilePath = working_path + os.sep + workingFileName
             if(os.path.isfile(publishWorkingFilePath) != True):
-                workingSaveStatus = self.__manager.integration.saveFile(workingPath + os.sep + workingFileName)
+                workingSaveStatus = self.__manager.integration.saveFile(working_path + os.sep + workingFileName)
                 if(workingSaveStatus):
                     self.__manager.logging.error("Couldn't save the working file")
             
             publishOutputFilePaths = []
             for i, outputFilename in enumerate(outputFileNames):
                 self.__manager.logging.info("Writing output file %s/%s." % (i+1, len(outputFileNames)))
-                path = outputPath + os.sep + outputFilename
+                path = output_path + os.sep + outputFilename
                 if(os.path.isfile(path) != True):
                     extension = os.path.splitext(outputFilename)[1]
                     exportStatus = self.__manager.integration.exportSelection(path=path, extension=extension)
@@ -296,8 +296,8 @@ class PublishWindow(QWidget):
             
             # Copy the preview to output folder.
             self.__manager.logging.info("Writing the preview file.")
-            copyFile(self.__screenshotPath, outputPath, newName=previewFilename)
-            publishPreviewFilePath = outputPath + os.sep + previewFilename + os.path.splitext(self.__screenshotPath)[1]
+            FileManager().copy_file(self.__screenshotPath, output_path, newName=previewFilename)
+            publishPreviewFilePath = output_path + os.sep + previewFilename + os.path.splitext(self.__screenshotPath)[1]
 
             self.__manager.logging.info("Publishing online.")
             # Publishing files to the project manager.

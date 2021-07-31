@@ -60,7 +60,7 @@ class FolderTreeView(QWidget):
                                 description="The type of category",
                                 datas=self.__availableTypes,
                                 defaultValue=0,
-                                functionToInvoke=self.changeCurrentCategoryType)
+                                functionToInvoke=self.change_current_category_type)
         self.mainLayout.addWidget(self.typeDropDown)
 
         # Creating the base of the TreeView (ScrollArea).
@@ -79,7 +79,7 @@ class FolderTreeView(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def changeCurrentCategoryType(self):
+    def change_current_category_type(self):
         """Updating the current selected category when type change.
 
         Returns:
@@ -92,7 +92,7 @@ class FolderTreeView(QWidget):
             return False
         
         if category != None:
-            self.__project.currentCategory = self.__project.categories.index(category)
+            self.__project.current_category = self.__project.categories.index(category)
         else:
             self.__manager.logging.error("Category invalid.")
             return False
@@ -106,7 +106,7 @@ class FolderTreeView(QWidget):
         """
         # Updating variables.
         self.__project    = self.__manager.projects[self.__manager.currentProject]
-        self.__categories = [category for category in self.__project.categories if category.type == self.__project.categories[self.__project.currentCategory].type]
+        self.__categories = [category for category in self.__project.categories if category.type == self.__project.categories[self.__project.current_category].type]
 
         # Updating the grid with a new grid.
         self.grid = GridWidget(manager=self.__manager,

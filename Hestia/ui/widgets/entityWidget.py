@@ -50,7 +50,7 @@ class EntityWidget(QWidget):
 
         self.__name           = asset.name
         self.__description    = asset.description
-        self.__icon           = asset.icon if path.exists(asset.icon) else self.__defaultIcon
+        self.__icon           = self.__defaultIcon
         self.__iconSize       = iconSize
         self.__versions       = asset.versions
         self.__tasks          = self.getTasks()
@@ -130,11 +130,11 @@ class EntityWidget(QWidget):
         
         currentProject = self.__manager.projects[self.__manager.currentProject]
 
-        if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
+        if(currentProject.categories[currentProject.current_category].type == "Assets"):
             self.__manager.integration.loadAsset(asset = self.__asset,
                                                 version = self.__currentVersion)
 
-        elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+        elif(currentProject.categories[currentProject.current_category].type == "Shots"):
             self.__manager.integration.loadShot(asset = self.__asset,
                                                 version = self.__currentVersion)
 
@@ -172,7 +172,7 @@ class EntityWidget(QWidget):
         versionsNames = []
         for version in self.__versions:
             if(version.task == self.__currentTask):
-                versionsNames.append("%s (%s)" % (version.name, version.type))
+                versionsNames.append("Version %s (%s)" % (version.revision_number, version.type))
         
         if(len(versionsNames) == 0):
             return ["No versions available."]
@@ -202,12 +202,12 @@ class EntityWidget(QWidget):
         menu = QMenu()
 
         currentProject = self.__manager.projects[self.__manager.currentProject]
-        if(currentProject.categories[currentProject.currentCategory].type == "Assets"):
+        if(currentProject.categories[currentProject.current_category].type == "Assets"):
             # Assign shader to asset button.
             if(len(self.__versions) > 0 and self.__manager.integration.name != "standalone"):
                 assignShader = menu.addAction("Assign shader to current object")
                 assignShader.triggered.connect(self.assignShaderToSelectedAsset)
-        elif(currentProject.categories[currentProject.currentCategory].type == "Shots"):
+        elif(currentProject.categories[currentProject.current_category].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
@@ -253,12 +253,12 @@ class EntityWidget(QWidget):
         currentProject = self.__manager.projects[self.__manager.currentProject]
         
         # Setup scene.
-        setupStatus = self.__manager.integration.setupShot(category=currentProject.categories[currentProject.currentCategory],
+        setupStatus = self.__manager.integration.setupShot(category=currentProject.categories[currentProject.current_category],
                                                             shot=self.__asset)
 
         # Import assigned assets.
         assets = [entity for entity in currentProject.entities if entity.type == "Assets"]
-        for assetID in self.__asset.assignedAssets:
+        for assetID in self.__asset.assigned_assets:
             staticAsset = True
             # Get the asset from ID.
             assetToImport = [asset for asset in assets if asset.id == assetID][0]

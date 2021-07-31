@@ -9,7 +9,7 @@ import sys
 import os
 import subprocess
 
-def videoConverter(filePath, targetPath):
+def video_converter(filePath, targetPath):
     """Convert video to MP4.
 
     Args:

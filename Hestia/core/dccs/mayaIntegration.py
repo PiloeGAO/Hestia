@@ -22,13 +22,12 @@ from .defaultIntegration import DefaultIntegration
 class MayaIntegration(DefaultIntegration):
     """Default integration class.
     """
-    def __init__(self, manager=None):
-        self.__manager = manager
-
+    def __init__(self, *args, **kwargs):
+        super(MayaIntegration, self).__init__(*args, **kwargs)
         self._name = "Maya"
 
         if(not integrationActive):
-            self.__manager.logging.error("Maya Libraries not found!")
+            self._manager.logging.error("Maya Libraries not found!")
 
         self._active = integrationActive
 
@@ -38,7 +37,7 @@ class MayaIntegration(DefaultIntegration):
         self._supportInstances      = True # Autodesk Maya support instance by using "References". 
         self._instances             = True
         self._supportScreenshots    = True
-        self.__useGPUCache          = bool(int(self.__manager.preferences.getValue("MAYA", "useGPUCache")))
+        self.__useGPUCache          = bool(int(self._manager.preferences.getValue("MAYA", "useGPUCache")))
     
     def initializeFileFormats(self):
         """Initialize the file formats list.
@@ -46,7 +45,7 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             list: str: File formats enables.
         """
-        self.__manager.logging.info("Initialize File Formats.")
+        self._manager.logging.info("Initialize File Formats.")
         self._availableFormats = [".ma", ".mb"]
 
         # Enabling plugins for additional formats
@@ -75,7 +74,7 @@ class MayaIntegration(DefaultIntegration):
             cmds.loadPlugin(pluginName)
             pluginActive = True
         except RuntimeError:
-            self.__manager.logging.error("Failed to load: " + pluginName)
+            self._manager.logging.error("Failed to load: " + pluginName)
             pluginActive = False
 
         return pluginActive
@@ -90,8 +89,8 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: load status.
         """
-        if(not os.path.exists(version.outputPath)):
-            self.__manager.logging.error("File not found.")
+        if(not os.path.exists(version.output_path)):
+            self._manager.logging.error("File not found.")
             return False
 
         # Looking for asset replacement.
@@ -103,7 +102,7 @@ class MayaIntegration(DefaultIntegration):
                     if(cmds.objectType(currentSelection) == "reference" and self.isInstanceImport(version=version)):
                         # Updating reference is done with the file function. From: https://stackoverflow.com/a/44718215
                         referenceToUpdate = cmds.referenceQuery(currentSelection, referenceNode=True)
-                        cmds.file(version.outputPath, loadReference=referenceToUpdate)
+                        cmds.file(version.output_path, loadReference=referenceToUpdate)
                     elif(cmds.objectType(currentSelection) == "transform" and not self.isInstanceImport(version=version)):
                         # Delete objects inside of the selected group.
                         oldObjects = cmds.listRelatives(currentSelection, children=True)
@@ -124,7 +123,7 @@ class MayaIntegration(DefaultIntegration):
                         for object in imported:
                             cmds.rename(object, "%s_%s" % (currentSelection, object))
                     else:
-                        self.__manager.logging.warning("Reference and traditional import can't be mixed together.")
+                        self._manager.logging.warning("Reference and traditional import can't be mixed together.")
                         return False
                     
                     return True
@@ -148,12 +147,12 @@ class MayaIntegration(DefaultIntegration):
 
                 cmds.createNode("transform", n=parentName)
                 cmds.createNode("gpuCache", n=gpuCacheName, p=parentName)
-                cmds.setAttr(gpuCacheName + ".cacheFileName", str(version.outputPath), type="string")
+                cmds.setAttr(gpuCacheName + ".cacheFileName", str(version.output_path), type="string")
                 cmds.setAttr(gpuCacheName + ".cacheGeomPath", "|", type="string")
 
                 currentAsset = parentName
             else:
-                self.__manager.logging.warning("Static objects should be ABC files, using legacy mode for importing asset (errors can be added by legacy mode).")
+                self._manager.logging.warning("Static objects should be ABC files, using legacy mode for importing asset (errors can be added by legacy mode).")
                 # DEPRECATED FUNCTION, ONLY HERE FOR COMPATIBILITY.
                 # Importing the asset and getting the transform node.
                 before = set(cmds.ls(type="transform"))
@@ -242,14 +241,14 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: load status.
         """
-        if(not os.path.exists(version.outputPath)):
-            self.__manager.logging.error("File not found.")
+        if(not os.path.exists(version.output_path)):
+            self._manager.logging.error("File not found.")
             return False
 
         if(version.type == ".ma" or version.type == ".mb"):
             # Loading the file.
             cmds.file(new=True, force=True)
-            cmds.file(version.outputPath, o=True)
+            cmds.file(version.output_path, o=True)
 
             return True
 
@@ -271,7 +270,7 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Setup status.
         """
-        project = self.__manager.projects[self.__manager.currentProject]
+        project = self._manager.projects[self._manager.currentProject]
 
         # Checking if the file current file is part of a maya projet foldertree.
         filepath = cmds.file(q=True, sn=True)
@@ -279,35 +278,35 @@ class MayaIntegration(DefaultIntegration):
         if(filepath != ""):
             if(os.path.basename(os.path.dirname(filepath)) == "scenes" and
                 os.path.isfile(os.path.dirname(filepath) + os.sep + ".." + os.sep + "workspace.mel")):
-                self.__manager.logging.debug("The scene is part of a Maya Project, Hestia will setup the project correctly! ")
+                self._manager.logging.debug("The scene is part of a Maya Project, Hestia will setup the project correctly! ")
                 cmds.workspace(os.path.abspath(os.path.dirname(filepath) + os.sep + ".."), openWorkspace=True)
             else:
-                self.__manager.logging.warning("The scene isn't part of a Maya Project, please build a Maya project and save your scene in the \"scenes\" subdirectory (all features couldn't work as expected).")
+                self._manager.logging.warning("The scene isn't part of a Maya Project, please build a Maya project and save your scene in the \"scenes\" subdirectory (all features couldn't work as expected).")
         else:
-            self.__manager.logging.warning("Please save your scene (all features couldn't work as expected).")
+            self._manager.logging.warning("Please save your scene (all features couldn't work as expected).")
 
         # Set main values for timeline setup.
         # Correct order is:
-        # |-----------------------------------------------------------------------|
-        # | startFrame | startAnimationFrame ======> endAnimationFrame | endFrame |
-        # |-----------------------------------------------------------------------|
-        startFrame          = project.startFrame
-        startAnimationFrame = startFrame + project.preRoll
-        endAnimationFrame   = startAnimationFrame + shot.frameNumber
-        endFrame            = endAnimationFrame + project.postRoll
+        # |-----------------------------------------------------------------------------|
+        # | start_frame | start_animation_frame ======> end_animation_frame | end_frame |
+        # |-----------------------------------------------------------------------------|
+        start_frame           = project.start_frame
+        start_animation_frame = start_frame + project.pre_roll
+        end_animation_frame   = start_animation_frame + shot.frame_number
+        end_frame            = end_animation_frame + project.post_roll
 
         # Set timeline datas.
         cmds.currentUnit( time='%sfps' % int(project.framerate)) # WARNING: Framerate must be setup before timeline !
 
-        cmds.playbackOptions(animationStartTime=startFrame, minTime=startAnimationFrame,
-                            animationEndTime=endFrame,      maxTime=endAnimationFrame,
+        cmds.playbackOptions(animationStartTime=start_frame, minTime=start_animation_frame,
+                            animationEndTime=end_frame,      maxTime=end_animation_frame,
                             playbackSpeed=1.0)
 
         # Create timeline bookmarks (for visual feedback).
         # "timeSliderBookmark.mll" need to be loaded first.
-        createBookmark(name="PREROLL",  start=startFrame,            stop=(startAnimationFrame-1), color=(0.67, 0.23, 0.23))
-        createBookmark(name="ANIM",     start=startAnimationFrame,   stop=endAnimationFrame,       color=(0.28, 0.69, 0.48))
-        createBookmark(name="POSTROLL", start=(endAnimationFrame+1), stop=endFrame,                color=(0.67, 0.23, 0.23))
+        createBookmark(name="PREROLL",  start=start_frame,            stop=(start_animation_frame-1), color=(0.67, 0.23, 0.23))
+        createBookmark(name="ANIM",     start=start_animation_frame,   stop=end_animation_frame,       color=(0.28, 0.69, 0.48))
+        createBookmark(name="POSTROLL", start=(end_animation_frame+1), stop=end_frame,                color=(0.67, 0.23, 0.23))
 
         # Setting up render settings in the scene.
         cmds.setAttr("defaultRenderGlobals.imageFilePrefix", "%s_%s_<Scene>_<RenderLayer>_<Camera>" % (category.name, shot.name), type="string")
@@ -316,21 +315,21 @@ class MayaIntegration(DefaultIntegration):
         cmds.setAttr("defaultResolution.width", width)
         cmds.setAttr("defaultResolution.height", height)
 
-        cmds.setAttr("defaultRenderGlobals.startFrame", startAnimationFrame)
-        cmds.setAttr("defaultRenderGlobals.endFrame", endAnimationFrame)
+        cmds.setAttr("defaultRenderGlobals.start_frame", start_animation_frame)
+        cmds.setAttr("defaultRenderGlobals.end_frame", end_animation_frame)
         cmds.setAttr("defaultRenderGlobals.byFrameStep", 1.0)
 
         cmds.setAttr("defaultRenderGlobals.animation", True)
         cmds.setAttr("defaultRenderGlobals.putFrameBeforeExt", True)
 
         # Getting the number of digits from last frame to set padding.
-        paddingCount = 0
-        counter = endFrame
+        padding_count = 0
+        counter = end_frame
         while(counter>0):
-            paddingCount=paddingCount+1
+            padding_count=padding_count+1
             counter=counter//10
 
-        cmds.setAttr("defaultRenderGlobals.extensionPadding", paddingCount)
+        cmds.setAttr("defaultRenderGlobals.extensionPadding", padding_count)
 
         return True
     
@@ -344,7 +343,7 @@ class MayaIntegration(DefaultIntegration):
             shotPath (str, optional): [description]. Defaults to "".
         """
         if(not os.path.exists(shotPath)):
-            self.__manager.logging.error("File not found.")
+            self._manager.logging.error("File not found.")
             return False
         
         return NotImplemented
@@ -356,9 +355,9 @@ class MayaIntegration(DefaultIntegration):
             path (str, optional): Path of the asset. Defaults to "".
         """
         if(self.isInstanceImport(version=version)):
-            cmds.file(version.outputPath, reference=True, usingNamespaces=True, namespace=asset.name)
+            cmds.file(version.output_path, reference=True, usingNamespaces=True, namespace=asset.name)
         else:
-            cmds.file(version.outputPath, i=True)
+            cmds.file(version.output_path, i=True)
     
     def isInstanceImport(self, version=None):
         """Return the status for instance import.
@@ -405,12 +404,12 @@ class MayaIntegration(DefaultIntegration):
 
         return False
     
-    def takePlayblast(self, startFrame, endFrame, path):
+    def takePlayblast(self, start_frame, end_frame, path):
         """Take a playblast of the scene.
 
         Args:
-            startFrame (int): Start frame.
-            endFrame (int): End frame.
+            start_frame (int): Start frame.
+            end_frame (int): End frame.
             path (sty): Ouput path.
 
         Returns:
@@ -420,11 +419,11 @@ class MayaIntegration(DefaultIntegration):
         width = 1920
         height = 1080
 
-        if(startFrame == endFrame):
+        if(start_frame == end_frame):
             # From: https://gist.github.com/gfxhacks/f3e750f416f94952d7c9894ed8f78a71
             # Take a single image.
-            currentFrame = startFrame
-            if(startFrame == -1):
+            currentFrame = start_frame
+            if(start_frame == -1):
                 currentFrame = int(cmds.currentTime(query=True))
 
             cmds.playblast(fr=currentFrame, v=False, fmt="image", c="png", orn=False, cf=path, wh=[width,height], p=100, forceOverwrite=True)
@@ -445,11 +444,11 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Function status.
         """
-        filePath = str(version.workingPath)
+        filePath = str(version.working_path)
         if(os.path.isfile(filePath) and
             (os.path.splitext(filePath)[1] == ".ma" or os.path.splitext(filePath)[1] == ".mb")):
             cmds.file(new=True, force=True)
-            cmds.file(version.workingPath, o=True)
+            cmds.file(version.working_path, o=True)
             return True
         else:
             return False
@@ -468,7 +467,7 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(force=True, save=True, type="mayaAscii")
             return True
         
-        self.__manager.logging.error("Failed to save the file : %s" % path)
+        self._manager.logging.error("Failed to save the file : %s" % path)
         return False
 
     def exportSelection(self, path, extension):
@@ -482,11 +481,11 @@ class MayaIntegration(DefaultIntegration):
             bool: Function status.
         """
         if(os.path.isfile(path)):
-            self.__manager.logging.error("File \"%s\" already exist, skipping export." % path)
+            self._manager.logging.error("File \"%s\" already exist, skipping export." % path)
             return False
         
         if(len(cmds.ls(sl=True)) == 0):
-            self.__manager.logging.error("Nothing selected, skipping export.")
+            self._manager.logging.error("Nothing selected, skipping export.")
             return False
         
         extension = extension.lower()

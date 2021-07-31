@@ -21,13 +21,13 @@ from .defaultIntegration import DefaultIntegration
 class GuerillaIntegration(DefaultIntegration):
     """Default integration class.
     """
-    def __init__(self, manager=None):
-        self.__manager = manager
+    def __init__(self, *args, **kwargs):
+        super(GuerillaIntegration, self).__init__(*args, **kwargs)
 
         self._name = "Guerilla"
 
         if(not integrationActive):
-            self.__manager.logging.error("Guerilla Libraries not found!")
+            self._manager.logging.error("Guerilla Libraries not found!")
 
         self._active = integrationActive
 
@@ -44,7 +44,7 @@ class GuerillaIntegration(DefaultIntegration):
         Returns:
             list: str: File formats enables.
         """
-        self.__manager.logging.info("Initialize File Formats.")
+        self._manager.logging.info("Initialize File Formats.")
         self._availableFormats = [".gproject", ".abc"]
 
         pluginFormats = {}
@@ -75,8 +75,8 @@ class GuerillaIntegration(DefaultIntegration):
         Returns:
             bool: load status.
         """
-        if(not os.path.exists(version.outputPath)):
-            self.__manager.logging.error("File not found.")
+        if(not os.path.exists(version.output_path)):
+            self._manager.logging.error("File not found.")
             return False
 
         return NotImplemented
@@ -91,8 +91,8 @@ class GuerillaIntegration(DefaultIntegration):
         Returns:
             bool: load status.
         """
-        if(not os.path.exists(version.outputPath)):
-            self.__manager.logging.error("File not found.")
+        if(not os.path.exists(version.output_path)):
+            self._manager.logging.error("File not found.")
             return False
 
         if(version.type == ".gproject"):
@@ -116,7 +116,7 @@ class GuerillaIntegration(DefaultIntegration):
             shotPath (str, optional): [description]. Defaults to "".
         """
         if(not os.path.exists(shotPath)):
-            self.__manager.logging.error("File not found.")
+            self._manager.logging.error("File not found.")
             return False
         
         return NotImplemented
@@ -159,11 +159,11 @@ class GuerillaIntegration(DefaultIntegration):
         """
         return NotImplemented
     
-    def takePlayblast(self, startFrame, endFrame, path):
+    def takePlayblast(self, start_frame, endFrame, path):
         """Take a playblast of the scene.
 
         Args:
-            startFrame (int): Start frame.
+            start_frame (int): Start frame.
             endFrame (int): End frame.
             path (sty): Ouput path.
 
