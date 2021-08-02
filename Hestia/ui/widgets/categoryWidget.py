@@ -31,7 +31,7 @@ class CategoryWidget(QWidget):
         self.__mainWindow   = mainWindow
         self.__parent       = parentWidget
 
-        self.__project      = self.__manager.projects[self.__manager.currentProject]
+        self.__project      = self.__manager.get_current_project()
 
         self.__category     = category
         self.__categoryID   = self.__project.categories.index(self.__category)
@@ -63,6 +63,6 @@ class CategoryWidget(QWidget):
     def set_current_category(self):
         """Change the current category of the project.
         """
-        self.__manager.projects[self.__manager.currentProject].current_category = self.__categoryID
+        self.__manager.get_current_project().current_category = self.__categoryID
         self.__parent.refresh()
         self.__mainWindow.refreshCategory()

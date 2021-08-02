@@ -20,7 +20,7 @@ class DefaultWrapper(object):
     def __init__(self, manager=None):
         self._manager       = manager
 
-        self._current_user  = User(username=getpass.getuser() + "(Local Mode)")
+        self._current_user  = User(username=getpass.getuser() + "(Local Mode)", is_downloaded=True)
         self._active        = False
 
         self._users         = []
@@ -45,20 +45,75 @@ class DefaultWrapper(object):
     
     def get_open_projects(self):
         """Get open project.
-
-        Returns:
-            NotImplementedError: Projects not implemented.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
         """
         raise CoreError("Not implemented in the default wrapper.")
     
-    def get_datas_from_project(self, project):
+    def get_datas_from_project(self, raw_datas):
         """Get data for the selected project.
 
         Args:
-            project (str): Project datas.
+            raw_datas (str): Project datas.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
 
-        Returns:
-            NotImplementedError: Projects not implemented.
+    def get_datas_for_asset(self, asset):
+        """Get data for the given asset.
+        
+        Args:
+            asset (class:`Asset`): Asset to dowload.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def get_datas_for_category(self, category):
+        """Get data for the given category.
+        
+        Args:
+            category (class:`Category`): Category to download.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def get_datas_for_shot(self, shot):
+        """Get data for the given shot.
+        
+        Args:
+            shot (class:`Shot`): Shot to download.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def get_datas_for_task(self, task):
+        """Get data for the given task.
+        
+        Args:
+            task (class:`Task`): Task to download.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def get_datas_for_version(self, version):
+        """Get data for the given version.
+        
+        Args:
+            version (class:`Version`): Version to download.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
         """
         raise CoreError("Not implemented in the default wrapper.")
 
@@ -68,7 +123,15 @@ class DefaultWrapper(object):
         Args:
             raw_datas (dict): Data from project request.
         
-        Returns:
-            dict: Path templates
+        Raises:
+            CoreError: Not implemented in default wrapper.
+        """
+        raise CoreError("Not implemented in the default wrapper.")
+
+    def publish(self, *args, **kwargs):
+        """Publish files (working and outputs) to project management system.
+        
+        Raises:
+            CoreError: Not implemented in default wrapper.
         """
         raise CoreError("Not implemented in the default wrapper.")

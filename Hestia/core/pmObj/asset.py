@@ -5,6 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+from ..links.decorators import sync_entity
+
 from .entity import Entity
 
 class Asset(Entity):
@@ -19,6 +21,7 @@ class Asset(Entity):
         self._versions = versions
     
     @property
+    @sync_entity
     def versions(self):
         """Get versions of the asset.
 

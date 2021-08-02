@@ -5,6 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+from ..links.decorators import sync_entity
+
 from .entity import Entity
 
 class Category(Entity):
@@ -26,6 +28,7 @@ class Category(Entity):
         return self._type
 
     @property
+    @sync_entity
     def entities(self):
         """Get the entities stored in the category.
 

@@ -15,7 +15,7 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
-from ..core.pmObj.category        import Category
+from ..core.pmObj.category  import Category
 
 from .widgets.gridWidget    import GridWidget
 from .widgets.entityWidget  import EntityWidget
@@ -33,11 +33,11 @@ class ContentView(QWidget):
         super(ContentView, self).__init__(parent=parent)
         self.__manager      = manager
         self.__mainWindow   = mainWindow
-        self.__project      = self.__manager.projects[self.__manager.currentProject]
+        self.__project      = self.__manager.get_current_project()
         
         self.__rootPath     = os.path.dirname(os.path.abspath(__file__))
 
-        self.__category     = Category(name="Empty")
+        self.__category     = Category(name="Empty", is_downloaded=True)
         if(len(self.__project.categories) > 0):
             self.__category = self.__project.categories[self.__project.current_category]
 
@@ -83,9 +83,9 @@ class ContentView(QWidget):
         """Force refresh of the widget.
         """
         # Updating variables.
-        self.__project  = self.__manager.projects[self.__manager.currentProject]
+        self.__project  = self.__manager.get_current_project()
 
-        self.__category = Category(name="Empty")
+        self.__category = Category(name="Empty", is_downloaded=True)
         if(len(self.__project.categories) > 0):
             self.__category = self.__project.categories[self.__project.current_category]
 

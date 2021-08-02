@@ -18,7 +18,7 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
-from .core.manager          import *
+from .core.manager          import start_manager, current_manager
 
 from .loginWindow           import LoginWindow
 from .publishWindow         import PublishWindow

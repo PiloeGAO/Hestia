@@ -42,8 +42,8 @@ class PublishWindow(QWidget):
         self.__manager      = manager
         self.__mainWindow   = mainWindow
         
-        self.__currentProject = self.__manager.projects[self.__manager.currentProject]
-        self.__category     = self.__currentProject.categories[self.__currentProject.current_category]
+        self.__current_project = self.__manager.get_current_project()
+        self.__category     = self.__current_project.categories[self.__current_project.current_category]
         self.__entity       = entity
 
         self.__screenshotPath = ""
@@ -248,14 +248,14 @@ class PublishWindow(QWidget):
         publishName = self.publishName.currentValue
         publishComment = self.publishComment.currentValue
         publishVersion = int(self.__entity.get_next_version(taskType=publishTask))
-        working_path = TemplateManager().get_folderpath(exportType="working", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
-        workingFileName = TemplateManager().get_filename(exportType="working", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.defaultFormat
-        output_path = TemplateManager().get_folderpath(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
+        working_path = TemplateManager().get_folderpath(exportType="working", project=self.__current_project, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
+        workingFileName = TemplateManager().get_filename(exportType="working", project=self.__current_project, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.defaultFormat
+        output_path = TemplateManager().get_folderpath(exportType="output", project=self.__current_project, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion)
         outputFileNames = []
-        previewFilename = TemplateManager().get_filename(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + "_preview"
+        previewFilename = TemplateManager().get_filename(exportType="output", project=self.__current_project, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + "_preview"
 
         for i, widget in enumerate(self.outputsList):
-            outputFileNames.append(TemplateManager().get_filename(exportType="output", project=self.__currentProject, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.availableFormats[widget.currentValue])
+            outputFileNames.append(TemplateManager().get_filename(exportType="output", project=self.__current_project, category=self.__category, entity=self.__entity, taskType=publishTask, version_number=publishVersion) + self.__manager.integration.availableFormats[widget.currentValue])
 
         if(publishName != "" and publishComment != ""
             and working_path != "" and workingFileName != ""

@@ -19,31 +19,28 @@ from .dccs.defaultIntegration   import DefaultIntegration
 
 from .links.defaultWrapper      import DefaultWrapper
 
-from .pmObj.project             import Project
+from .pmObj.project import Project
 
 class Manager():
     """Manager class.
-
-    Args:
-        projects (list(class: "Project"), optional): Projects list. Defaults to [].
     """
-    def __init__(self, integration = "standalone", projects = None, **kwargs):
-        self.__version  = "0.0.5Dev"
+    def __init__(self, integration="standalone", **kwargs):
+        self._version  = "0.0.5Dev"
 
         # Loading preferences.
-        self.__preferences = Preferences(manager=self)
-        isPreferencesLoaded = self.__preferences.loadPreferences()
-        atexit.register(self.__preferences.savePreferences)
+        self._preferences = Preferences(manager=self)
+        isPreferencesLoaded = self._preferences.loadPreferences()
+        atexit.register(self._preferences.savePreferences)
 
         if(not isPreferencesLoaded):
             # Saving blank preferences on install
-            self.__preferences.generatePreferences()
-            self.__preferences.savePreferences()
+            self._preferences.generatePreferences()
+            self._preferences.savePreferences()
 
-        self.__debugMode = bool(int(self.__preferences.getValue("MANAGER", "debugMode")))
+        self._debugMode = bool(int(self._preferences.getValue("MANAGER", "debugMode")))
 
         # Initialize the custom logging system.
-        self.__logging = get_logging(__name__, self.__debugMode)
+        self._logging = get_logging(__name__, self._debugMode)
 
         # Remove temp directory at exit (standalone only).
         atexit.register(shutil.rmtree, FileManager().temp_directory)
@@ -51,25 +48,25 @@ class Manager():
         # Managing integrations.
         if(integration == "Maya"):
             from .dccs.mayaIntegration import MayaIntegration
-            self.__integration = MayaIntegration(manager=self)
+            self._integration = MayaIntegration(manager=self)
         elif(integration == "Guerilla"):
             from .dccs.guerillaIntegration import GuerillaIntegration
-            self.__integration = GuerillaIntegration(manager=self)
+            self._integration = GuerillaIntegration(manager=self)
         else:
-            self.__integration = DefaultIntegration()
+            self._integration = DefaultIntegration()
         
         # Setting up the service.
-        if(self.__preferences.getValue("MANAGER", "service") == "kitsu"):
+        if(self._preferences.getValue("MANAGER", "service") == "kitsu"):
             from .links.kitsuWrapper    import KitsuWrapper
-            self.__mode = "kitsu"
-            self.__link = KitsuWrapper(manager=self, api=self.__preferences.getValue("MANAGER", "onlineHost"))
+            self._mode = "kitsu"
+            self._link = KitsuWrapper(manager=self, api=self._preferences.getValue("MANAGER", "onlineHost"))
         else:
-            self.__mode = "local"
-            self.__link = DefaultWrapper()
+            self._mode = "local"
+            self._link = DefaultWrapper()
 
         # Setup projects.
-        self.__projects = projects if projects != None else [Project(name="local", description="Local file system.")]
-        self.__currentProject = 0
+        self._projects = [Project(name="local", description="Local file system.", is_downloaded=True)]
+        self._current_project = 0
     
     @property
     def logging(self):
@@ -78,7 +75,7 @@ class Manager():
         Returns:
             class: "logging": Logging system.
         """
-        return self.__logging
+        return self._logging
     
     @property
     def debug(self):
@@ -87,7 +84,7 @@ class Manager():
         Returns:
             bool: Debug state.
         """
-        return self.__debugMode
+        return self._debugMode
     
     @property
     def integration(self):
@@ -96,7 +93,7 @@ class Manager():
         Returns:
             class: "DefaultIntegration" : Get the integration class to communicate with the DCC.
         """
-        return self.__integration
+        return self._integration
 
     @property
     def projects(self):
@@ -105,7 +102,7 @@ class Manager():
         Returns:
             list(class: "Project"): Projects list.
         """
-        return self.__projects
+        return self._projects
     
     @projects.setter
     def projects(self, projects):
@@ -114,28 +111,36 @@ class Manager():
         Args:
             projects (list(class: "Project")): Projects list.
         """
-        self.__projects = projects
+        self._projects = projects
     
     @property
-    def currentProject(self):
+    def current_project(self):
         """Get the current project.
 
         Returns:
             int: Project ID.
         """
-        return self.__currentProject
+        return self._current_project
     
-    @currentProject.setter
-    def currentProject(self, newCurrentProject):
+    @current_project.setter
+    def current_project(self, new_current_project):
         """Set the current project.
 
         Args:
-            newCurrentProject (int): New current project.
+            newcurrent_project (int): New current project.
         """
-        if(newCurrentProject is int):
-            self.__currentProject = newCurrentProject
+        if(new_current_project is int):
+            self._current_project = new_current_project
         else:
-            self.__currentProject = 0
+            self._current_project = 0
+
+    def get_current_project(self):
+        """Get the current project (Hestia object).
+        
+        Returns:
+            class:`Project`: Current project.
+        """
+        return self._projects[self._current_project]
     
     @property
     def link(self):
@@ -144,7 +149,7 @@ class Manager():
         Returns:
             class: "KitsuWrapper": Current link.
         """
-        return self.__link
+        return self._link
     
     @property
     def mode(self):
@@ -153,7 +158,7 @@ class Manager():
         Returns:
             str: Current link mode.
         """
-        return self.__mode
+        return self._mode
 
     @property
     def preferences(self):
@@ -162,7 +167,7 @@ class Manager():
         Returns:
             class: 'Preferences' : Preference class.
         """
-        return self.__preferences
+        return self._preferences
 
     @property
     def version(self):
@@ -171,7 +176,7 @@ class Manager():
         Returns:
             str: Manager version.
         """
-        return self.__version
+        return self._version
     
     def addProject(self, project):
         """Add a new project to the projects list.
@@ -179,7 +184,7 @@ class Manager():
         Args:
             project (class: "Project"): New project to add.
         """
-        self.__projects.append(project)
+        self._projects.append(project)
     
     def removeProject(self, projectName):
         """Remove a project for the projects list.
@@ -188,7 +193,7 @@ class Manager():
             projectName (class: "Project"): Project to remove.
         """
         #TODO: MOVE TO COMPREHENSIVE LIST.
-        for project in self.__projects:
+        for project in self._projects:
             if(project.name == projectName):
                 del project
     
@@ -202,20 +207,20 @@ class Manager():
             bool: Connection status.
         """
         if(cleanProjects):
-            self.__projects = []
+            self._projects = []
 
-        if(self.__mode == "kitsu"
+        if(self._mode == "kitsu"
             and kwargs["api"] != ""
             and kwargs["username"] != ""
             and kwargs["password"] != ""):
-            self.__link.api = kwargs["api"]
-            isUserLoged = self.__link.login(username=kwargs["username"], password=kwargs["password"])
+            self._link.api = kwargs["api"]
+            isUserLoged = self._link.login(username=kwargs["username"], password=kwargs["password"])
 
             if(isUserLoged):
-                openProjects = self.__link.get_open_projects()
+                openProjects = self._link.get_open_projects()
 
                 for project in openProjects:
-                    self.addProject(self.__link.get_datas_from_project(project))
+                    self.addProject(self._link.get_datas_from_project(project))
                 
                 return True
 
@@ -258,9 +263,8 @@ def start_manager(*args, **kwargs):
         raise CoreError("Manager already started.")
     
     integration = kwargs["integration"] if "integration" in kwargs  else "standalone"
-    projects    = kwargs["projects"]    if "projects"    in kwargs  else None
 
-    manager = Manager(integration, projects)
+    manager = Manager(integration)
     set_current_manager(manager)
 
     return manager

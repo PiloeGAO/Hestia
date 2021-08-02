@@ -5,6 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+from ..links.decorators import sync_entity
 
 class Entity(object):
     """Entity class.
@@ -16,13 +17,16 @@ class Entity(object):
         tasks (list: class: "Task"): Entity's tasks. Defaults to [].
         raw_datas (dict): Raw datas from DB. Defaults to {}.
     """
-    def __init__(self, id = "", name = "", description = "", tasks=[], raw_datas={}, *args, **kwargs):
+    def __init__(self, id = "", name = "", description = "", tasks=[], preview_path="", raw_datas={}, is_downloaded=False, *args, **kwargs):
         self._id           = id
         self._name         = name
         self._description  = description
         self._tasks        = tasks
+        self._preview_path = preview_path
 
-        self._raw_datas     = raw_datas
+        self._raw_datas    = raw_datas
+
+        self._is_downloaded = is_downloaded
 
     @property
     def id(self):
@@ -34,6 +38,7 @@ class Entity(object):
         return self._id
     
     @property
+    @sync_entity
     def name(self):
         """Get the name of the entity.
 
@@ -52,6 +57,7 @@ class Entity(object):
         self._name = name
     
     @property
+    @sync_entity
     def description(self):
         """Get the description of the entity.
 
@@ -68,26 +74,9 @@ class Entity(object):
             description (str): The description of the entity
         """
         self._description = description
-    
-    @property
-    def raw_datas(self):
-        """Get the raw datas of the class.
-
-        Returns:
-            dict: Raw datas
-        """
-        return self._raw_datas
-    
-    @raw_datas.setter
-    def raw_datas(self, new_datas):
-        """Set the raw datas of the entity.
-
-        Args:
-            new_datas (dict): Raw datas
-        """
-        self._raw_datas = new_datas
 
     @property
+    @sync_entity
     def tasks(self):
         """Get tasks of the entity.
 
@@ -115,3 +104,59 @@ class Entity(object):
             raise CoreError("A task can't be added twice to an entity.")
         
         self._tasks.append(new_task)
+
+    @property
+    @sync_entity
+    def preview_path(self):
+        """Get the preview file path.
+        
+        Returns:
+            str: Path
+        """
+        return self._preview_path
+
+    @preview_path.setter
+    def preview_path(self, new_path):
+        """Set the preview file path.
+        
+        Args:
+            new_path (str): Path.
+        """
+        self._preview_path = new_path
+
+    @property
+    def is_downloaded(self):
+        """Get download status of the entity.
+        
+        Returns:
+            bool: Status
+        """
+        return self._is_downloaded
+
+    @is_downloaded.setter
+    def is_downloaded(self, new_status):
+        """Set download status of the entity.
+        
+        Args:
+            new_status (bool): Download status
+        """
+        self._is_downloaded = new_status
+    
+    @property
+    @sync_entity
+    def raw_datas(self):
+        """Get the raw datas of the class.
+
+        Returns:
+            dict: Raw datas
+        """
+        return self._raw_datas
+    
+    @raw_datas.setter
+    def raw_datas(self, new_datas):
+        """Set the raw datas of the entity.
+
+        Args:
+            new_datas (dict): Raw datas
+        """
+        self._raw_datas = new_datas

@@ -30,7 +30,7 @@ class FolderTreeView(QWidget):
         self.__manager      = manager
         self.__mainWindow   = mainWindow
 
-        self.__project      = self.__manager.projects[self.__manager.currentProject]
+        self.__project      = self.__manager.get_current_project()
 
         self.__availableTypes = ["Assets", "Shots"]
         self.__categories = [category for category in self.__project.categories if category.type == self.__availableTypes[0]]
@@ -105,7 +105,7 @@ class FolderTreeView(QWidget):
         """Force refresh of the widget.
         """
         # Updating variables.
-        self.__project    = self.__manager.projects[self.__manager.currentProject]
+        self.__project    = self.__manager.get_current_project()
         self.__categories = [category for category in self.__project.categories if category.type == self.__project.categories[self.__project.current_category].type]
 
         # Updating the grid with a new grid.

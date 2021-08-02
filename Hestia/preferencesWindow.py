@@ -39,7 +39,6 @@ class PreferencesWindow(QWidget):
         self.__currentService       = [i for i,x in enumerate(self.__servicesAvailables) if x.lower() == serviceFromPreferences][0]
 
         self.__loadPreviewStatus    = bool(int(self.__manager.preferences.getValue("MANAGER",   "loadPreviews")))
-        self.__downloadVideosStatus = bool(int(self.__manager.preferences.getValue("MANAGER",   "downloadVideos")))
         self.__debugMode            = bool(int(self.__manager.preferences.getValue("MANAGER",   "debugMode")))
         self.__useGPUCache          = bool(int(self.__manager.preferences.getValue("MAYA",      "useGPUCache")))
 
@@ -75,12 +74,6 @@ class PreferencesWindow(QWidget):
 
         self.generalSettingsLayout.addWidget(self.loadPreviews)
 
-        self.downloadVideos = QCheckBox("Download videos")
-        self.downloadVideos.setToolTip("Warning: This can slowdown the GUI.")
-        self.downloadVideos.setChecked(self.__downloadVideosStatus)
-
-        self.generalSettingsLayout.addWidget(self.downloadVideos)
-
         # Debug mode.
         self.debugMode = QCheckBox("Debug Mode")
         self.debugMode.setToolTip("Usefull in case of crashes.")
@@ -115,7 +108,7 @@ class PreferencesWindow(QWidget):
 
         self.projectManagerSettingsLayout.addWidget(self.serviceButton)
 
-        if(self.__manager.projects[self.__manager.currentProject].supportFileTree):
+        if(self.__manager.get_current_project().support_filetree):
             self.buildProjectFolderTreeButton = QPushButton("Build folder tree")
             self.buildProjectFolderTreeButton.clicked.connect(self.buildProjectFolderTree)
             self.projectManagerSettingsLayout.addWidget(self.buildProjectFolderTreeButton)
@@ -168,7 +161,7 @@ class PreferencesWindow(QWidget):
         """Build project foldertree.
         """
         self.__manager.logging.info("Folder tree generation started.")
-        self.__manager.projects[self.__manager.currentProject].build_folder_tree()
+        self.__manager.get_current_project().build_folder_tree()
         self.__manager.logging.info("Folder tree successfully generated.")
     
     def savePreferences(self):
@@ -176,7 +169,6 @@ class PreferencesWindow(QWidget):
         """
         self.__manager.preferences.setValue("MANAGER", "service", self.__servicesAvailables[self.serviceButton.currentValue].lower())
         self.__manager.preferences.setValue("MANAGER", "loadPreviews", str(int(self.loadPreviews.isChecked())))
-        self.__manager.preferences.setValue("MANAGER", "downloadVideos", str(int(self.downloadVideos.isChecked())))
         self.__manager.preferences.setValue("MANAGER", "debugMode", str(int(self.debugMode.isChecked())))
         self.__manager.preferences.setValue("MAYA", "useGPUCache", str(int(self.useGPUCache.isChecked())))
         self.__manager.preferences.savePreferences()

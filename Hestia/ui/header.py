@@ -92,7 +92,7 @@ class Header(QWidget):
     def changeProject(self):
         """Change the project on the manager and update the mainWindow.
         """
-        self.__manager.currentProject = self.projectSelector.currentValue
+        self.__manager.current_project = self.projectSelector.currentValue
         self.__mainWindow.refreshProject()
 
     def refresh(self):

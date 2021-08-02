@@ -5,7 +5,7 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.4
 """
-from os import path
+import os
 
 global pysideVers
 try:
@@ -19,7 +19,6 @@ except:
     pysideVers = 1
 
 from .iconButton            import IconButton
-from .videoButton           import VideoButton
 from .dropDown              import DropDown
 
 class EntityWidget(QWidget):
@@ -38,19 +37,18 @@ class EntityWidget(QWidget):
         self.__mainWindow   = mainWindow
         self.__asset        = asset
         
-        self.__rootPath = path.dirname(path.abspath(__file__))
+        self.__root_path = os.path.dirname(os.path.abspath(__file__))
 
-        self.__movies_exts = ["avi", "mov", "mkv", "mp4", "m4v"]
 
         self.__defaultIcon = ""
         if(pysideVers == 2):
-            self.__defaultIcon = self.__rootPath + "/../icons/card-image.svg"
+            self.__defaultIcon = self.__root_path + "/../icons/card-image.svg"
         else:
-            self.__defaultIcon = self.__rootPath + "/../icons/card-image.png"
+            self.__defaultIcon = self.__root_path + "/../icons/card-image.png"
 
         self.__name           = asset.name
         self.__description    = asset.description
-        self.__icon           = self.__defaultIcon
+        self.__icon           = asset.preview_file if os.path.isfile(asset.preview_file) else self.__defaultIcon
         self.__iconSize       = iconSize
         self.__versions       = asset.versions
         self.__tasks          = self.getTasks()
@@ -76,11 +74,7 @@ class EntityWidget(QWidget):
         self.verticalLayout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
-        if(self.__icon.split(".")[len(self.__icon.split("."))-1] in self.__movies_exts and pysideVers != 1):
-            # Video Button.
-            self.iconButton = VideoButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
-        else:
-            self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
+        self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
         self.verticalLayout.addWidget(self.iconButton)
 
         # Task and verisons layout.
@@ -128,13 +122,13 @@ class EntityWidget(QWidget):
         """
         self.__manager.logging.info("Import %s" % self.__name)
         
-        currentProject = self.__manager.projects[self.__manager.currentProject]
+        current_project = self.__manager.get_current_project()
 
-        if(currentProject.categories[currentProject.current_category].type == "Assets"):
+        if(current_project.categories[current_project.current_category].type == "Assets"):
             self.__manager.integration.loadAsset(asset = self.__asset,
                                                 version = self.__currentVersion)
 
-        elif(currentProject.categories[currentProject.current_category].type == "Shots"):
+        elif(current_project.categories[current_project.current_category].type == "Shots"):
             self.__manager.integration.loadShot(asset = self.__asset,
                                                 version = self.__currentVersion)
 
@@ -201,13 +195,13 @@ class EntityWidget(QWidget):
         """
         menu = QMenu()
 
-        currentProject = self.__manager.projects[self.__manager.currentProject]
-        if(currentProject.categories[currentProject.current_category].type == "Assets"):
+        current_project = self.__manager.get_current_project()
+        if(current_project.categories[current_project.current_category].type == "Assets"):
             # Assign shader to asset button.
             if(len(self.__versions) > 0 and self.__manager.integration.name != "standalone"):
                 assignShader = menu.addAction("Assign shader to current object")
                 assignShader.triggered.connect(self.assignShaderToSelectedAsset)
-        elif(currentProject.categories[currentProject.current_category].type == "Shots"):
+        elif(current_project.categories[current_project.current_category].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
@@ -217,7 +211,7 @@ class EntityWidget(QWidget):
             extractAssets.triggered.connect(self.exportShotToHSHOT)
 
         # Entity publish area.
-        if(self.__manager.projects[self.__manager.currentProject].supportFileTree
+        if(self.__manager.get_current_project().supportFileTree
             and self.__manager.integration.name != "standalone"):
 
             menu.addSeparator()
@@ -250,14 +244,14 @@ class EntityWidget(QWidget):
         Returns:
             bool: Function status.
         """
-        currentProject = self.__manager.projects[self.__manager.currentProject]
+        current_project = self.__manager.get_current_project()
         
         # Setup scene.
-        setupStatus = self.__manager.integration.setupShot(category=currentProject.categories[currentProject.current_category],
+        setupStatus = self.__manager.integration.setupShot(category=current_project.categories[current_project.current_category],
                                                             shot=self.__asset)
 
         # Import assigned assets.
-        assets = [entity for entity in currentProject.entities if entity.type == "Assets"]
+        assets = [entity for entity in current_project.entities if entity.type == "Assets"]
         for assetID in self.__asset.assigned_assets:
             staticAsset = True
             # Get the asset from ID.

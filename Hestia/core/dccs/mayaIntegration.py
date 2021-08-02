@@ -270,7 +270,7 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Setup status.
         """
-        project = self._manager.projects[self._manager.currentProject]
+        project = get_current_project()
 
         # Checking if the file current file is part of a maya projet foldertree.
         filepath = cmds.file(q=True, sn=True)

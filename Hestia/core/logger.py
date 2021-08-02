@@ -18,6 +18,7 @@ def get_logging(module_name, debug=True):
         class:`logging`: Logger to be used.
     """
     logger = logging.getLogger(module_name)
+    
     if(not logger.handlers):
         # If logger isn't setup, create one.
         streamHandler = logging.StreamHandler()

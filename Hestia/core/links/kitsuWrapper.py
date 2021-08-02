@@ -7,6 +7,7 @@
 """
 import os
 import json
+
 import gazu
 
 from .defaultWrapper    import DefaultWrapper
@@ -75,16 +76,21 @@ class KitsuWrapper(DefaultWrapper):
             return False
         else:
             # Get, create and add users to wrapper.
-            self._users = [
-                User(id=user["id"], username=user["full_name"], email=user["email"], phone=user["phone"], role=user["role"], raw_datas=user)\
-                for user in gazu.person.all_persons()
-            ]
+            self._users = []
 
-            self._current_user = [user for user in self._users if user.id == gazu.client.get_current_user()["id"]][0]
+            current_user_raw_datas = gazu.client.get_current_user()
+
+            self._current_user = User(id=current_user_raw_datas["id"],
+                                    username=current_user_raw_datas["full_name"],
+                                    email=current_user_raw_datas["email"],
+                                    phone=current_user_raw_datas["phone"],
+                                    role=current_user_raw_datas["role"],
+                                    raw_datas=current_user_raw_datas
+                                )
+
+            self._users.append(self._current_user)
+
             self._username = self._current_user.username + " (Online Mode: Kitsu)"
-
-            # Enable caching for faster download from online.
-            gazu.cache.enable()
 
             return True
     
@@ -100,39 +106,43 @@ class KitsuWrapper(DefaultWrapper):
         
         return gazu.project.all_open_projects()
     
-    def get_datas_from_project(self, project):
+    def get_datas_from_project(self, raw_datas):
         """Get data for the selected project.
 
         Args:
-            project (str): Project datas.
+            raw_datas (str): Project raw datas.
 
         Returns:
             class: "Project": Project generated from kitsu.
         """
-        self._manager.logging.info("Getting datas for: %s" % project["name"])
+        self._manager.logging.info("Getting datas for: %s" % raw_datas["name"])
 
         # Setup project variables.
-        description             = project["description"] if project["description"] != None else ""
-        fps                     = project["fps"] if project["fps"] != None else 0
-        ratio                   = project["ratio"] if project["ratio"] != None else 0
-        resolution              = project["resolution"] if project["resolution"] != None else 0
-
-
-        if(self._manager.debug and self._debug_kitsu_datas):
-            self._manager.logging.debug("Project filetree: \n{}".format(json.dumps(project["file_tree"],\
-                                            sort_keys=True, indent=4)))
+        description             = raw_datas["description"] if raw_datas["description"] != None else ""
+        fps                     = raw_datas["fps"] if raw_datas["fps"] != None else 0
+        ratio                   = raw_datas["ratio"] if raw_datas["ratio"] != None else 0
+        resolution              = raw_datas["resolution"] if raw_datas["resolution"] != None else 0
 
         # Get and create a new project.
-        new_project = Project(id=project["id"], name=project["name"], description=description,
+        new_project = Project(id=raw_datas["id"], name=raw_datas["name"], description=description,
                             fps=fps, ratio=ratio, resolution=resolution,
-                            paths_template=self.convert_templates(project["file_tree"]),
-                            raw_datas=project)
-
-        if(self._manager.debug and self._debug_kitsu_datas):
-            self._manager.logging.debug(json.dumps(project, sort_keys=True, indent=4))
+                            paths_template=self.convert_templates(raw_datas["file_tree"]),
+                            raw_datas=raw_datas)
         
-        # Add users to project.
-        new_project.team = [user for user in self._users if user.id in project["team"]]
+        # Get, create and add users to wrapper.
+        for user_id in [user_id for user_id in raw_datas["team"] if user_id not in [user.id for user in self._users]]:
+            user_raw_datas = gazu.person.get_person(user_id)
+            self._users.append(
+                User(id=user_raw_datas["id"],
+                    username=user_raw_datas["full_name"],
+                    email=user_raw_datas["email"],
+                    phone=user_raw_datas["phone"],
+                    role=user_raw_datas["role"],
+                    raw_datas=user_raw_datas
+                )
+            )
+
+        new_project.team = [user for user in self._users if user.id in raw_datas["team"]]
         
         # Get, create and add tasks to project.
         tasks = gazu.task.all_task_types()
@@ -141,57 +151,20 @@ class KitsuWrapper(DefaultWrapper):
             taskType = "Assets" if task["for_shots"] == "false" else "Shots"
             new_task = Task(taskType=taskType, id=task["id"], name=task["name"], raw_datas=task)
             new_project.add_task(new_task)
-
-        if(self._manager.debug and self._debug_kitsu_datas):
-            self._manager.logging.debug(json.dumps(tasks, sort_keys=True, indent=4))
         
         self._manager.logging.info("Tasks loaded.")
 
         # Get, create and add categories to project.
-        categories = gazu.asset.all_asset_types_for_project(project)
-
-        if(self._manager.debug and self._debug_kitsu_datas):
-            self._manager.logging.debug(json.dumps(categories, sort_keys=True, indent=4))
+        categories = gazu.asset.all_asset_types_for_project(raw_datas)
 
         for category in categories:
             new_category = Category(id=category["id"], name=category["name"], description="", type="Assets", raw_datas=category)
             new_project.add_category(new_category)
-
-            # Get, create and add assets to categories.
-            assets = gazu.asset.all_assets_for_project_and_type(project, category)
-
-            for asset in assets:
-                
-                if(self._manager.debug and self._debug_kitsu_datas):
-                    self._manager.logging.debug(json.dumps(asset, sort_keys=True, indent=4))
-                
-                # Get tasks for asset.
-                assetTasks = []
-                for assetTask in gazu.task.all_task_types_for_asset(asset["id"]):
-                    assetTasks.append([task for task in new_project.tasks if task.id == assetTask["id"]][0])
-                
-                # Output versionning.
-                versions = self.get_versions(new_project, asset)
-
-                # Buildint the Entity with all datas.
-                newAsset = Asset(
-                                    id=asset["id"],
-                                    name=asset["name"],
-                                    description=asset["description"],
-                                    tasks=assetTasks,
-                                    versions=versions,
-                                    raw_datas=asset
-                                )
-                
-                new_category.add_entity(newAsset)
             
         self._manager.logging.info("Categories and assets loaded.")
 
         # Get, create and add sequences to project.
-        sequences = gazu.shot.all_sequences_for_project(project)
-
-        if(self._manager.debug and self._debug_kitsu_datas):
-            self._manager.logging.debug(json.dumps(sequences, sort_keys=True, indent=4))
+        sequences = gazu.shot.all_sequences_for_project(raw_datas)
 
         for sequence in sequences:
             newSequence = Category(id=sequence["id"],
@@ -202,51 +175,112 @@ class KitsuWrapper(DefaultWrapper):
             
             new_project.add_category(newSequence)
 
-            # Get, create and add shots to sequences.
-            shots = gazu.shot.all_shots_for_sequence(sequence)
-
-            for shot in shots:
-
-                if(self._manager.debug and self._debug_kitsu_datas):
-                    self._manager.logging.debug(json.dumps(shot, sort_keys=True, indent=4))
-
-                # Get technical datas.
-                nb_frames = 0
-
-                if(shot["nb_frames"] != None):
-                    nb_frames = shot["nb_frames"]
-
-                    if(nb_frames == 0 and 
-                        shot["data"]["frame_in"] != None and shot["data"]["frame_out"] != None):
-                        nb_frames = int(shot["data"]["frame_out"]) - int(shot["data"]["frame_in"])
-                
-                # Get Assets assigned in the shot.
-                assigned_assets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(shot["id"])]
-
-                # Get tasks for shot.
-                shotTasks = []
-                for shotTask in gazu.task.all_task_types_for_shot(shot["id"]):
-                    shotTasks.append([task for task in new_project.tasks if task.id == shotTask["id"]][0])
-
-                # Output versionning.
-                versions = self.get_versions(new_project, shot)
-
-                new_shot = Shot(
-                                id=shot["id"],
-                                name=shot["name"],
-                                description=shot["description"],
-                                tasks=shotTasks,
-                                versions=versions,
-                                frame_number=nb_frames,
-                                assigned_assets=assigned_assets,
-                                raw_datas=shot
-                            )
-
-                newSequence.add_entity(new_shot)
-
         self._manager.logging.info("Sequences and shots loaded.")
 
         return new_project
+
+
+    def get_datas_for_asset(self, asset):
+        """Get data for the given asset.
+        
+        Args:
+            asset (class:`Asset`): Asset to dowload.
+        
+        Returns:
+            class:`Asset`: Asset.
+        """
+        raw_datas = gazu.asset.get_asset(asset.id)
+
+        asset.name = raw_datas["name"]
+        asset.description = raw_datas["description"]
+
+        asset.preview_file = self.download_preview(asset)
+
+        for task in raw_datas["tasks"]:
+            Task(id=task["id"])
+
+        asset.versions = versions = self.get_versions(self._manager.get_current_project(), raw_datas)
+
+        asset.raw_datas = raw_datas
+
+        return asset
+
+    def get_datas_for_category(self, category):
+        """Get data for the given category.
+        
+        Args:
+            category (class:`Category`): Category to download.
+        
+        Returns:
+            class:`Category`: Category.
+        """
+        if(category.type == "Assets"):
+            raw_datas = gazu.asset.all_assets_for_project_and_type(self._manager.get_current_project().id, category.id)
+
+            for asset in raw_datas:
+                category.add_entity(Asset(id=asset["id"]))
+
+        else:
+            raw_datas = gazu.shot.all_shots_for_sequence(category.id)
+
+            for shot in raw_datas:
+                print(shot["id"])
+                category.add_entity(Shot(id=shot["id"]))
+
+        return category
+
+    def get_datas_for_shot(self, shot):
+        """Get data for the given shot.
+        
+        Args:
+            shot (class:`Shot`): Shot to download.
+        
+        Returns:
+            class:`Shot`: Shot.
+        """
+        raw_datas = gazu.shot.get_shot(shot.id)
+
+        shot.name = raw_datas["name"]
+        shot.description = raw_datas["description"]
+
+        shot.preview_file = self.download_preview(shot)
+
+        if(raw_datas["nb_frames"] > 0):
+            shot.frame_number = int(raw_datas["nb_frames"])
+        else:
+            shot.frame_number = int(raw_datas["frame_out"]) - int(raw_datas["frame_in"]) + 1
+
+        shot.versions = self.get_versions(self._manager.get_current_project(), raw_datas)
+
+        shot.assigned_assets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(raw_datas["id"])]
+        
+        return shot
+
+    def get_datas_for_task(self, task):
+        """Get data for the given task.
+        
+        Args:
+            task (class:`Task`): Task to download.
+        
+        Returns:
+            class:`Task`: Task.
+        """
+        # No need to use the defered loading for tasks,
+        # the main request already get all datas.
+        return task
+
+    def get_datas_for_version(self, version):
+        """Get data for the given version.
+        
+        Args:
+            version (class:`Version`): Version to download.
+        
+        Returns:
+            class:`Version`: Version.
+        """
+        # Not used for Kitsu (Kitsu use a different way to get versions).
+        # This can be used for REST requests later.
+        return version
 
     def convert_templates(self, raw_datas={}):
         """Convert kitsu project path management to Hestia.
@@ -283,25 +317,18 @@ class KitsuWrapper(DefaultWrapper):
             return ""
         
         # Getting the preview picture.
-        icon_path = ""
-        tempPath = FileManager().temp_directory
-        movies_exts = ["avi", "mov", "mkv", "mp4", "m4v"]
+        target_path = ""
 
         try:
             preview_file = gazu.files.get_preview_file(entity_datas["preview_file_id"])
         except gazu.exception.NotAllowedException:
             self._manager.logging.debug("%s : Acces refused to preview." % entity_datas["name"])
         else:
-            if(preview_file["extension"] in movies_exts and not bool(int(self._manager.preferences.getValue("MANAGER", "downloadVideos")))):
-                self._manager.logging.debug("%s : Loading movie thumbnail." % entity_datas["name"])
-                icon_path = tempPath + os.path.sep + preview_file["id"] + ".png"
-                gazu.files.download_preview_file_thumbnail(preview_file, icon_path)
-            else:
-                self._manager.logging.debug("%s : Loading preview." % entity_datas["name"])
-                icon_path = tempPath + os.path.sep + preview_file["id"] + "." + preview_file["extension"]
-                gazu.files.download_preview_file(preview_file, icon_path)
+            self._manager.logging.debug("%s : Downloading thumbnail." % entity_datas["name"])
+            target_path = os.path.join(FileManager().temp_directory, preview_file["id"] + ".png")
+            gazu.files.download_preview_file_thumbnail(preview_file, target_path)
         
-        return icon_path
+        return target_path
     
     def get_versions(self, project=None, entity=None):
         """Get versions for entity.
