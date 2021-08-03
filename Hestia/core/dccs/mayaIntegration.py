@@ -6,6 +6,7 @@
     :version:   0.0.5
 """
 import os
+import sys
 
 global integrationActive
 
@@ -16,6 +17,8 @@ except:
     integrationActive = False
 else:
     integrationActive = True
+
+from ..exceptions import CoreError
 
 from .defaultIntegration import DefaultIntegration
 
@@ -48,8 +51,15 @@ class MayaIntegration(DefaultIntegration):
         self._manager.logging.info("Initialize File Formats.")
         self._availableFormats = [".ma", ".mb"]
 
+        if(sys.platform.startswith('win32')):
+            extension = "mll"
+        elif(sys.platform.startswith('darwin')):
+            extension = "bundle"
+        else:
+            raise CoreError("Linux not supported.")
+
         # Enabling plugins for additional formats
-        pluginFormats = {".obj": ["objExport.mll"], ".abc": ["AbcExport.mll", "AbcImport.mll", "gpuCache.mll"]}
+        pluginFormats = {".obj": ["objExport.{}".format(extension)], ".abc": ["AbcExport.{}".format(extension), "AbcImport.{}".format(extension), "gpuCache.{}".format(extension)]}
         for plugin in pluginFormats:
             for subPlugin in pluginFormats[plugin]:
                 loadPluginStatus = self.loadExternalPlugin(pluginName=subPlugin)
@@ -60,7 +70,7 @@ class MayaIntegration(DefaultIntegration):
                 self._availableFormats.append(plugin)
         
         # Enabling plugins for additional features.
-        plugins = ["timeSliderBookmark.mll"]
+        plugins = ["timeSliderBookmark.{}".format(extension)]
         for plugin in plugins:
             loadPluginStatus = self.loadExternalPlugin(pluginName=plugin)
     

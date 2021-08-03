@@ -223,7 +223,7 @@ class KitsuWrapper(DefaultWrapper):
         else:
             raw_datas = gazu.shot.all_shots_for_sequence(category.id)
 
-            for shot in raw_datas
+            for shot in raw_datas:
                 category.add_entity(Shot(id=shot["id"]))
 
         return category
