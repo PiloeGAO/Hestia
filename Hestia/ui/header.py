@@ -47,18 +47,6 @@ class Header(QWidget):
         # Set the main layout component.
         self.mainLayout = QHBoxLayout()
 
-        # Add import as instance checkbox.
-        self.importAsReference = QCheckBox("Reference")
-        self.importAsReference.setToolTip("Import the asset as reference in the scene.")
-        self.importAsReference.setChecked(self.importAsReferenceState)
-        self.importAsReference.stateChanged.connect(self.changeImportAsReferenceState)
-        self.mainLayout.addWidget(self.importAsReference)
-
-        if(self.__manager.integration.supportInstances):
-            self.importAsReference.show()
-        else:
-            self.importAsReference.hide()
-
         # Add spacer to header.
         self.mainLayout.addStretch()
 

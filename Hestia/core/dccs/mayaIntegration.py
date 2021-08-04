@@ -59,7 +59,8 @@ class MayaIntegration(DefaultIntegration):
             raise CoreError("Linux not supported.")
 
         # Enabling plugins for additional formats
-        pluginFormats = {".obj": ["objExport.{}".format(extension)], ".abc": ["AbcExport.{}".format(extension), "AbcImport.{}".format(extension), "gpuCache.{}".format(extension)]}
+        # Format: {"extension": ["plugin.mll", "plugin2.mll"]}
+        pluginFormats = {}
         for plugin in pluginFormats:
             for subPlugin in pluginFormats[plugin]:
                 loadPluginStatus = self.loadExternalPlugin(pluginName=subPlugin)
@@ -76,18 +77,19 @@ class MayaIntegration(DefaultIntegration):
     
     def loadExternalPlugin(self, pluginName):
         """Load external plugins needed by the implementation (exemple: for special formats...)
+        
+        Args:
+            pluginName (str): Name of the plugin.
 
         Returns:
             bool: Status of the loading.
         """
         try:
             cmds.loadPlugin(pluginName)
-            pluginActive = True
+            return True
         except RuntimeError:
             self._manager.logging.error("Failed to load: " + pluginName)
-            pluginActive = False
-
-        return pluginActive
+            return False
     
     def loadAsset(self, asset=None, version=None, staticAsset=None):
         """Load the selected asset inside of the scene.
@@ -102,142 +104,6 @@ class MayaIntegration(DefaultIntegration):
         if(not os.path.exists(version.output_path)):
             self._manager.logging.error("File not found.")
             return False
-
-        # Looking for asset replacement.
-        currentSelection = cmds.ls(sl=True)
-        if(len(currentSelection) > 0):
-            currentSelection = currentSelection[0]
-            if(cmds.attributeQuery("isHestiaAsset", node=currentSelection, exists=True)):
-                if(cmds.getAttr(currentSelection+".hestiaAssetID") == str(asset.id)):
-                    if(cmds.objectType(currentSelection) == "reference" and self.isInstanceImport(version=version)):
-                        # Updating reference is done with the file function. From: https://stackoverflow.com/a/44718215
-                        referenceToUpdate = cmds.referenceQuery(currentSelection, referenceNode=True)
-                        cmds.file(version.output_path, loadReference=referenceToUpdate)
-                    elif(cmds.objectType(currentSelection) == "transform" and not self.isInstanceImport(version=version)):
-                        # Delete objects inside of the selected group.
-                        oldObjects = cmds.listRelatives(currentSelection, children=True)
-                        cmds.delete(oldObjects)
-
-                        # Importing the asset and getting the transform node.
-                        before = set(cmds.ls(type="transform"))
-
-                        self.importAsset(asset=asset, version=version)
-
-                        after = set(cmds.ls(type="transform"))
-                        imported = after - before
-
-                        # Reparent new objects.
-                        cmds.parent(imported, currentSelection, relative=True)
-                        
-                        #Rename each object to avoid duplication on second import.
-                        for object in imported:
-                            cmds.rename(object, "%s_%s" % (currentSelection, object))
-                    else:
-                        self._manager.logging.warning("Reference and traditional import can't be mixed together.")
-                        return False
-                    
-                    return True
-
-        # If nothing is selected or asset isn't the same, start import procedure.
-        currentAsset = None    
-        # Create a group that will contain asset except for instances.
-        if(not self.isInstanceImport(version=version) or staticAsset == True):
-            # Parse a maya compatible name.
-            groupName = asset.name.replace(" ", "_").replace("-", "_")
-            while(cmds.objExists(groupName) or groupName in cmds.namespaceInfo(listNamespace=True)):
-                groupName = groupName + "_bis"
-            
-            staticAsset = 1
-
-            if(self.__useGPUCache and version.type == ".abc"):
-                # GPU Caches can only be added throught custom node creation.
-                # source: https://knowledge.autodesk.com/support/maya/learn-explore/caas/CloudHelp/cloudhelp/2019/ENU/Maya-ManagingScenes/files/GUID-738736C6-F8D9-4E7F-BB3E-12DE06CD3303-htm.html
-                gpuCacheName = groupName
-                parentName = gpuCacheName + "_transform"
-
-                cmds.createNode("transform", n=parentName)
-                cmds.createNode("gpuCache", n=gpuCacheName, p=parentName)
-                cmds.setAttr(gpuCacheName + ".cacheFileName", str(version.output_path), type="string")
-                cmds.setAttr(gpuCacheName + ".cacheGeomPath", "|", type="string")
-
-                currentAsset = parentName
-            else:
-                self._manager.logging.warning("Static objects should be ABC files, using legacy mode for importing asset (errors can be added by legacy mode).")
-                # DEPRECATED FUNCTION, ONLY HERE FOR COMPATIBILITY.
-                # Importing the asset and getting the transform node.
-                before = set(cmds.ls(type="transform"))
-
-                self.importAsset(asset=asset, version=version)
-
-                after = set(cmds.ls(type="transform"))
-                imported = after - before
-
-                # Group need to be created as empty to make sure pivot is in the center of the scene.
-                cmds.group(empty=True, name=groupName, absolute=True)
-                cmds.parent(imported, groupName, relative=True)
-
-                #Rename each object to avoid duplication on second import.
-                """
-                for object in imported:
-                    cmds.rename(object, "%s_%s" % (groupName, object))
-                """
-
-                cmds.select(groupName, r=True)
-                currentAsset = cmds.ls(sl=True)[0]
-
-            # Make statis assets not keyable.
-            cmds.setAttr(currentAsset + ".translateX",  keyable=False)
-            cmds.setAttr(currentAsset + ".translateY",  keyable=False)
-            cmds.setAttr(currentAsset + ".translateZ",  keyable=False)
-            cmds.setAttr(currentAsset + ".rotateX",     keyable=False)
-            cmds.setAttr(currentAsset + ".rotateY",     keyable=False)
-            cmds.setAttr(currentAsset + ".rotateZ",     keyable=False)
-            cmds.setAttr(currentAsset + ".scaleX",      keyable=False)
-            cmds.setAttr(currentAsset + ".scaleY",      keyable=False)
-            cmds.setAttr(currentAsset + ".scaleZ",      keyable=False)
-        else:
-            # Importing the asset and getting the reference node.
-            before = set(cmds.ls(type="reference"))
-
-            self.importAsset(asset=asset, version=version)
-
-            after = set(cmds.ls(type="reference"))
-            imported = after - before
-
-            staticAsset = 0
-
-            cmds.select(imported, r=True)
-            currentAsset = cmds.ls(sl=True)[0]
-
-            # I need to unlock the reference to add custom attributes
-            # Source: https://discourse.techart.online/t/adding-attributes-to-a-reference-node-in-maya/9274
-            cmds.getAttr(currentAsset + ".locked")
-            cmds.lockNode(currentAsset,q=1,lock=1)
-            cmds.lockNode(currentAsset,lock=0)
-
-        # Setting needed attributes for shot assembly.
-        cmds.addAttr(attributeType="bool", hidden=0,
-                    longName="isHestiaAsset", shortName="isHstAsst")
-        cmds.setAttr(currentAsset + ".isHestiaAsset", 1)
-        
-        cmds.addAttr(attributeType="bool", hidden=0,
-                    longName="hestiaStaticAsset", shortName="hestiaStcAsst")
-        cmds.setAttr(currentAsset + ".hestiaStaticAsset", staticAsset)
-
-        cmds.addAttr(dataType="string", hidden=0,
-                    longName="hestiaAssetID", shortName="hestiaAsstID")
-        cmds.setAttr(currentAsset + ".hestiaAssetID", str(asset.id), type="string")
-
-        cmds.addAttr(dataType="string", hidden=0,
-                    longName="hestiaShaderID", shortName="hestiaShdrID")
-        cmds.setAttr(currentAsset + ".hestiaShaderID", str(""), type="string")
-        
-        cmds.addAttr(dataType="string", hidden=0,
-                    longName="hestiaVersionID", shortName="hestiaVrsID")
-        cmds.setAttr(currentAsset + ".hestiaVersionID", str(version.id), type="string")
-        
-        # Clear selection.
-        cmds.select( clear=True )
 
         return True
     
@@ -261,12 +127,6 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(version.output_path, o=True)
 
             return True
-
-        elif(version.type == ".hshot"):
-            # HSHOT format is a JSON file.
-            # Invoke build mechanic.
-            self.buildShot(shotPath=version.ouputPath)
-            return False
         else:
             return False
     
@@ -343,77 +203,6 @@ class MayaIntegration(DefaultIntegration):
 
         return True
     
-    def buildShot(self, shotPath = ""):
-        """Build the shot from shot assembly system.
-
-        Args:
-            shotPath (str): Shot path. Defaults to "".
-
-        Args:
-            shotPath (str, optional): [description]. Defaults to "".
-        """
-        if(not os.path.exists(shotPath)):
-            self._manager.logging.error("File not found.")
-            return False
-        
-        return NotImplemented
-    
-    def importAsset(self, asset=None, version=None):
-        """Import the asset inside of Maya.
-
-        Args:
-            path (str, optional): Path of the asset. Defaults to "".
-        """
-        if(self.isInstanceImport(version=version)):
-            cmds.file(version.output_path, reference=True, usingNamespaces=True, namespace=asset.name)
-        else:
-            cmds.file(version.output_path, i=True)
-    
-    def isInstanceImport(self, version=None):
-        """Return the status for instance import.
-
-        Returns:
-            bool: Instance status.
-        """
-        if(self._instances == True and (version.type == ".ma" or version.type == ".mb")):
-            return True
-        else:
-            return False
-    
-    def assignShaderToSelectedAsset(self, version):
-        """Assign a shader ID to an Hestia asset.
-
-        Args:
-            version (class:"Version"): Version datas. Defaults to None.
-
-        Returns:
-            bool: Function status.
-        """
-        if(len(cmds.ls(sl=True)) == 0):
-            return False
-        
-        currentAsset = cmds.ls(sl=True)[0]
-
-        if(cmds.attributeQuery("isHestiaAsset", node=currentAsset, exists=True)
-                and cmds.attributeQuery("hestiaShaderID", node=currentAsset, exists=True)):
-            cmds.setAttr(currentAsset + ".hestiaShaderID", str(version.id), type="string")
-            return True
-        else:
-            return False
-
-    def extractAssets(self):
-        """Extracts assets for shot building file.
-        """
-        sceneTransforms = cmds.ls(type="transform")
-
-        for t in sceneTransforms:
-            if(cmds.attributeQuery("isHestiaAsset", node=t, exists=True)):
-                # Getting data for Hestia assets.
-                print("%s : " % t)
-                print(cmds.xform(t, query=True, matrix=True, worldSpace=True))
-
-        return False
-    
     def takePlayblast(self, start_frame, end_frame, path):
         """Take a playblast of the scene.
 
@@ -443,8 +232,7 @@ class MayaIntegration(DefaultIntegration):
             cmds.playblast(v=False, orn=False, f=path, wh=[width,height], p=100, forceOverwrite=True)
 
         return True
-        
-    
+
     def openFile(self, version):
         """Open the file in the DCC.
 
@@ -504,18 +292,6 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(path, type='mayaAscii', exportSelected=True)
         elif(extension == ".mb"):
             cmds.file(path, type='mayaBinary', exportSelected=True)
-        elif(extension == ".abc"):
-            oldSelection = cmds.ls(sl=True)
-
-            # Select hierarchy.
-            cmds.select(hierarchy=True)
-            command = "-uvWrite -worldSpace " + "-selection -file " + path
-            cmds.AbcExport ( j = command )
-
-            # Reset selection
-            cmds.select(oldSelection)
-        elif(extension == ".obj"):
-            cmds.file(path, type='OBJexport', exportSelected=True)
         else:
             return False
         

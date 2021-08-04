@@ -198,9 +198,8 @@ class EntityWidget(QWidget):
         current_project = self.__manager.get_current_project()
         if(current_project.categories[current_project.current_category].type == "Assets"):
             # Assign shader to asset button.
-            if(len(self.__versions) > 0 and self.__manager.integration.name != "standalone"):
-                assignShader = menu.addAction("Assign shader to current object")
-                assignShader.triggered.connect(self.assignShaderToSelectedAsset)
+            if(len(self.__versions) > 0):
+                pass
         elif(current_project.categories[current_project.current_category].type == "Shots"):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
@@ -211,9 +210,7 @@ class EntityWidget(QWidget):
             extractAssets.triggered.connect(self.exportShotToHSHOT)
 
         # Entity publish area.
-        if(self.__manager.get_current_project().supportFileTree
-            and self.__manager.integration.name != "standalone"):
-
+        if(self.__manager.get_current_project().support_filetree):
             menu.addSeparator()
             if(len(self.__versions) > 0):
                 openFileMenu = menu.addAction("Open file")
@@ -224,20 +221,6 @@ class EntityWidget(QWidget):
 
         menu.exec_(event.globalPos())
     
-    def assignShaderToSelectedAsset(self):
-        """Function to assign the shader ID to the selected asset.
-
-        Returns:
-            bool: Function status.
-        """
-
-        assignStatus = self.__manager.integration.assignShaderToSelectedAsset(version=self.__currentVersion)
-        if(assignStatus):
-            return True
-        else:
-            self.__manager.logging.error("Failed to assign shader to selection.")
-            return False
-        
     def setupSceneForShot(self):
         """Function to setup scene for selected shot.
 
@@ -286,27 +269,6 @@ class EntityWidget(QWidget):
         else:
             self.__manager.logging.error("Shot setup failed.")
             return False
-
-    def exportShotToHSHOT(self):
-        """Function to export shot to hshot format.
-
-        Returns:
-            bool: Function status.
-        """
-        exportPathDialog = QFileDialog()
-        exportPathDialog.setFileMode(QFileDialog.AnyFile)
-        exportPathDialog.setNameFilter("Hestia shot (*.hshot *.json)")
-        exportPathDialog.setViewMode(QFileDialog.Detail)
-        exportPathDialog.setAcceptMode(QFileDialog.AcceptSave)
-
-        if exportPathDialog.exec_():
-            exportPath = exportPathDialog.selectedFiles()[0]
-        
-        print(exportPath)
-
-        self.__manager.integration.extractAssets()
-        
-        return True
     
     def openFile(self):
         """Function to open file.

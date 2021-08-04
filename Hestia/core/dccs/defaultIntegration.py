@@ -19,8 +19,6 @@ class DefaultIntegration(object):
         self._defaultFormat = ""
         self._availableFormats = []
 
-        self._supportInstances = False
-        self._instances = False
         self._supportScreenshots = False
     
     @property
@@ -49,34 +47,6 @@ class DefaultIntegration(object):
             list: str: Formats usable by the dccs.
         """
         return self._availableFormats
-    
-    @property
-    def supportInstances(self):
-        """Get the instance support.
-
-        Returns:
-            bool: Is instance available in the current dcc.
-        """
-        return self._supportInstances
-    
-    @property
-    def instances(self):
-        """Get the instance import status.
-
-        Returns:
-            bool: Is asset should be imported as instance.
-        """
-        return self._instances
-    
-    @instances.setter
-    def instances(self, newStatus):
-        """Set the instance import status.
-
-        Args:
-            newStatus (bool): New status.
-        """
-        print("Instances new status" + str(newStatus))
-        self._instances = newStatus
     
     @property
     def supportScreenshots(self):
@@ -139,7 +109,6 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    
     def buildShot(self, shotPath = ""):
         """Build the shot from shot assembly system.
 
@@ -150,38 +119,6 @@ class DefaultIntegration(object):
             shotPath (str, optional): [description]. Defaults to "".
         """
         return NotImplemented
-
-    def importAsset(self, path = ""):
-        """Import the asset inside of default.
-
-        Args:
-            path (str, optional): Path of the asset. Defaults to "".
-        """
-        return NotImplemented
-    
-    def isInstanceImport(self, version=None):
-        """Return the status for instance import.
-
-        Returns:
-            bool: Instance status.
-        """
-        return NotImplementedError
-
-    def assignShaderToSelectedAsset(self, version):
-        """Assign a shader ID to an Hestia asset.
-
-        Args:
-            version (class:"Version"): Version datas. Defaults to None.
-
-        Returns:
-            bool: Function status.
-        """
-        return NotImplementedError
-
-    def extractAssets(self):
-        """Extracts assets for shot building file.
-        """
-        return NotImplementedError
     
     def takePlayblast(self, start_frame, endFrame, path):
         """Take a playblast of the scene.
@@ -195,7 +132,7 @@ class DefaultIntegration(object):
             bool: Function status.
         """
         return NotImplementedError
-        
+
     def openFile(self, path):
         """Open the file in the DCC.
 
