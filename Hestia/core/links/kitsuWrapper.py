@@ -35,6 +35,17 @@ class KitsuWrapper(DefaultWrapper):
         self._current_user   = None
 
         self._debug_kitsu_datas = False
+
+        if(bool(os.environ.get("HESTIA_AUTOLOGIN", "False"))):
+            self._manager.projects = []
+
+            self._api = os.environ.get("HESTIA_API","http://localhost:80/api")
+            self.login(username=os.environ.get("HESTIA_LOGIN","username"), password=os.environ.get("HESTIA_PASSWORD","password"))
+
+            openProjects = self.get_open_projects()
+
+            for project in openProjects:
+                self._manager.addProject(self.get_datas_from_project(project))
     
     @property
     def api(self):
@@ -244,10 +255,14 @@ class KitsuWrapper(DefaultWrapper):
 
         shot.preview_file = self.download_preview(shot)
 
-        if(raw_datas["nb_frames"] > 0):
-            shot.frame_number = int(raw_datas["nb_frames"])
-        else:
-            shot.frame_number = int(raw_datas["frame_out"]) - int(raw_datas["frame_in"]) + 1
+        if(raw_datas.get("nb_frames") != None
+            or raw_datas.get("frame_in") != None
+            or raw_datas.get("frame_out") != None):
+            # This case is needed in case of no frame duration entered in the DB.
+            if(raw_datas.get("nb_frames", 0) > 0):
+                shot.frame_number = int(raw_datas.get("nb_frames", 0))
+            else:
+                shot.frame_number = int(raw_datas.get("frame_out", 0)) - int(raw_datas.get("frame_in", 0)) + 1
 
         shot.versions = self.get_versions(self._manager.get_current_project(), raw_datas)
 

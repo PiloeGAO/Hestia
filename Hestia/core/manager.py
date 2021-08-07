@@ -45,6 +45,10 @@ class Manager():
         # Remove temp directory at exit (standalone only).
         atexit.register(shutil.rmtree, FileManager().temp_directory)
 
+        # Setup projects.
+        self._projects = [Project(name="local", description="Local file system.", is_downloaded=True)]
+        self._current_project = 0
+
         # Managing integrations.
         if(integration == "Maya"):
             from .dccs.mayaIntegration import MayaIntegration
@@ -63,10 +67,6 @@ class Manager():
         else:
             self._mode = "local"
             self._link = DefaultWrapper()
-
-        # Setup projects.
-        self._projects = [Project(name="local", description="Local file system.", is_downloaded=True)]
-        self._current_project = 0
     
     @property
     def logging(self):
