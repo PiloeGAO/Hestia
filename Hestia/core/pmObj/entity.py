@@ -5,6 +5,8 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+import os
+
 from ..links.decorators import sync_entity
 
 class Entity(object):
@@ -22,6 +24,7 @@ class Entity(object):
         self._name         = name
         self._description  = description
         self._tasks        = tasks
+        self._path         = ""
         self._preview_path = preview_path
 
         self._raw_datas    = raw_datas
@@ -104,6 +107,31 @@ class Entity(object):
             raise CoreError("A task can't be added twice to an entity.")
         
         self._tasks.append(new_task)
+
+    @property
+    @sync_entity
+    def path(self):
+        """Get the path to usd main scene.
+        
+        Returns:
+            str: Path.
+        """
+        # Build USD file if not on the disk.
+        if(not os.path.isfile(self._path)):
+            from Hestia.core.USD import create_stage
+            create_stage(self._path)
+            del create_stage
+
+        return self._path
+    
+    @path.setter
+    def path(self, path):
+        """Set the path to usd main scene.
+        
+        Args:
+            path (str): Path
+        """
+        self._path = path
 
     @property
     @sync_entity

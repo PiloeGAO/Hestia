@@ -12,6 +12,7 @@ import atexit
 from .logger                    import get_logging
 from .exceptions                import CoreError
 from .IO.path                   import FileManager
+from .USD                       import *
 
 from .preferences               import Preferences
 

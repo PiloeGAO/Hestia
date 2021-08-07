@@ -12,7 +12,7 @@ import gazu
 
 from .defaultWrapper    import DefaultWrapper
 
-from ..IO.path          import TemplateManager, FileManager
+from ..IO.path          import TemplateManager, FileManager, remove_special_characters
 
 from ..pmObj.project    import Project
 from ..pmObj.task       import Task
@@ -210,7 +210,21 @@ class KitsuWrapper(DefaultWrapper):
         for task in raw_datas["tasks"]:
             Task(id=task["id"])
 
-        asset.versions = versions = self.get_versions(self._manager.get_current_project(), raw_datas)
+        asset.versions = self.get_versions(self._manager.get_current_project(), raw_datas)
+
+        # Build the path to asset master USD.
+        template_path = TemplateManager().get_template_path_for_entity(self._manager.get_current_project().paths_template, publish=True, parent_entity="asset", target_entity="Asset")
+
+        current_category = [category for category in self._manager.get_current_project().categories if asset.id in [entity.id for entity in category.entities]][0]
+        asset.path = os.path.join(
+                        TemplateManager().get_folderpath_from_template(
+                            template=template_path,
+                            project=self._manager.get_current_project(),
+                            category=current_category,
+                            entity=asset
+                        ),
+                        "{}.usda".format(remove_special_characters(asset.name))
+                    )
 
         asset.raw_datas = raw_datas
 
@@ -267,6 +281,22 @@ class KitsuWrapper(DefaultWrapper):
         shot.versions = self.get_versions(self._manager.get_current_project(), raw_datas)
 
         shot.assigned_assets = [str(asset["id"]) for asset in gazu.asset.all_assets_for_shot(raw_datas["id"])]
+
+        # Build the path to shot master USD.
+        template_path = TemplateManager().get_template_path_for_entity(self._manager.get_current_project().paths_template, publish=True, parent_entity="shot", target_entity="Shot")
+
+        current_category = [category for category in self._manager.get_current_project().categories if shot.id in [entity.id for entity in category.entities]][0]
+        shot.path = os.path.join(
+                        TemplateManager().get_folderpath_from_template(
+                            template=template_path,
+                            project=self._manager.get_current_project(),
+                            category=current_category,
+                            entity=shot
+                        ),
+                        "{}.usda".format(remove_special_characters(shot.name))
+                    )
+
+        shot.raw_datas = raw_datas
         
         return shot
 

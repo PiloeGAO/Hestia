@@ -18,6 +18,8 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
+from Hestia.core.USD.tools  import USDTools
+
 from .iconButton            import IconButton
 from .dropDown              import DropDown
 
@@ -35,7 +37,7 @@ class EntityWidget(QWidget):
         super(EntityWidget, self).__init__(parent=parent)
         self.__manager      = manager
         self.__mainWindow   = mainWindow
-        self.__asset        = asset
+        self._entity        = asset
         
         self.__root_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -125,11 +127,11 @@ class EntityWidget(QWidget):
         current_project = self.__manager.get_current_project()
 
         if(current_project.categories[current_project.current_category].type == "Assets"):
-            self.__manager.integration.loadAsset(asset = self.__asset,
+            self.__manager.integration.loadAsset(asset = self._entity,
                                                 version = self.__currentVersion)
 
         elif(current_project.categories[current_project.current_category].type == "Shots"):
-            self.__manager.integration.loadShot(asset = self.__asset,
+            self.__manager.integration.loadShot(asset = self._entity,
                                                 version = self.__currentVersion)
 
         else:
@@ -204,10 +206,6 @@ class EntityWidget(QWidget):
             # Setup scene for shot button.
             setupShot = menu.addAction("Setup shot")
             setupShot.triggered.connect(self.setupSceneForShot)
-            # Export to HSHOT button.
-            menu.addSeparator()
-            extractAssets = menu.addAction("Export to Hestia shot (.hshot)")
-            extractAssets.triggered.connect(self.exportShotToHSHOT)
 
         # Entity publish area.
         if(self.__manager.get_current_project().support_filetree):
@@ -218,6 +216,13 @@ class EntityWidget(QWidget):
             
             publishEntity = menu.addAction("Publish selection")
             publishEntity.triggered.connect(self.publishSelectionToProjectManager)
+
+        # USD utils.
+        if(self.__manager.get_current_project().support_filetree):
+            menu.addSeparator()
+            if(os.path.isfile(self._entity.path)):
+                openFileMenu = menu.addAction("Open with USDView")
+                openFileMenu.triggered.connect(lambda state: USDTools.open_usdview(self._entity.path))
 
         menu.exec_(event.globalPos())
     
@@ -231,11 +236,11 @@ class EntityWidget(QWidget):
         
         # Setup scene.
         setupStatus = self.__manager.integration.setupShot(category=current_project.categories[current_project.current_category],
-                                                            shot=self.__asset)
+                                                            shot=self._entity)
 
         # Import assigned assets.
         assets = [entity for entity in current_project.entities if entity.type == "Assets"]
-        for assetID in self.__asset.assigned_assets:
+        for assetID in self._entity.assigned_assets:
             staticAsset = True
             # Get the asset from ID.
             assetToImport = [asset for asset in assets if asset.id == assetID][0]
@@ -300,5 +305,5 @@ class EntityWidget(QWidget):
         Returns:
             bool: Function status.
         """
-        self.__mainWindow.openPublishWindow(entity=self.__asset)
+        self.__mainWindow.openPublishWindow(entity=self._entity)
         return True

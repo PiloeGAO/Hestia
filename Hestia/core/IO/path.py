@@ -34,6 +34,48 @@ class TemplateManager():
         pass
 
     @staticmethod
+    def get_template_path_for_entity(template, working=False, publish=False, parent_entity="asset", target_entity="Project"):
+        """Get the template path for entity.
+        
+        Args:
+            template (str): Project template.
+            working (bool, optional): Use working path.
+            publish (bool, optional): Use publish path.
+            parent_entity (str, optional): Type of entity to target, can be "asset" or "shot".
+            target_entity (str, optional): Type of entity to get.
+        
+        Returns:
+            str: Template path.
+        
+        Raises:
+            CoreError: Can be related to not correct value for `parent_entity` or missing `working`/`publish` argument.
+        """
+        if(parent_entity not in ["asset", "shot"]):
+            raise CoreError("Parent entity can only be either \"asset\" or \"shot\".")
+
+        # Path type.
+        if(working and not publish):
+            template_type = template["working"]
+        elif(not working and publish):
+            template_type = template["output"]
+        else:
+            raise CoreError("Get template can only find path for working path OR publish path (not both).")
+
+        # Entity to look for.
+        entity_to_find = "{"+target_entity+"}"
+
+        original_template = os.path.join(template_type["mountpoint"], template_type["root"], template_type["folder_path"][parent_entity])
+
+        new_template = ""
+        for current_template_part in original_template.split("/"):
+            new_template += current_template_part
+            new_template += "/"
+            if(current_template_part == entity_to_find):
+                return new_template
+
+        raise CoreError("Failed to find a match for {}".format(target_entity))
+
+    @staticmethod
     def get_folderpath(exportType="output", project=None, category=None, entity=None, task_type=None, version_number=-1):
         """Get the folderpath for entity.
 
@@ -43,7 +85,7 @@ class TemplateManager():
             category (class:`Category`): Category of the entity. Defaults to None.
             entity (class:`Entity`): Entity. Defaults to None.
             task_type (class:`Task`): Task. Defaults to None.
-            versionNumber (int): Version of the entity.
+            version_number (int): Version of the entity.
 
         Returns:
             str: Folder path.
@@ -81,11 +123,43 @@ class TemplateManager():
                             TaskType=task_name,
                             Version=version_number)
 
-        path = remove_special_characters(path)
-
         del(Asset)
 
-        return path
+        return remove_special_characters(path)
+
+    @staticmethod
+    def get_folderpath_from_template(template="", project=None, category=None, entity=None, task_type=None, version_number=-1):
+        """Get the path from a template.
+        
+        Args:
+            template (str): Template to use
+            project (class:`Project`): Project to apply template
+            category (class:`Category`): Category of the entity. Defaults to None.
+            entity (class:`Entity`): Entity. Defaults to None.
+            task_type (class:`Task`): Task. Defaults to None.
+            version_number (int): Version of the entity.
+        
+        Returns:
+            str: Path on the disk.
+        """
+        project_name = project.name
+        category_name = category.name
+        entity_name = entity.name
+
+        if(task_type == None):
+            task_name = ""
+        else:
+            task_name = task_type.name.lower()
+
+        path = template.format(Project=project_name,
+                            AssetType=category_name,
+                            Sequence=category_name,
+                            Asset=entity_name,
+                            Shot=entity_name,
+                            TaskType=task_name,
+                            Version=version_number)
+
+        return remove_special_characters(path)
 
     @staticmethod
     def get_filename(exportType="output", project=None, category=None, entity=None, task_type=None, version_number=-1):
@@ -153,8 +227,8 @@ class TemplateManager():
         for category in project.categories:
             for entity in category.entities:
                 for task in entity.tasks:
-                    FileManager().make_folder(TemplateManager().get_folderpath(exportType="working", project=self, category=category, entity=entity, task_type=task, version_number=0))
-                    FileManager().make_folder(TemplateManager().get_folderpath(exportType="output", project=self, category=category, entity=entity, task_type=task, version_number=0))
+                    FileManager().make_folder(TemplateManager().get_folderpath(exportType="working", project=project, category=category, entity=entity, task_type=task, version_number=0))
+                    FileManager().make_folder(TemplateManager().get_folderpath(exportType="output", project=project, category=category, entity=entity, task_type=task, version_number=0))
         
         return True
 

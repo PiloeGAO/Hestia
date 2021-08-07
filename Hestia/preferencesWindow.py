@@ -16,6 +16,8 @@ except:
     from PySide.QtCore      import *
     from PySide.QtGui       import *
 
+from Hestia.core.IO.path         import TemplateManager
+
 from .ui.widgets.dropDown   import DropDown
 
 class PreferencesWindow(QWidget):
@@ -161,7 +163,7 @@ class PreferencesWindow(QWidget):
         """Build project foldertree.
         """
         self.__manager.logging.info("Folder tree generation started.")
-        self.__manager.get_current_project().build_folder_tree()
+        TemplateManager.build_folder_tree(self.__manager.get_current_project())
         self.__manager.logging.info("Folder tree successfully generated.")
     
     def savePreferences(self):
