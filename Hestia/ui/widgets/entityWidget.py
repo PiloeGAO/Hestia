@@ -198,31 +198,31 @@ class EntityWidget(QWidget):
         menu = QMenu()
 
         current_project = self.__manager.get_current_project()
-        if(current_project.categories[current_project.current_category].type == "Assets"):
-            # Assign shader to asset button.
-            if(len(self.__versions) > 0):
-                pass
-        elif(current_project.categories[current_project.current_category].type == "Shots"):
+        if(current_project.categories[current_project.current_category].type == "Shots"):
             # Setup scene for shot button.
-            setupShot = menu.addAction("Setup shot")
-            setupShot.triggered.connect(self.setupSceneForShot)
+            menu_setup_shot = menu.addAction("Setup shot")
+            menu_setup_shot.triggered.connect(self.setupSceneForShot)
 
         # Entity publish area.
         if(self.__manager.get_current_project().support_filetree):
             menu.addSeparator()
             if(len(self.__versions) > 0):
-                openFileMenu = menu.addAction("Open file")
-                openFileMenu.triggered.connect(self.openFile)
+                menu_open_file = menu.addAction("Open file")
+                menu_open_file.triggered.connect(self.openFile)
             
-            publishEntity = menu.addAction("Publish selection")
-            publishEntity.triggered.connect(self.publishSelectionToProjectManager)
+            menu_publish_entity = menu.addAction("Publish selection")
+            menu_publish_entity.triggered.connect(self.publishSelectionToProjectManager)
 
         # USD utils.
         if(self.__manager.get_current_project().support_filetree):
             menu.addSeparator()
+            if(self.__currentVersion.type in [".usda", ".usd"]):
+                menu_open_file_usdview = menu.addAction("Open current in USDView")
+                menu_open_file_usdview.triggered.connect(lambda state: USDTools.open_usdview(self.__currentVersion.output_path))
+
             if(os.path.isfile(self._entity.path)):
-                openFileMenu = menu.addAction("Open with USDView")
-                openFileMenu.triggered.connect(lambda state: USDTools.open_usdview(self._entity.path))
+                menu_open_file_usdview_master = menu.addAction("Open with master stage in USDView")
+                menu_open_file_usdview_master.triggered.connect(lambda state: USDTools.open_usdview(self._entity.path))
 
         menu.exec_(event.globalPos())
     

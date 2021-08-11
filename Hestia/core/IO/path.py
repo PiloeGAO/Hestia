@@ -287,11 +287,13 @@ class FileManager():
             bool: Copy status.
         """
         oldFilename = os.path.split(filePath)[1]
-        if( not os.path.isfile(targetPath + os.sep + oldFilename)):
+        if(not os.path.isfile(targetPath + os.sep + oldFilename)):
             shutil.copy(filePath, targetPath)
 
-            if(kwargs["newName"] != None):
-                dst = targetPath + os.sep + kwargs["newName"] + os.path.splitext(oldFilename)[1]
+            if(isinstance(kwargs["new_name"], str)):
+                extension = kwargs["new_extension"] if "new_extension" in kwargs else os.path.splitext(oldFilename)[1][1:]
+                dst = targetPath + os.sep + kwargs["new_name"] + "." + extension
+
                 if(os.path.isfile(dst) != True):
                     src = targetPath + os.sep + oldFilename
                     os.rename(src, dst)

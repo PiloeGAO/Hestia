@@ -34,7 +34,7 @@ class MayaIntegration(DefaultIntegration):
 
         self._active = integrationActive
 
-        self._defaultFormat = ".ma"
+        self._defaultFormat = "ma"
         self.initializeFileFormats()
 
         self._supportInstances      = True # Autodesk Maya support instance by using "References". 
@@ -49,7 +49,7 @@ class MayaIntegration(DefaultIntegration):
             list: str: File formats enables.
         """
         self._manager.logging.info("Initialize File Formats.")
-        self._availableFormats = [".ma", ".mb"]
+        self._availableFormats.extend(["ma", "mb"])
 
         if(sys.platform.startswith('win32')):
             extension = "mll"

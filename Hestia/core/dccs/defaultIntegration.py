@@ -17,7 +17,7 @@ class DefaultIntegration(object):
         self._active = False
 
         self._defaultFormat = ""
-        self._availableFormats = []
+        self._availableFormats = ["usda"]
 
         self._supportScreenshots = False
     

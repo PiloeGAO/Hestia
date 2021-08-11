@@ -31,12 +31,15 @@ class KitsuWrapper(DefaultWrapper):
     def __init__(self, api="", *args, **kwargs):
         super(KitsuWrapper, self).__init__(*args, **kwargs)
 
-        self._api            = api
-        self._current_user   = None
+        self._api                       = api
+        self._current_user              = None
 
-        self._debug_kitsu_datas = False
+        self._setup_kitsu_for_hestia    = kwargs.get("setup_kitsu", False)
 
-        if(bool(os.environ.get("HESTIA_AUTOLOGIN", "False"))):
+        self._debug_kitsu_datas         = False
+
+        if(bool(os.environ.get("HESTIA_AUTOLOGIN", False))):
+            self._manager.logging.info("Using auto-logging to Kitsu.")
             self._manager.projects = []
 
             self._api = os.environ.get("HESTIA_API","http://localhost:80/api")
@@ -102,6 +105,9 @@ class KitsuWrapper(DefaultWrapper):
             self._users.append(self._current_user)
 
             self._username = self._current_user.username + " (Online Mode: Kitsu)"
+
+            if(self._current_user.role == "admin" and self._setup_kitsu_for_hestia):
+                self.setup_output_filetypes()
 
             return True
     
@@ -406,7 +412,40 @@ class KitsuWrapper(DefaultWrapper):
 
         return versions
     
-    def publish(self, entity=None, name="", comment="", task_type_ID="", task_status="TODO", version="", software="", output_type="", working_file_path="", output_files=[], preview_file_path=""):
+    def setup_output_filetypes(self):
+        """Setup output filetypes.
+        """
+        filetypes = [
+            # Major DCCs.
+            {"name":"Blender Scene",            "short_name":"blend"},
+            {"name":"Maya ASCII Scene",         "short_name":"ma"},
+            {"name":"Maya Binary Scene",        "short_name":"mb"},
+            {"name":"Houdini Apprentice Scene", "short_name":"hipnc"},
+            {"name":"Houdini Indie Scene",      "short_name":"hiplc"},
+            {"name":"Houdini FX Scene",         "short_name":"hip"},
+            {"name":"Nuke Script",              "short_name":"nk"},
+            # Major CGI formats.
+            {"name":"USD ASCII Stage",          "short_name":"usda"},
+            {"name":"USD Binary Stage",         "short_name":"usd"},
+            {"name":"Alembic File",             "short_name":"abc"},
+            {"name":"Volume File",              "short_name":"vdb"},
+            {"name":"Material X",               "short_name":"mtlx"},
+            {"name":"OSL Shader",               "short_name":"osl"},
+            # Image formats.
+            {"name":"PNG",                      "short_name":"png"},
+            {"name":"EXR",                      "short_name":"exr"},
+            {"name":"JPG",                      "short_name":"jpg"},
+            {"name":"JPEG",                     "short_name":"jpeg"},
+            {"name":"HDR",                      "short_name":"hdr"},
+            {"name":"TX",                       "short_name":"tx"},
+            # Movie formats.
+        ]
+
+        for filetype in filetypes:
+            gazu.files.new_output_type(filetype["name"], filetype["short_name"])
+
+    def publish(self, entity=None, name="", comment="", task_type_ID="", task_status="TODO", version="",\
+        software="", output_type="", working_file_path="", output_files=[], preview_file_path=""):
         """Publish files (working and outputs) to Kitsu. (Code from Guillaume Baratte project's called managerTools)
 
         Args:
@@ -426,6 +465,12 @@ class KitsuWrapper(DefaultWrapper):
             bool: Publish status.
         """
         task = gazu.task.get_task_by_entity(entity.id, task_type_ID)
+
+        if(not task):
+            self._manager.logging.error(
+                "Publish cannot be done for task ID {}.".format(task_type_ID)
+            )
+            return False
 
         # Add working file.
         working_file_data = {
@@ -465,17 +510,19 @@ class KitsuWrapper(DefaultWrapper):
         output_files_publish_data = []
         for output_file_path in output_files:
             filename = os.path.split(output_file_path)[1]
-            extension = os.path.splitext(output_file_path)[1]
+            extension = os.path.splitext(output_file_path)[1][1:]
 
-            output_type_name = ""
-            if(extension == ".ma"):
-                output_type_name = "Maya Rig"
-            elif(extension == ".abc" and entity.type == "Assets"):
-                output_type_name = "ABC Modeling"
-            elif(extension == ".abc" and entity.type == "Shots"):
-                output_type_name = "ABC Animation"
-            else:
-                output_type_name = output_type
+            output_type_name = None
+
+            for output_filetype in gazu.files.all_output_types():
+                if(extension.lower() == output_filetype["short_name"].lower()):
+                    output_type_name = output_filetype["name"]
+
+            if(output_type_name == None):
+                self._manager.logging.error(
+                    "Publish cannot be done for {} due to missing output filetype in Kitsu.".format(filename)
+                )
+                continue
 
             output_type_data = gazu.client.fetch_first(
                                     "output-types",
