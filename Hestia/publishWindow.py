@@ -376,13 +376,6 @@ class PublishWindow(QWidget):
 
             if(publish_status):
                 self._manager.logging.info("Publishing done.")
-
-                # Temporary warning message.
-                # Show information message.
-                QMessageBox.warning(self, self.tr("Hestia"),
-                                    self.tr("Please close Hestia to get latest updates."),
-                                    QMessageBox.NoButton,
-                                    QMessageBox.Ok)
             else:
                 self._manager.logging.info("Publishing failed.")
 
@@ -393,9 +386,9 @@ class PublishWindow(QWidget):
                                     QMessageBox.NoButton,
                                     QMessageBox.Ok)
 
-            # TODO: Find a way to refresh project.
             # Refreshing the project to get last datas uploaded.
-
+            self._entity.is_downloaded = False
+            self._main_window.refresh()
             self._main_window.show()
 
         else:
