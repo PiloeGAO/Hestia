@@ -33,34 +33,34 @@ class EntityWidget(QWidget):
             status (int, optional): Status of the button. Defaults to 1.
             parent (class: `QWidget`, optional): Parent widget. Defaults to None.
     """
-    def __init__(self, manager=None, mainWindow=None, asset=None, iconSize=64, status=1, parent=None):
+    def __init__(self, manager=None, main_window=None, asset=None, icon_size=64, status=1, parent=None):
         super(EntityWidget, self).__init__(parent=parent)
-        self.__manager      = manager
-        self.__mainWindow   = mainWindow
-        self._entity        = asset
+        self._manager      = manager
+        self._main_window  = main_window
+        self._entity       = asset
         
-        self.__root_path = os.path.dirname(os.path.abspath(__file__))
+        self._root_path = os.path.dirname(os.path.abspath(__file__))
 
 
-        self.__defaultIcon = ""
+        self._default_icon = ""
         if(pysideVers == 2):
-            self.__defaultIcon = self.__root_path + "/../icons/card-image.svg"
+            self._default_icon = self._root_path + "/../icons/card-image.svg"
         else:
-            self.__defaultIcon = self.__root_path + "/../icons/card-image.png"
+            self._default_icon = self._root_path + "/../icons/card-image.png"
 
-        self.__name           = asset.name
-        self.__description    = asset.description
-        self.__icon           = asset.preview_file if os.path.isfile(asset.preview_file) else self.__defaultIcon
-        self.__iconSize       = iconSize
-        self.__versions       = asset.versions
-        self.__tasks          = self.getTasks()
-        self.__currentTask    = self.__versions[0].task if len(self.__versions) > 0 else None
-        self.__currentVersion = self.__versions[0] if len(self.__versions) > 0 else None
+        self._name            = asset.name
+        self._description     = asset.description
+        self._icon            = asset.preview_file if os.path.isfile(asset.preview_file) else self._default_icon
+        self._icon_size       = icon_size
+        self._versions        = asset.versions
+        self._tasks           = self.get_tasks()
+        self._current_task    = self._versions[0].task if len(self._versions) > 0 else None
+        self._current_version = self._versions[0] if len(self._versions) > 0 else None
 
-        if(len(self.__versions) > 0):
-            self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
+        if(len(self._versions) > 0):
+            self._status = 0 if not self._current_version.type in self._manager.integration.availableFormats else 1
         else:
-            self.__status = 0
+            self._status = 0
 
         self.initUI()
     
@@ -68,157 +68,153 @@ class EntityWidget(QWidget):
         """Main UI creation function.
         """
         # Setting the main layout as Vertical.
-        self.mainLayout = QVBoxLayout()
-        self.groupBox = QGroupBox(self.__name)
+        self.main_layout = QVBoxLayout()
+
+        group_box_title = self._name
+        if(self._current_version != None):
+            group_box_title += " - Version {} ({})".format(
+                self._current_version.revision_number,
+                self._current_version.type
+            )
+        else:
+            group_box_title += " - No versions available"
+
+        self.entity_box = QGroupBox(group_box_title)
         
-        self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setSpacing(0)
-        self.verticalLayout.setContentsMargins(0,0,0,0)
+        self.vertical_layout = QVBoxLayout()
+        self.vertical_layout.setSpacing(0)
+        self.vertical_layout.setContentsMargins(0,0,0,0)
 
         # Button / Logo.
-        self.iconButton = IconButton(self.__name, self.__description, self.__icon, self.__iconSize, self.__status, self.importAsset)
-        self.verticalLayout.addWidget(self.iconButton)
+        self.icon_button = IconButton(self._name, self._description, self._icon, self._icon_size, self._status, self.import_asset)
+        self.vertical_layout.addWidget(self.icon_button)
 
         # Task and verisons layout.
-        self.taskAndVersionLayout = QHBoxLayout()
+        self.task_and_version_layout = QHBoxLayout()
 
-        if(len(self.__versions)>0):
+        if(len(self._versions)>0):
             # Tasks.
-            self.taskDropDown = DropDown(
+            self.task_dropdown = DropDown(
                 name="Tasks",
                 description="List of tasks available for the asset.",
-                datas=self.getTasksNames(),
+                datas=self.get_tasks_names(),
                 defaultValue=0,
-                functionToInvoke=self.updateEntity
+                functionToInvoke=self.update_entity
             )
-            self.taskAndVersionLayout.addWidget(self.taskDropDown)
-
-            # Versions.
-            self.versionDropDown = DropDown(
-                name="Version",
-                description="Current version of the asset.",
-                datas=self.getVersionsNames(),
-                defaultValue=0,
-                functionToInvoke=self.updateEntity
-            )
-            self.taskAndVersionLayout.addWidget(self.versionDropDown)
+            self.task_and_version_layout.addWidget(self.task_dropdown)
         else:
-            self.noVersionsLabel = QLabel("No versions availables")
-            self.taskAndVersionLayout.addWidget(self.noVersionsLabel)
+            self.no_versions_label = QLabel("No versions availables")
+            self.task_and_version_layout.addWidget(self.no_versions_label)
 
-        self.verticalLayout.addLayout(self.taskAndVersionLayout)
-        self.verticalLayout.addStretch(1)
+        self.vertical_layout.addLayout(self.task_and_version_layout)
+        self.vertical_layout.addStretch(1)
 
         # Add the main layout to the window.
-        self.groupBox.setLayout(self.verticalLayout)
-        self.mainLayout.addWidget(self.groupBox)
-        self.setLayout(self.mainLayout)
+        self.entity_box.setLayout(self.vertical_layout)
+        self.main_layout.addWidget(self.entity_box)
+        self.setLayout(self.main_layout)
 
     def mousePressEvent(self, event):
         if event.type() == QEvent.MouseButtonPress:
             if event.button() == Qt.RightButton:
                 self.createRightClickMenu(event=event)
 
-    def importAsset(self):
+    def import_asset(self):
         """Function that invoke the import in core.
         """
-        self.__manager.logging.info("Import %s" % self.__name)
+        self._manager.logging.info("Import %s" % self._name)
         
-        current_project = self.__manager.get_current_project()
+        current_project = self._manager.get_current_project()
 
         if(current_project.categories[current_project.current_category].type == "Assets"):
-            self.__manager.integration.loadAsset(asset = self._entity,
-                                                version = self.__currentVersion)
+            self._manager.integration.loadAsset(asset = self._entity,
+                                                version = self._current_version)
 
         elif(current_project.categories[current_project.current_category].type == "Shots"):
-            self.__manager.integration.loadShot(asset = self._entity,
-                                                version = self.__currentVersion)
+            self._manager.integration.loadShot(asset = self._entity,
+                                                version = self._current_version)
 
         else:
-            self.__manager.logging.error("Load failed: not supported type.")
+            self._manager.logging.error("Load failed: not supported type.")
     
-    def getTasks(self):
+    def get_tasks(self):
         tasks = []
-        for version in self.__versions:
+        for version in self._versions:
             task = version.task
             if(task not in tasks):
                 tasks.append(task)
 
         return tasks
 
-    def getTasksNames(self):
+    def get_tasks_names(self):
         """Getting tasks names from version class.
 
         Returns:
             list:str: Names.
         """
-        tasksNames = [task.name for task in self.__tasks]
+        tasks_names = [task.name for task in self._tasks]
 
-        if(len(tasksNames) == 0):
+        if(len(tasks_names) == 0):
             return ["No tasks available."]
 
-        return tasksNames
+        return tasks_names
 
-    def getVersionsNames(self):
-        """Getting versions names from version class.
-
-        Returns:
-            list:str: Names.
-        """
-        versionsNames = []
-        for version in self.__versions:
-            if(version.task == self.__currentTask):
-                versionsNames.append("Version %s (%s)" % (version.revision_number, version.type))
-        
-        if(len(versionsNames) == 0):
-            return ["No versions available."]
-
-        return versionsNames
-
-    def updateEntity(self):
+    def update_entity(self, version=None):
         """Update the entity widget with the new selected version.
         """
-        if(len(self.__versions) > 0):
-            if(self.__currentTask != self.__tasks[self.taskDropDown.currentValue]):
-                self.__currentTask = self.__tasks[self.taskDropDown.currentValue]
+        if(not version):
+            if(self._current_task != self._tasks[self.task_dropdown.currentValue]):
+                self._current_task = self._tasks[self.task_dropdown.currentValue]
+                version = [version for version in self._versions if version.task == self._current_task][0]
 
-                self.versionDropDown.datas = self.getVersionsNames()
-                self.versionDropDown.currentValue = 0
+        self._current_version = version
 
-                self.__currentVersion = [version for version in self.__versions if version.task == self.__currentTask][0]
-            else:
-                self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
+        self._status = 0 if not self._current_version.type in self._manager.integration.availableFormats else 1
+        self.icon_button.changeButtonStatus(self._status)
 
-            self.__status = 0 if not self.__currentVersion.type in self.__manager.integration.availableFormats else 1
-            self.iconButton.changeButtonStatus(self.__status)
-    
+        self.entity_box.setTitle("{} - Version {} ({})".format(self._name, version.revision_number, version.type))
+
     def createRightClickMenu(self, event):
         """This function invoke a floating menu at mouse position with advanced functionnalities.
         """
         menu = QMenu()
 
-        current_project = self.__manager.get_current_project()
+        if(len(self._versions) > 0):
+            version_menu = menu.addMenu("Versions: ")
+            # Only get versions for current task.
+            versions_for_task = [version for version in self._versions if version.task == self._current_task]
+            for current_version in versions_for_task:
+                version_menu.addAction(
+                    "Version {} ({})".format(current_version.revision_number, current_version.type),
+                    (lambda version=current_version: self.update_entity(version=version))
+                )
+        else:
+            menu.addAction("No versions available.")
+
+        current_project = self._manager.get_current_project()
         if(current_project.categories[current_project.current_category].type == "Shots"):
             # Setup scene for shot button.
             menu_setup_shot = menu.addAction("Setup shot")
-            menu_setup_shot.triggered.connect(self.setupSceneForShot)
+            menu_setup_shot.triggered.connect(self.setup_scene_for_shot)
 
         # Entity publish area.
-        if(self.__manager.get_current_project().support_filetree):
+        if(self._manager.get_current_project().support_filetree
+            and self._current_version != None):
             menu.addSeparator()
-            if(len(self.__versions) > 0):
+            if(len(self._versions) > 0):
                 menu_open_file = menu.addAction("Open file")
-                menu_open_file.triggered.connect(self.openFile)
+                menu_open_file.triggered.connect(self.open_file)
             
             menu_publish_entity = menu.addAction("Publish selection")
-            menu_publish_entity.triggered.connect(self.publishSelectionToProjectManager)
+            menu_publish_entity.triggered.connect(self.publish_selection_to_pm)
 
         # USD utils.
-        if(self.__manager.get_current_project().support_filetree):
+        if(self._manager.get_current_project().support_filetree
+            and self._current_version != None):
             menu.addSeparator()
-            if(self.__currentVersion.type in [".usda", ".usd"]):
+            if(self._current_version.type in [".usda", ".usd"]):
                 menu_open_file_usdview = menu.addAction("Open current in USDView")
-                menu_open_file_usdview.triggered.connect(lambda state: USDTools.open_usdview(self.__currentVersion.output_path))
+                menu_open_file_usdview.triggered.connect(lambda state: USDTools.open_usdview(self._current_version.output_path))
 
             if(os.path.isfile(self._entity.path)):
                 menu_open_file_usdview_master = menu.addAction("Open with master stage in USDView")
@@ -226,84 +222,84 @@ class EntityWidget(QWidget):
 
         menu.exec_(event.globalPos())
     
-    def setupSceneForShot(self):
+    def setup_scene_for_shot(self):
         """Function to setup scene for selected shot.
+        TODO: Move the content of this to core.
 
         Returns:
             bool: Function status.
         """
-        current_project = self.__manager.get_current_project()
+        current_project = self._manager.get_current_project()
         
         # Setup scene.
-        setupStatus = self.__manager.integration.setupShot(category=current_project.categories[current_project.current_category],
+        setup_status = self._manager.integration.setupShot(category=current_project.categories[current_project.current_category],
                                                             shot=self._entity)
 
         # Import assigned assets.
         assets = [entity for entity in current_project.entities if entity.type == "Assets"]
-        for assetID in self._entity.assigned_assets:
-            staticAsset = True
+        for asset_ID in self._entity.assigned_assets:
+            static_asset = True
             # Get the asset from ID.
-            assetToImport = [asset for asset in assets if asset.id == assetID][0]
+            asset_to_import = [asset for asset in assets if asset.id == asset_ID][0]
             
             # Get the last updated version of the asset.
             # TODO: Filter the versions, publish branch need to be merged before to support Version Number.
-            self.assetVersions       = assetToImport.versions
+            self.asset_versions       = asset_to_import.versions
 
-            versionToLoad = "Set Dressing"
-            if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
-                versionToLoad = "Rigging"
-                staticAsset = False
-                if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
-                    versionToLoad = "Modeling"
-                    staticAsset = True
-                    if(len([assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name]) == 0):
-                        self.currentAssetVersion = None
+            version_to_load = "Set Dressing"
+            if(len([asset for asset in self.asset_versions if version_to_load in asset.task.name]) == 0):
+                version_to_load = "Rigging"
+                static_asset = False
+                if(len([asset for asset in self.asset_versions if version_to_load in asset.task.name]) == 0):
+                    version_to_load = "Modeling"
+                    static_asset = True
+                    if(len([asset for asset in self.asset_versions if version_to_load in asset.task.name]) == 0):
+                        self.current_asset_version = None
             
-            self.currentAssetVersion = [assetRig for assetRig in self.assetVersions if versionToLoad in assetRig.task.name][0] if len(self.assetVersions) > 0 else None
+            self.current_asset_version = [asset for asset in self.asset_versions if version_to_load in asset.task.name][0] if len(self.asset_versions) > 0 else None
 
-            if self.currentAssetVersion != None:
+            if self.current_asset_version != None:
                 # Import the version inside of the scene.
-                self.__manager.integration.loadAsset(asset = assetToImport,
-                                                    version = self.currentAssetVersion,
-                                                    staticAsset = staticAsset)
+                self._manager.integration.loadAsset(asset = asset_to_import,
+                                                    version = self.current_asset_version,
+                                                    static_asset = static_asset)
             else:
-                self.__manager.logging.error("Failed to load %s" % self.assetToImport.name)
+                self._manager.logging.error("Failed to load %s" % self.asset_to_import.name)
 
-        if(setupStatus):
+        if(setup_status):
             return True
         else:
-            self.__manager.logging.error("Shot setup failed.")
+            self._manager.logging.error("Shot setup failed.")
             return False
     
-    def openFile(self):
+    def open_file(self):
         """Function to open file.
 
         Returns:
             bool: Function status.
         """
         # Show information message.
-        warningPopup = QMessageBox.warning(self, self.tr("Hestia"),
+        warning_popup = QMessageBox.warning(self, self.tr("Hestia"),
                             self.tr("Openning a new file will loose the current datas.\n" + \
                                 "Please save before."),
                             QMessageBox.Cancel,
                             QMessageBox.Ok)
         
-        if(warningPopup == QMessageBox.Ok):
-            self.__currentVersion = self.__versions[self.versionDropDown.currentValue]
-            openStatus = self.__manager.integration.openFile(self.__currentVersion)
+        if(warning_popup == QMessageBox.Ok):
+            open_status = self._manager.integration.open_file(self._current_version)
 
-            if(not openStatus):
-                self.__manager.logging.error("Open failed.")
+            if(not open_status):
+                self._manager.logging.error("Open failed.")
 
-            return openStatus
+            return open_status
         else:
             return False
 
-    def publishSelectionToProjectManager(self):
+    def publish_selection_to_pm(self):
         """Function to publish entity to project manager.
 
         Returns:
             bool: Function status.
         """
-        self.__mainWindow.openPublishWindow(entity=self._entity)
+        self._main_window.openPublishWindow(entity=self._entity)
         return True
