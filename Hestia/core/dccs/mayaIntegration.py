@@ -12,7 +12,6 @@ global integrationActive
 
 try:
     from maya import cmds
-    from maya.plugin.timeSliderBookmark.timeSliderBookmark import createBookmark
 except:
     integrationActive = False
 else:
@@ -34,64 +33,66 @@ class MayaIntegration(DefaultIntegration):
 
         self._active = integrationActive
 
-        self._defaultFormat = "ma"
-        self.initializeFileFormats()
+        self._manager.logging.info("Initialize File Formats.")
+        self._default_format = "ma"
+        self._available_formats = ["ma", "mb"]
 
-        self._supportInstances      = True # Autodesk Maya support instance by using "References". 
+        plugins = {
+            "tools" : [
+                "timeSliderBookmark",
+            ],
+            "extensions" : [
+                {
+                    "mayaUsdPlugin,mtoh": ["usda", "usdc", "usd"],
+                }
+            ]
+        }
+        self.initialize_plugins(plugins=plugins)
+
+        self._support_instances     = True # Autodesk Maya support instance by using "References". 
         self._instances             = True
-        self._supportScreenshots    = True
-        self.__useGPUCache          = bool(int(self._manager.preferences.getValue("MAYA", "useGPUCache")))
+        self._support_screenshots   = True
     
-    def initializeFileFormats(self):
+    def initialize_plugins(self, plugins={}):
         """Initialize the file formats list.
 
         Returns:
             list: str: File formats enables.
         """
-        self._manager.logging.info("Initialize File Formats.")
-        self._availableFormats.extend(["ma", "mb"])
-
         if(sys.platform.startswith('win32')):
-            extension = "mll"
+            plugin_extension = "mll"
         elif(sys.platform.startswith('darwin')):
-            extension = "bundle"
+            plugin_extension = "bundle"
         else:
             raise CoreError("Linux not supported.")
 
         # Enabling plugins for additional formats
-        # Format: {"extension": ["plugin.mll", "plugin2.mll"]}
-        pluginFormats = {}
-        for plugin in pluginFormats:
-            for subPlugin in pluginFormats[plugin]:
-                loadPluginStatus = self.loadExternalPlugin(pluginName=subPlugin)
-                if(loadPluginStatus is not True):
-                    break
+        for tool in plugins["tools"]:
+            self.load_maya_plugin("{}.{}".format(tool, plugin_extension))
 
-            if(loadPluginStatus):
-                self._availableFormats.append(plugin)
-        
-        # Enabling plugins for additional features.
-        plugins = ["timeSliderBookmark.{}".format(extension)]
-        for plugin in plugins:
-            loadPluginStatus = self.loadExternalPlugin(pluginName=plugin)
+        for extensions in plugins["extensions"]:
+            for plugins in extensions:
+                for plugin in plugins.split(","):
+                    status = self.load_maya_plugin("{}.{}".format(plugin, plugin_extension))
+                    self._available_formats.extend(extensions[plugins])
     
-    def loadExternalPlugin(self, pluginName):
+    def load_maya_plugin(self, plugin_name):
         """Load external plugins needed by the implementation (exemple: for special formats...)
         
         Args:
-            pluginName (str): Name of the plugin.
+            plugin_name (str): Name of the plugin.
 
         Returns:
             bool: Status of the loading.
         """
         try:
-            cmds.loadPlugin(pluginName)
+            cmds.loadPlugin(plugin_name)
             return True
         except RuntimeError:
-            self._manager.logging.error("Failed to load: " + pluginName)
-            return False
+            raise CoreError("Failed to load {}.{}".format(plugin, plugin_extension))
     
-    def loadAsset(self, asset=None, version=None, staticAsset=None):
+    
+    def load_asset(self, asset=None, version=None, staticAsset=None):
         """Load the selected asset inside of the scene.
 
         Args:
@@ -107,7 +108,7 @@ class MayaIntegration(DefaultIntegration):
 
         return True
     
-    def loadShot(self, asset=None, version=None):
+    def load_shot(self, asset=None, version=None):
         """Load the selected shot inside of the scene.
 
         Args:
@@ -130,7 +131,7 @@ class MayaIntegration(DefaultIntegration):
         else:
             return False
     
-    def setupShot(self, category=None, shot=None):
+    def setup_shot(self, category=None, shot=None):
         """Setup shot values (eg: Framerate, duration, camera...) inside of the scene.
 
         Args:
@@ -140,6 +141,10 @@ class MayaIntegration(DefaultIntegration):
         Returns:
             bool: Setup status.
         """
+        try:
+            from maya.plugin.timeSliderBookmark.timeSliderBookmark import createBookmark
+        except Exception as e:
+            raise CoreError("timeSliderBookmark not loaded in Maya.")
         project = get_current_project()
 
         # Checking if the file current file is part of a maya projet foldertree.
@@ -163,7 +168,7 @@ class MayaIntegration(DefaultIntegration):
         start_frame           = project.start_frame
         start_animation_frame = start_frame + project.pre_roll
         end_animation_frame   = start_animation_frame + shot.frame_number
-        end_frame            = end_animation_frame + project.post_roll
+        end_frame             = end_animation_frame + project.post_roll
 
         # Set timeline datas.
         cmds.currentUnit( time='%sfps' % int(project.framerate)) # WARNING: Framerate must be setup before timeline !
@@ -203,7 +208,7 @@ class MayaIntegration(DefaultIntegration):
 
         return True
     
-    def takePlayblast(self, start_frame, end_frame, path):
+    def take_playblast(self, start_frame, end_frame, path):
         """Take a playblast of the scene.
 
         Args:
@@ -233,7 +238,7 @@ class MayaIntegration(DefaultIntegration):
 
         return True
 
-    def openFile(self, version):
+    def open_file(self, version):
         """Open the file in the DCC.
 
         Args:
@@ -251,7 +256,7 @@ class MayaIntegration(DefaultIntegration):
         else:
             return False
     
-    def saveFile(self, path):
+    def save_file(self, path):
         """Save current file to the given path.
 
         Args:
@@ -268,7 +273,7 @@ class MayaIntegration(DefaultIntegration):
         self._manager.logging.error("Failed to save the file : %s" % path)
         return False
 
-    def exportSelection(self, path, extension):
+    def export_selection(self, path, extension):
         """Export selection to the path with the correct format.
 
         Args:

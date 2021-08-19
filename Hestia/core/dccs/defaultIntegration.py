@@ -5,6 +5,12 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+import os
+
+from Hestia.core.USD.tools import USDTools
+
+from Hestia.core.logger                    import get_logging
+logger = get_logging(__name__)
 
 class DefaultIntegration(object):
     """Default integration class.
@@ -16,10 +22,10 @@ class DefaultIntegration(object):
 
         self._active = False
 
-        self._defaultFormat = ""
-        self._availableFormats = ["usda"]
+        self._default_format = "usda"
+        self._available_formats = ["usda"]
 
-        self._supportScreenshots = False
+        self._support_screenshots = False
     
     @property
     def name(self):
@@ -31,22 +37,22 @@ class DefaultIntegration(object):
         return self._name
 
     @property
-    def defaultFormat(self):
+    def default_format(self):
         """Get the default format.
 
         Returns:
             str: Default format/extension.
         """
-        return self._defaultFormat
+        return self._default_format
 
     @property
-    def availableFormats(self):
+    def available_formats(self):
         """Get the available formats.
 
         Returns:
             list: str: Formats usable by the dccs.
         """
-        return self._availableFormats
+        return self._available_formats
     
     @property
     def supportScreenshots(self):
@@ -55,9 +61,9 @@ class DefaultIntegration(object):
         Returns:
             bool: Is screenshot support is available.
         """
-        return self._supportScreenshots
+        return self._support_screenshots
     
-    def initializeFileFormats(self):
+    def initialize_plugins(self, plugins={}):
         """Initialize the file formats list.
 
         Returns:
@@ -65,15 +71,7 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def loadExternalPlugin(self):
-        """Load external plugins needed by the implementation (exemple: for special formats...)
-
-        Returns:
-            bool: Status of the loading.
-        """
-        return NotImplemented
-    
-    def loadAsset(self, asset=None, version=None):
+    def load_asset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
         Args:
@@ -85,7 +83,7 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def setupShot(self, category=None, shot=None):
+    def setup_shot(self, category=None, shot=None):
         """Setup shot values (eg: Framerate, duration, camera...) inside of the scene.
 
         Args:
@@ -97,7 +95,7 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def loadShot(self, asset=None, version=None):
+    def load_shot(self, asset=None, version=None):
         """Load the selected shot inside of the scene.
 
         Args:
@@ -109,7 +107,7 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def buildShot(self, shotPath = ""):
+    def build_shot(self, shotPath = ""):
         """Build the shot from shot assembly system.
 
         Args:
@@ -120,7 +118,7 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def takePlayblast(self, start_frame, endFrame, path):
+    def take_playblast(self, start_frame, endFrame, path):
         """Take a playblast of the scene.
 
         Args:
@@ -133,18 +131,25 @@ class DefaultIntegration(object):
         """
         return NotImplementedError
 
-    def openFile(self, path):
+    def open_file(self, version):
         """Open the file in the DCC.
 
         Args:
-            path (str): File path.
+            version (class:`Version`): Version of the asset.
 
         Returns:
             bool: Function status.
         """
-        return NotImplementedError
+        path = version.working_path
+        if(os.path.isfile(path)
+            and os.path.splitext(path)[1][1:] == self._default_format):
+            USDTools.open_usdview(path)
+            return True
+        else:
+            logger.error("Open \"{}\" failed.".format(path))
+            return False
 
-    def saveFile(self, path):
+    def save_file(self, path):
         """Save current file to the given path.
 
         Args:
@@ -155,7 +160,7 @@ class DefaultIntegration(object):
         """
         return NotImplementedError
 
-    def exportSelection(self, path, extension):
+    def export_selection(self, path, extension):
         """Export selection to the path with the correct format.
 
         Args:

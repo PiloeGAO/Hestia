@@ -58,7 +58,7 @@ class EntityWidget(QWidget):
         self._current_version = self._versions[0] if len(self._versions) > 0 else None
 
         if(len(self._versions) > 0):
-            self._status = 0 if not self._current_version.type in self._manager.integration.availableFormats else 1
+            self._status = 0 if not self._current_version.type in self._manager.integration.available_formats else 1
         else:
             self._status = 0
 
@@ -127,11 +127,11 @@ class EntityWidget(QWidget):
         current_project = self._manager.get_current_project()
 
         if(current_project.categories[current_project.current_category].type == "Assets"):
-            self._manager.integration.loadAsset(asset = self._entity,
+            self._manager.integration.load_asset(asset = self._entity,
                                                 version = self._current_version)
 
         elif(current_project.categories[current_project.current_category].type == "Shots"):
-            self._manager.integration.loadShot(asset = self._entity,
+            self._manager.integration.load_shot(asset = self._entity,
                                                 version = self._current_version)
 
         else:
@@ -169,7 +169,7 @@ class EntityWidget(QWidget):
 
         self._current_version = version
 
-        self._status = 0 if not self._current_version.type in self._manager.integration.availableFormats else 1
+        self._status = 0 if not self._current_version.type in self._manager.integration.available_formats else 1
         self.icon_button.changeButtonStatus(self._status)
 
         self.entity_box.setTitle("{} - Version {} ({})".format(self._name, version.revision_number, version.type))
@@ -212,11 +212,8 @@ class EntityWidget(QWidget):
         if(self._manager.get_current_project().support_filetree
             and self._current_version != None):
             menu.addSeparator()
-            if(self._current_version.type in [".usda", ".usd"]):
-                menu_open_file_usdview = menu.addAction("Open current in USDView")
-                menu_open_file_usdview.triggered.connect(lambda state: USDTools.open_usdview(self._current_version.output_path))
-
-            if(os.path.isfile(self._entity.path)):
+            if(os.path.splitext(self._entity.path)[1] in [".usda", ".usd"]
+                and os.path.isfile(self._entity.path)):
                 menu_open_file_usdview_master = menu.addAction("Open with master stage in USDView")
                 menu_open_file_usdview_master.triggered.connect(lambda state: USDTools.open_usdview(self._entity.path))
 
@@ -232,7 +229,7 @@ class EntityWidget(QWidget):
         current_project = self._manager.get_current_project()
         
         # Setup scene.
-        setup_status = self._manager.integration.setupShot(category=current_project.categories[current_project.current_category],
+        setup_status = self._manager.integration.setup_shot(category=current_project.categories[current_project.current_category],
                                                             shot=self._entity)
 
         # Import assigned assets.
@@ -260,7 +257,7 @@ class EntityWidget(QWidget):
 
             if self.current_asset_version != None:
                 # Import the version inside of the scene.
-                self._manager.integration.loadAsset(asset = asset_to_import,
+                self._manager.integration.load_asset(asset = asset_to_import,
                                                     version = self.current_asset_version,
                                                     static_asset = static_asset)
             else:

@@ -205,9 +205,9 @@ class PublishWindow(QWidget):
     def addOutput(self):
         """Add a new line in the output list.
         """
-        availableFormats = [format.upper() for format in self._manager.integration.availableFormats]
-        if(len(self.outputsList) < len(availableFormats)):
-            outputChoice = DropDown(name="Export Type", datas=availableFormats)
+        available_formats = [format.upper() for format in self._manager.integration.available_formats]
+        if(len(self.outputsList) < len(available_formats)):
+            outputChoice = DropDown(name="Export Type", datas=available_formats)
             self.outputsList.append(outputChoice)
             
             self.outputGrid = GridWidget(manager=self._manager,
@@ -244,12 +244,12 @@ class PublishWindow(QWidget):
         """Take a screenshot of the scene.
         """
         path = FileManager().temp_directory + os.sep + "preview.PNG"
-        self._manager.integration.takePlayblast(start_frame=-1, endFrame=-1, path=path)
+        self._manager.integration.take_playblast(start_frame=-1, endFrame=-1, path=path)
         self._screenshot_path = path
 
         self.previewTitle.setText("Preview : %s" % self._screenshot_path)
     
-    def takePlayblast(self):
+    def take_playblast(self):
         """Take a playblast of the scene.
         """
         if(sys.platform.startswith('win32')):
@@ -260,7 +260,7 @@ class PublishWindow(QWidget):
             return False
         
         path_raw = FileManager().temp_directory + os.sep + "preview_raw." + format
-        self._manager.integration.takePlayblast(start_frame=-2, endFrame=0, path=path_raw)
+        self._manager.integration.take_playblast(start_frame=-2, endFrame=0, path=path_raw)
 
         path = FileManager().temp_directory + os.sep + "preview.mp4"
         conversionStatus = video_converter(path_raw, path)
@@ -290,7 +290,7 @@ class PublishWindow(QWidget):
 
         for i, widget in enumerate(self.outputsList):
             output_filenames.append(TemplateManager().get_filename(exportType="output", project=self._current_project, category=self._category, entity=self._entity, task_type=publish_task, version_number=publishVersion))
-            output_extensions.append(self._manager.integration.availableFormats[widget.currentValue])
+            output_extensions.append(self._manager.integration.available_formats[widget.currentValue])
 
         if(publishName != "" and publishComment != ""
             and working_path != "" and workingFileName != ""
@@ -306,7 +306,7 @@ class PublishWindow(QWidget):
             # Export files from DCC.
             self._manager.logging.info("Writing the working file.")
             
-            working_extension = self._manager.integration.defaultFormat
+            working_extension = self._manager.integration.default_format
             if(self._manager.integration.name == "standalone"):
                 working_extension = os.path.splitext(self._workfile_path)[1][1:]
 
@@ -319,7 +319,7 @@ class PublishWindow(QWidget):
                     and os.path.isfile(self._workfile_path)):
                     working_save_status = FileManager.copy_file(self._workfile_path, os.path.split(publish_working_file_path)[0], new_name=workingFileName)
                 else:
-                    working_save_status = self._manager.integration.saveFile(publish_working_file_path)
+                    working_save_status = self._manager.integration.save_file(publish_working_file_path)
                 
                 if(not working_save_status):
                     self._manager.logging.error("Couldn't save the working file")
@@ -342,7 +342,7 @@ class PublishWindow(QWidget):
                         # Auto export should be done if input not match the output (ex: .usd > .usda).
                         path = output_path + os.sep + output_filename + "." + os.path.splitext(self._workfile_path)[1][1:]
                     else:
-                        export_status = self._manager.integration.exportSelection(path=path)
+                        export_status = self._manager.integration.export_selection(path=path)
 
                     # If export failed for current export (example: file already exist),
                     # remove the unnecessary file.
