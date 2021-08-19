@@ -8,10 +8,6 @@
 from ..exceptions import CoreError
 
 try:
-    from pxr import Usd, UsdGeom
+    from pxr import Usd
 except ImportError:
     raise CoreError("Please add USD in your PYTHONPATH and PATH,\nthe procedure can be found here: https://graphics.pixar.com/usd/docs/USD-Tutorials.html")
-
-def create_stage(path):
-	stage = Usd.Stage.CreateNew(path)
-	stage.GetRootLayer().Save()

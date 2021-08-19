@@ -7,6 +7,8 @@
 """
 import os
 
+from Hestia.core.USD.stage import USDStage
+
 from ..links.decorators import sync_entity
 
 class Entity(object):
@@ -26,6 +28,10 @@ class Entity(object):
         self._tasks        = tasks
         self._path         = ""
         self._preview_path = preview_path
+
+        self._usd_stage    = USDStage(path=self._path)\
+                             if os.path.isfile(self._path)\
+                             else None
 
         self._raw_datas    = raw_datas
 
@@ -117,11 +123,10 @@ class Entity(object):
             str: Path.
         """
         # Build USD file if not on the disk.
-        if(not os.path.isfile(self._path)):
-            from Hestia.core.USD import create_stage
-            create_stage(self._path)
-            del create_stage
-
+        if(not self._usd_stage):
+            self._usd_stage = USDStage(path=self._path)
+            self._usd_stage.create_stage()
+        
         return self._path
     
     @path.setter
