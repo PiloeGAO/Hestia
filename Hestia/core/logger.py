@@ -22,7 +22,10 @@ def get_logging(module_name, debug=True):
     if(not logger.handlers):
         # If logger isn't setup, create one.
         streamHandler = logging.StreamHandler()
-        formatter = logging.Formatter("HESTIA | %(levelname)s @ %(asctime)s | %(message)s")
+        formatter = logging.Formatter(
+            "HESTIA | %(levelname)s - %(message)s @ [%(asctime)s] | %(pathname)s:%(lineno)d",
+            "%y-%m-%d %H:%M:%S"
+        )
         streamHandler.setFormatter(formatter)
         logger.addHandler(streamHandler)
         if(debug):
