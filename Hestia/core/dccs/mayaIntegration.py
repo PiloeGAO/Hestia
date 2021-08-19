@@ -74,7 +74,8 @@ class MayaIntegration(DefaultIntegration):
             for plugins in extensions:
                 for plugin in plugins.split(","):
                     status = self.load_maya_plugin("{}.{}".format(plugin, plugin_extension))
-                    self._available_formats.extend(extensions[plugins])
+                
+                self._available_formats.extend(extensions[plugins])
     
     def load_maya_plugin(self, plugin_name):
         """Load external plugins needed by the implementation (exemple: for special formats...)

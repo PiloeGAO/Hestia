@@ -55,7 +55,7 @@ class DefaultIntegration(object):
         return self._available_formats
     
     @property
-    def supportScreenshots(self):
+    def support_screenshots(self):
         """Get the screenshots support.
 
         Returns:
@@ -95,11 +95,11 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def load_shot(self, asset=None, version=None):
+    def load_shot(self, shot=None, version=None):
         """Load the selected shot inside of the scene.
 
         Args:
-            asset (class:"Entity"): Asset datas. Defaults to None.
+            shot (class:"Entity"): Shot datas. Defaults to None.
             version (class:"Version"): Version datas. Defaults to None.
 
         Returns:
@@ -107,24 +107,21 @@ class DefaultIntegration(object):
         """
         return NotImplemented
     
-    def build_shot(self, shotPath = ""):
+    def build_shot(self, shot_path = ""):
         """Build the shot from shot assembly system.
 
         Args:
-            shotPath (str): Shot path. Defaults to "".
-
-        Args:
-            shotPath (str, optional): [description]. Defaults to "".
+            shot_path (str): Shot path. Defaults to "".
         """
         return NotImplemented
     
-    def take_playblast(self, start_frame, endFrame, path):
+    def take_playblast(self, start_frame, end_frame, path):
         """Take a playblast of the scene.
 
         Args:
             start_frame (int): Start frame.
-            endFrame (int): End frame.
-            path (sty): Ouput path.
+            end_frame (int): End frame.
+            path (sty): Output path.
 
         Returns:
             bool: Function status.

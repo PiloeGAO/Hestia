@@ -50,7 +50,7 @@ class PublishWindow(QWidget):
         self._workfile_path = ""
 
         self._screenshot_path = ""
-        self._screenshot_support = self._manager.integration.supportScreenshots
+        self._screenshot_support = self._manager.integration.support_screenshots
         
         self._root_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -75,7 +75,7 @@ class PublishWindow(QWidget):
         self.taskLayout = QHBoxLayout()
 
         # Task drop down.
-        self.taskDropBox = DropDown(name="Task", description="Task of the publish.", datas=self.getTasksNames())
+        self.taskDropBox = DropDown(name="Task", description="Task of the publish.", datas=self.get_tasks_names())
         self.taskLayout.addWidget(self.taskDropBox)
 
         # Task status drop drown.
@@ -152,7 +152,7 @@ class PublishWindow(QWidget):
             iconPath = self._root_path + "/ui/icons/folder2-open.png"
         self.previewButton = IconButton(name="Open file browser",description="Locate the screenshot",
                                             iconPath=iconPath, iconScale=16,
-                                            functionToInvoke=self.openScreenshotExplorer)
+                                            functionToInvoke=self.open_screenshot_explorer)
         self.previewLayout.addWidget(self.previewButton)
 
         if(self._screenshot_support):
@@ -162,7 +162,7 @@ class PublishWindow(QWidget):
                 iconPath = self._root_path + "/ui/icons/camera.png"
             self.screenshotButton = IconButton(name="Take screenshot", description="Take screenshot of current scene.",
                                                 iconPath=iconPath, iconScale=16,
-                                                status=1, functionToInvoke=self.takeScreenshot)
+                                                status=1, functionToInvoke=self.take_screenshot)
             self.previewLayout.addWidget(self.screenshotButton)
             
             if(pysideVers == 2):
@@ -171,7 +171,7 @@ class PublishWindow(QWidget):
                 iconPath = self._root_path + "/ui/icons/camera-reels.png"
             self.playblastButton = IconButton(name="Take a video", description="Take video of current scene.",
                                                 iconPath=iconPath, iconScale=16,
-                                                status=1, functionToInvoke=self.takePlayblast)
+                                                status=1, functionToInvoke=self.take_playblast)
             self.previewLayout.addWidget(self.playblastButton)
 
         self.mainLayout.addLayout(self.previewLayout)
@@ -184,7 +184,7 @@ class PublishWindow(QWidget):
         # Set main layout to the window.
         self.setLayout(self.mainLayout)
     
-    def getTasksNames(self):
+    def get_tasks_names(self):
         """Get all tasks for entity.
 
         Returns:
@@ -230,7 +230,7 @@ class PublishWindow(QWidget):
                                         emptyLabel="No outputs in list")
             self.outputScrollArea.setWidget(self.outputGrid)
 
-    def openScreenshotExplorer(self):
+    def open_screenshot_explorer(self):
         """Open file explorer to set screenshot path.
         """
         dialog = QFileDialog(self)
@@ -240,7 +240,7 @@ class PublishWindow(QWidget):
         
         self.previewTitle.setText("Preview : %s" % self._screenshot_path)
 
-    def takeScreenshot(self):
+    def take_screenshot(self):
         """Take a screenshot of the scene.
         """
         path = FileManager().temp_directory + os.sep + "preview.PNG"
