@@ -244,7 +244,7 @@ class PublishWindow(QWidget):
         """Take a screenshot of the scene.
         """
         path = FileManager().temp_directory + os.sep + "preview.PNG"
-        self._manager.integration.take_playblast(start_frame=-1, endFrame=-1, path=path)
+        self._manager.integration.take_playblast(start_frame=-1, end_frame=-1, path=path)
         self._screenshot_path = path
 
         self.previewTitle.setText("Preview : %s" % self._screenshot_path)
@@ -260,7 +260,7 @@ class PublishWindow(QWidget):
             return False
         
         path_raw = FileManager().temp_directory + os.sep + "preview_raw." + format
-        self._manager.integration.take_playblast(start_frame=-2, endFrame=0, path=path_raw)
+        self._manager.integration.take_playblast(start_frame=-2, end_frame=0, path=path_raw)
 
         path = FileManager().temp_directory + os.sep + "preview.mp4"
         conversionStatus = video_converter(path_raw, path)
@@ -342,7 +342,7 @@ class PublishWindow(QWidget):
                         # Auto export should be done if input not match the output (ex: .usd > .usda).
                         path = output_path + os.sep + output_filename + "." + os.path.splitext(self._workfile_path)[1][1:]
                     else:
-                        export_status = self._manager.integration.export_selection(path=path)
+                        export_status = self._manager.integration.export_selection(path=path, extension=extension.lower())
 
                     # If export failed for current export (example: file already exist),
                     # remove the unnecessary file.

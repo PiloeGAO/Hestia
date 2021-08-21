@@ -23,6 +23,9 @@ from ..exceptions import CoreError
 
 from Hestia.core.dccs.default import DefaultIntegration
 
+from Hestia.core.logger import get_logging
+logger = get_logging(__name__)
+
 class MayaIntegration(DefaultIntegration):
     """Default integration class.
     """
@@ -31,12 +34,12 @@ class MayaIntegration(DefaultIntegration):
         self._name = "Maya"
 
         if(not integrationActive):
-            self._manager.logging.error("Maya Libraries not found!")
+            logger.error("Maya Libraries not found!")
 
         self._active = integrationActive
 
         # Initialize file formats.
-        self._manager.logging.info("Initialize File Formats.")
+        logger.info("Initialize File Formats.")
         self._default_format = "ma"
         self._available_formats = ["ma", "mb"]
 
@@ -120,7 +123,7 @@ class MayaIntegration(DefaultIntegration):
             bool: load status.
         """
         if(not os.path.exists(version.output_path)):
-            self._manager.logging.error("File not found.")
+            logger.error("File not found.")
             return False
 
         return True
@@ -136,7 +139,7 @@ class MayaIntegration(DefaultIntegration):
             bool: load status.
         """
         if(not os.path.exists(version.output_path)):
-            self._manager.logging.error("File not found.")
+            logger.error("File not found.")
             return False
 
         if(version.type == ".ma" or version.type == ".mb"):
@@ -170,12 +173,12 @@ class MayaIntegration(DefaultIntegration):
         if(filepath != ""):
             if(os.path.basename(os.path.dirname(filepath)) == "scenes" and
                 os.path.isfile(os.path.dirname(filepath) + os.sep + ".." + os.sep + "workspace.mel")):
-                self._manager.logging.debug("The scene is part of a Maya Project, Hestia will setup the project correctly! ")
+                logger.debug("The scene is part of a Maya Project, Hestia will setup the project correctly! ")
                 cmds.workspace(os.path.abspath(os.path.dirname(filepath) + os.sep + ".."), openWorkspace=True)
             else:
-                self._manager.logging.warning("The scene isn't part of a Maya Project, please build a Maya project and save your scene in the \"scenes\" subdirectory (all features couldn't work as expected).")
+                logger.warning("The scene isn't part of a Maya Project, please build a Maya project and save your scene in the \"scenes\" subdirectory (all features couldn't work as expected).")
         else:
-            self._manager.logging.warning("Please save your scene (all features couldn't work as expected).")
+            logger.warning("Please save your scene (all features couldn't work as expected).")
 
         # Set main values for timeline setup.
         # Correct order is:
@@ -287,10 +290,10 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(force=True, save=True, type="mayaAscii")
             return True
         
-        self._manager.logging.error("Failed to save the file : %s" % path)
+        logger.error("Failed to save the file : %s" % path)
         return False
 
-    def export_selection(self, path, extension):
+    def export_selection(self, path, extension, export_selection_only=True, frame_range=[1, 1]):
         """Export selection to the path with the correct format.
 
         Args:
@@ -301,21 +304,32 @@ class MayaIntegration(DefaultIntegration):
             bool: Function status.
         """
         if(os.path.isfile(path)):
-            self._manager.logging.error("File \"%s\" already exist, skipping export." % path)
+            logger.error("File \"%s\" already exist, skipping export." % path)
             return False
         
         if(len(cmds.ls(sl=True)) == 0):
-            self._manager.logging.error("Nothing selected, skipping export.")
+            logger.error("Nothing selected, skipping export.")
             return False
         
         extension = extension.lower()
 
         if(extension == ".ma"):
-            cmds.file(path, type='mayaAscii', exportSelected=True)
+            cmds.file(path, type='mayaAscii', exportSelected=export_selection_only)
         elif(extension == ".mb"):
-            cmds.file(path, type='mayaBinary', exportSelected=True)
+            cmds.file(path, type='mayaBinary', exportSelected=export_selection_only)
         elif(extension in get_usd_extensions()):
-            print("USD")
+            if(self._current_render_engine == "arnold"):
+                logger.error("Arnold export not setup yet.")
+                pass
+            else:
+                logger.warning("Current render engine not exist, using Maya default (materials not exported).")
+                # Use default maya export function.
+                cmds.mayaUSDExport(
+                    file=path,
+                    defaultUSDFormat="usda",
+                    selection=export_selection_only,
+                    frameRange=frame_range
+                )
         else:
             return False
         

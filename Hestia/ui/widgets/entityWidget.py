@@ -18,6 +18,7 @@ except:
     from PySide.QtGui       import *
     pysideVers = 1
 
+from Hestia.core.USD        import get_usd_extensions
 from Hestia.core.USD.tools  import USDTools
 
 from .iconButton            import IconButton
@@ -212,7 +213,12 @@ class EntityWidget(QWidget):
         if(self._manager.get_current_project().support_filetree
             and self._current_version != None):
             menu.addSeparator()
-            if(os.path.splitext(self._entity.path)[1] in [".usda", ".usd"]
+            if(os.path.splitext(self._current_version.output_path)[1][1:] in get_usd_extensions()
+                and os.path.isfile(self._current_version.output_path)):
+                menu_open_output_file_usdview = menu.addAction("Open output file in USDView")
+                menu_open_output_file_usdview.triggered.connect(lambda state: USDTools.open_usdview(self._current_version.output_path))
+
+            if(os.path.splitext(self._entity.path)[1][1:] in get_usd_extensions()
                 and os.path.isfile(self._entity.path)):
                 menu_open_file_usdview_master = menu.addAction("Open with master stage in USDView")
                 menu_open_file_usdview_master.triggered.connect(lambda state: USDTools.open_usdview(self._entity.path))
