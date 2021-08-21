@@ -24,4 +24,5 @@ def createHestiaShelf():
 
    shelfStyle = ('shelf' if maya_version >= 2016 else 'simple')
 
-   cmds.shelfButton(label='Browser', command='from Hestia.dccs.maya.scripts.launchHestiaBrowser import launchBrowser; launchBrowser()', sourceType='python', annotation='Open Hestia Browser', image='browser.png', style='iconOnly')
+   # Please add the icons folder to environment variable: XBMLANGPATH
+   cmds.shelfButton(label='Browser', command='from Hestia.dccs.maya.scripts.launchHestiaBrowser import launchBrowser; launchBrowser()', sourceType='python', annotation='Open Hestia Browser', image='cloud.png', style='iconOnly')
