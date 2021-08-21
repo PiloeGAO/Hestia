@@ -7,6 +7,7 @@
 """
 import os
 
+from Hestia.core.USD import get_usd_extensions
 from Hestia.core.USD.tools import USDTools
 
 from Hestia.core.logger                    import get_logging
@@ -23,7 +24,7 @@ class DefaultIntegration(object):
         self._active = False
 
         self._default_format = "usda"
-        self._available_formats = ["usda"]
+        self._available_formats = get_usd_extensions()
 
         self._support_screenshots = False
     

@@ -17,6 +17,8 @@ except:
 else:
     integrationActive = True
 
+from Hestia.core.USD import get_usd_extensions
+
 from ..exceptions import CoreError
 
 from Hestia.core.dccs.default import DefaultIntegration
@@ -45,7 +47,7 @@ class MayaIntegration(DefaultIntegration):
             ],
             "extensions" : [
                 {
-                    "mayaUsdPlugin,mtoh": ["usda", "usdc", "usd"],
+                    "mayaUsdPlugin,mtoh": get_usd_extensions(),
                 }
             ]
         }
@@ -312,6 +314,8 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(path, type='mayaAscii', exportSelected=True)
         elif(extension == ".mb"):
             cmds.file(path, type='mayaBinary', exportSelected=True)
+        elif(extension in get_usd_extensions()):
+            print("USD")
         else:
             return False
         

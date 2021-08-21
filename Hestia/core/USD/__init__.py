@@ -11,3 +11,11 @@ try:
     from pxr import Usd
 except ImportError:
     raise CoreError("Please add USD in your PYTHONPATH and PATH,\nthe procedure can be found here: https://graphics.pixar.com/usd/docs/USD-Tutorials.html")
+
+def get_usd_extensions():
+    """Get extensions associated to USD.
+    
+    Returns:
+        list: str: Extensions.
+    """
+    return ["usd", "usda", "usdc"]
