@@ -33,10 +33,12 @@ class MayaIntegration(DefaultIntegration):
 
         self._active = integrationActive
 
+        # Initialize file formats.
         self._manager.logging.info("Initialize File Formats.")
         self._default_format = "ma"
         self._available_formats = ["ma", "mb"]
 
+        # Load necessary plugins for Hestia (including mayausd).
         plugins = {
             "tools" : [
                 "timeSliderBookmark",
@@ -49,8 +51,10 @@ class MayaIntegration(DefaultIntegration):
         }
         self.initialize_plugins(plugins=plugins)
 
-        self._support_instances     = True # Autodesk Maya support instance by using "References". 
-        self._instances             = True
+        # Get the current render engine (WARNING: Multiple render engine not supported).
+        self._current_render_engine = "legacy"
+        self.check_render_engine()
+
         self._support_screenshots   = True
     
     def initialize_plugins(self, plugins={}):
@@ -74,7 +78,7 @@ class MayaIntegration(DefaultIntegration):
             for plugins in extensions:
                 for plugin in plugins.split(","):
                     status = self.load_maya_plugin("{}.{}".format(plugin, plugin_extension))
-                
+
                 self._available_formats.extend(extensions[plugins])
     
     def load_maya_plugin(self, plugin_name):
@@ -92,6 +96,16 @@ class MayaIntegration(DefaultIntegration):
         except RuntimeError:
             raise CoreError("Failed to load {}.{}".format(plugin, plugin_extension))
     
+    def check_render_engine(self):
+        """Check plugin list to get renderer's names.
+        """
+        plugin_list = cmds.pluginInfo(query=True, listPlugins=True)
+
+        if("mtoa" in plugin_list):
+            self._current_render_engine = "arnold"
+        else:
+            self._current_render_engine = "legacy"
+
     
     def load_asset(self, asset=None, version=None, staticAsset=None):
         """Load the selected asset inside of the scene.

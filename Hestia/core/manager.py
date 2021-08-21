@@ -16,7 +16,7 @@ from .USD                       import *
 
 from .preferences               import Preferences
 
-from .dccs.defaultIntegration   import DefaultIntegration
+from Hestia.core.dccs.default   import DefaultIntegration
 
 from .links.defaultWrapper      import DefaultWrapper
 
@@ -52,11 +52,8 @@ class Manager():
 
         # Managing integrations.
         if(integration == "Maya"):
-            from .dccs.mayaIntegration import MayaIntegration
+            from Hestia.core.dccs.maya import MayaIntegration
             self._integration = MayaIntegration(manager=self)
-        elif(integration == "Guerilla"):
-            from .dccs.guerillaIntegration import GuerillaIntegration
-            self._integration = GuerillaIntegration(manager=self)
         else:
             self._integration = DefaultIntegration()
         
