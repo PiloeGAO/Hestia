@@ -2,7 +2,7 @@
     :package:   Hestia
     :file:      launchHestiaBrowser.py
     :author:    ldepoix
-    :version:   0.0.4
+    :version:   0.0.5
     :brief:     Class to start UI from Autodesk Maya.
 '''
 from    maya                            import OpenMayaUI
