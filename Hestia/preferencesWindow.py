@@ -42,7 +42,6 @@ class PreferencesWindow(QWidget):
 
         self.__loadPreviewStatus    = bool(int(self.__manager.preferences.getValue("MANAGER",   "loadPreviews")))
         self.__debugMode            = bool(int(self.__manager.preferences.getValue("MANAGER",   "debugMode")))
-        self.__useGPUCache          = bool(int(self.__manager.preferences.getValue("MAYA",      "useGPUCache")))
 
         # Initialize UI.
         self.initUI()
@@ -85,15 +84,6 @@ class PreferencesWindow(QWidget):
 
         self.generalSettingsLayout.addStretch()
 
-        # Use GPU Cache.
-        self.useGPUCache = QCheckBox("Use GPU Cache")
-        self.useGPUCache.setToolTip("Use Maya GPU Caches.")
-        self.useGPUCache.setChecked(self.__useGPUCache)
-
-        self.generalSettingsLayout.addWidget(self.useGPUCache)
-
-        self.generalSettingsLayout.addStretch()
-
 
         self.generalSettingsWidget.setLayout(self.generalSettingsLayout)
         self.tabWidget.addTab(self.generalSettingsWidget, "Main Settings")
@@ -130,7 +120,7 @@ class PreferencesWindow(QWidget):
             Current integration: %s
 
             Made by:
-                - Leo Depoix (pilegao)
+                - Leo Depoix (piloegao)
             
             Acknowledgments:
                 - Pole 3D
@@ -172,7 +162,6 @@ class PreferencesWindow(QWidget):
         self.__manager.preferences.setValue("MANAGER", "service", self.__servicesAvailables[self.serviceButton.currentValue].lower())
         self.__manager.preferences.setValue("MANAGER", "loadPreviews", str(int(self.loadPreviews.isChecked())))
         self.__manager.preferences.setValue("MANAGER", "debugMode", str(int(self.debugMode.isChecked())))
-        self.__manager.preferences.setValue("MAYA", "useGPUCache", str(int(self.useGPUCache.isChecked())))
         self.__manager.preferences.savePreferences()
 
         # Show information message.

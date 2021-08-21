@@ -16,8 +16,6 @@ from .USD                       import *
 
 from .preferences               import Preferences
 
-from Hestia.core.dccs.default   import DefaultIntegration
-
 from .links.defaultWrapper      import DefaultWrapper
 
 from .pmObj.project import Project
@@ -55,6 +53,7 @@ class Manager():
             from Hestia.core.dccs.maya import MayaIntegration
             self._integration = MayaIntegration(manager=self)
         else:
+            from Hestia.core.dccs.default   import DefaultIntegration
             self._integration = DefaultIntegration()
         
         # Setting up the service.

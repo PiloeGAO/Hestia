@@ -19,7 +19,7 @@ else:
 
 from ..exceptions import CoreError
 
-from .defaultIntegration import DefaultIntegration
+from Hestia.core.dccs.default import DefaultIntegration
 
 class MayaIntegration(DefaultIntegration):
     """Default integration class.
