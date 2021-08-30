@@ -15,6 +15,9 @@ logging = get_logging(__name__)
 
 def run_shell_command(command_line):
     """Start a command with subprocess and log outputs.
+
+    FOR MAYA: https://discourse.techart.online/t/run-maya-and-execute-a-script/11999/7
+    Add python case in each dccs, with argument in this command in case of python command.
     
     Args:
         command_line (str): Command.
@@ -30,7 +33,13 @@ def run_shell_command(command_line):
         command_line_process = subprocess.Popen(
             command_line_args,
             stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
+            stderr=subprocess.PIPE,
+            stdin=subprocess.PIPE,
+            shell=False
         )
+
+        # FOR DEBUG ONLY (freeze the main thread, threading management should be added later):
+        # logging.debug(command_line_process.communicate()[1].decode("UTF-8"))
     except Exception as e:
         logging.error(e)
+        raise CoreError("Failed to start command: {}".format(command_line))

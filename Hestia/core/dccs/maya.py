@@ -18,6 +18,7 @@ else:
     integrationActive = True
 
 from Hestia.core.USD import get_usd_extensions
+from Hestia.core.USD.tools import USDTools
 
 from ..exceptions import CoreError
 
@@ -319,10 +320,21 @@ class MayaIntegration(DefaultIntegration):
             cmds.file(path, type='mayaBinary', exportSelected=export_selection_only)
         elif(extension in get_usd_extensions()):
             if(self._current_render_engine == "arnold"):
-                logger.error("Arnold export not setup yet.")
-                pass
+                filepath = "{}.usd".format(os.path.splitext(path)[0])
+
+                """Maya mel command: file -force -options "-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-fullPath" -typ "Arnold-USD" -pr -es "/Users/piloegao/Desktop/demo.usda";"""
+                cmds.file(filepath, 
+                    force=True,
+                    options="-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-fullPath",
+                    type="Arnold-USD",
+                    preserveReferences=True,
+                    exportSelected=True)
+                # if extension not "usd" > convert to selected extension.
+                if(extension != "usd"):
+                    USDTools.open_usdcat(filepath, output=path)
+                    os.remove(filepath)
             else:
-                logger.warning("Current render engine not exist, using Maya default (materials not exported).")
+                logger.warning("Current render engine set to \"legacy\", using Maya USD plugin export function (materials not exported).")
                 # Use default maya export function.
                 cmds.mayaUSDExport(
                     file=path,
