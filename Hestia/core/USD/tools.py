@@ -114,3 +114,48 @@ class USDTools():
 		command.append(path)
 
 		run_shell_command(command)
+
+
+
+	@staticmethod
+	def open_usdcat(path=[], help=False, output="", usdFormat="usda", flatten=False, mask=""):
+		"""Open USD cat from USD toolset.
+		For more informations, please read: https://graphics.pixar.com/usd/docs/USD-Toolset.html#USDToolset-usdview
+		
+		Args:
+		    path (str): Path to USD scene.
+		    help (bool, optional): Show help and quit.
+		    output (str, optional): Output path to converted file.
+		    usdFormat (str, optional): Output format.
+		    flatten (bool, optional): Flatten output file.
+		    mask (str, optional): Paths to prims to use as mask.
+		"""
+		command = ["usdcat"]
+
+		if(help):
+			command.append("--help")
+
+		if(type(output) == str and output != ""):
+			command.append("--out")
+			command.append(output)
+		else:
+			raise CoreError("USDCAT not support console output to Hestia.")
+
+		if(usdFormat in ["usda", "usdb", "usdc"]):
+			command.append("--usdFormat")
+			command.append(usdFormat)
+
+		if(flatten):
+			command.append("--flatten")
+
+		if(mask != ""):
+			command.append("--mask")
+			command.append(mask)
+		
+		if(type(path) == list):
+			for i in path:
+				command.append(i)
+		else:
+			command.append(path)
+
+		run_shell_command(command)
