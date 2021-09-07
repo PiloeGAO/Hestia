@@ -59,7 +59,7 @@ class EntityWidget(QWidget):
         self._current_version = self._versions[0] if len(self._versions) > 0 else None
 
         if(len(self._versions) > 0):
-            self._status = 0 if not self._current_version.type in self._manager.integration.available_formats else 1
+            self._status = 0 if not self._current_version.type[1:] in self._manager.integration.available_formats else 1
         else:
             self._status = 0
 
@@ -170,7 +170,7 @@ class EntityWidget(QWidget):
 
         self._current_version = version
 
-        self._status = 0 if not self._current_version.type in self._manager.integration.available_formats else 1
+        self._status = 0 if not self._current_version.type[1:] in self._manager.integration.available_formats else 1
         self.icon_button.changeButtonStatus(self._status)
 
         self.entity_box.setTitle("{} - Version {} ({})".format(self._name, version.revision_number, version.type))

@@ -131,7 +131,7 @@ class MayaIntegration(DefaultIntegration):
             self._current_render_engine = "legacy"
 
     
-    def load_asset(self, asset=None, version=None, staticAsset=None):
+    def load_asset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
         Args:
@@ -144,6 +144,23 @@ class MayaIntegration(DefaultIntegration):
         if(not os.path.exists(version.output_path)):
             logger.error("File not found.")
             return False
+
+        if(os.path.splitext(version.output_path)[1][1:] in get_usd_extensions()):
+            parent_obj = None
+            if(len(cmds.ls(sl=True))>0):
+                parent_obj = cmds.ls(sl=True)[0]
+
+            hard_import = True
+
+            if(hard_import):
+                cmds.mayaUSDImport(
+                    file=version.output_path,
+                    parent=parent_obj,
+                    readAnimData=True,
+                    preferredMaterial="aiStandardSurface"
+                )
+            else:
+                raise CoreError("Reference system not implemented.")
 
         return True
     
