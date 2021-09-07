@@ -17,6 +17,8 @@ except:
 else:
     integrationActive = True
 
+from pxr import Usd
+
 from Hestia.core.USD import get_usd_extensions
 from Hestia.core.USD.tools import USDTools
 
@@ -340,13 +342,13 @@ class MayaIntegration(DefaultIntegration):
         elif(extension == ".mb"):
             cmds.file(path, type='mayaBinary', exportSelected=export_selection_only)
         elif(extension in get_usd_extensions()):
-            if(self._current_render_engine == "arnold" and not export_animation_datas):
+            if(self._current_render_engine == "arnold" and export_animation_datas == False):
                 filepath = "{}.usd".format(os.path.splitext(path)[0])
 
                 """Maya mel command: file -force -options "-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-startFrame 1.0;-endFrame 24.0;-frameStep 1.0;-fullPath" -typ "Arnold-USD" -pr -es "/Users/piloegao/Desktop/demo.usda";"""
                 export_options = ["-boundingBox", "-asciiAss", "-mask 6399", "-lightLinks 1", "-shadowLinks 1"]
 
-                if(frame_range[1] - frame_range[0] != 0):
+                if(export_animation_datas):
                     export_options.append("-startFrame {}".format(frame_range[0]))
                     export_options.append("-endFrame {}".format(frame_range[1]))
                     export_options.append("-frameStep 1.0")
@@ -362,8 +364,23 @@ class MayaIntegration(DefaultIntegration):
 
                 # if extension not "usd" > convert to selected extension.
                 if(extension != "usd"):
-                    USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter(), output=path, )
+                    USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter(), output=path)
                     os.remove(filepath)
+
+                # Set the selection to default prim.
+                stage = Usd.Stage.Open(path)
+
+                path_prim = "/{}".format(cmds.ls(sl=True)[0])
+
+                if(len([x for x in stage.Traverse() if x.GetPath() == path_prim]) == 1):
+                    # Set default prim.
+                    self._manager.logging.info("Set default prim for file {}.".format(path))
+                    prim = stage.GetPrimAtPath(path_prim)
+                    stage.SetDefaultPrim(prim)
+                    stage.GetRootLayer().Save()
+
+                del stage
+
             else:
                 logger.warning("Using Maya USD plugin export function (materials not exported but animation will be).")
                 # Use default maya export function.

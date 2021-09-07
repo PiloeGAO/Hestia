@@ -32,16 +32,6 @@ class USDStage(object):
         """
         return self._path
 
-    @property
-    def content(self):
-        """Get the content of a USD Stage.
-        
-        Returns:
-            str: String representation of the stage.
-        """
-        return self.root_layer.ExportToString()
-
-    @property
     def get_stage(self):
         """Get the stage from path.
         
@@ -50,14 +40,21 @@ class USDStage(object):
         """
         return Usd.Stage.Open(self._path)
 
-    @property
+    def content(self):
+        """Get the content of a USD Stage.
+        
+        Returns:
+            str: String representation of the stage.
+        """
+        return self.root_layer().ExportToString()
+
     def root_layer(self):
         """Get the root layer of the stage.
         
         Returns:
             class:`rootLayer`: Root layer of the stage.
         """
-        return self.get_stage.GetRootLayer()
+        return self.get_stage().GetRootLayer()
 
     def create_stage(self):
         """Create the stage on disk.
@@ -74,7 +71,7 @@ class USDStage(object):
             start_frame (int): Start frame.
             end_frame (int): End frame.
         """
-        stage = self.get_stage
+        stage = self.get_stage()
         stage.SetStartTimeCode(start_frame)
         stage.SetEndTimeCode(end_frame)
         stage.Save()
@@ -88,7 +85,7 @@ class USDStage(object):
         Raises:
             CoreError: Invalid axis
         """
-        stage = self.get_stage
+        stage = self.get_stage()
 
         if(not axis in ["x", "y", "z"]):
             raise CoreError("Invalid Up Axis for stage.")
@@ -147,7 +144,7 @@ class USDStage(object):
         Returns:
             class:`usdPrim: Primitive.
         """
-        return self.get_stage.GetPrimAtPath(path)
+        return self.get_stage().GetPrimAtPath(path)
 
     def set_default_prim(self, prim):
         """Set the default primitive for the stage.
@@ -158,7 +155,7 @@ class USDStage(object):
         Returns:
             bool: Status.
         """
-        stage = self.get_stage
+        stage = self.get_stage()
         status = stage.SetDefaultPrim(prim)
         stage.Save()
         return status
@@ -197,7 +194,7 @@ class USDStage(object):
         Returns:
             bool: Set status.
         """
-        stage = self.get_stage
+        stage = self.get_stage()
         status = prim.GetAttribute(attribute_name).Set(value)
         stage.Save()
         return status

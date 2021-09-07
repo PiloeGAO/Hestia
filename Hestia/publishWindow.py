@@ -22,6 +22,9 @@ except:
 
 from Hestia.core.manager import current_manager
 
+from Hestia.core.USD import get_usd_extensions
+from Hestia.core.USD.stage import USDStage
+
 from .core.IO.path import TemplateManager, FileManager
 from .core.IO.encoding import *
 
@@ -379,6 +382,35 @@ class PublishWindow(QWidget):
             )
 
             if(publish_status):
+                # Link the USD output to master.
+                output_files = [file for file in publish_output_file_paths if os.path.splitext(file)[1][1:] in get_usd_extensions()]
+
+                if(len(output_files) > 0):
+                    output_file = output_files[0]
+
+                    from pxr import Usd
+
+                    master_stage = Usd.Stage.Open(self._entity.path)
+
+                    path_ref_prim = "/{}".format(publish_task.name).replace(" ", "_")
+
+                    if(len([x for x in master_stage.Traverse() if x.GetPath() == path_ref_prim]) == 0):
+                        # Create the prim and add reference to output
+                        self._manager.logging.info("Creating the Prim to create the reference.")
+                        ref_prim = master_stage.OverridePrim(path_ref_prim)
+                    else:
+                        # Change the reference to the new ouptut.
+                        self._manager.logging.info("Clearing previous references.")
+                        ref_prim = master_stage.GetPrimAtPath(path_ref_prim)
+                        ref_prim.GetReferences().ClearReferences()
+
+                    self._manager.logging.info("Add the reference to the master stage.")
+                    ref_prim.GetReferences().AddReference(output_file)
+                    master_stage.GetRootLayer().Save()
+                else:
+                    self._manager.logging.warning("No USD files in outputs, nothing will be linked to master stage.")
+
+                # Export done log.
                 self._manager.logging.info("Publishing done.")
             else:
                 self._manager.logging.info("Publishing failed.")
