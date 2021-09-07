@@ -183,4 +183,4 @@ class USDTools():
 		else:
 			command.append(path)
 
-		run_shell_command(command, shell=True)
+		run_shell_command(command, shell=True, get_log=True)

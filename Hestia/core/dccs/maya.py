@@ -338,17 +338,26 @@ class MayaIntegration(DefaultIntegration):
             if(self._current_render_engine == "arnold"):
                 filepath = "{}.usd".format(os.path.splitext(path)[0])
 
-                """Maya mel command: file -force -options "-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-fullPath" -typ "Arnold-USD" -pr -es "/Users/piloegao/Desktop/demo.usda";"""
-                cmds.file(filepath, 
+                """Maya mel command: file -force -options "-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-startFrame 1.0;-endFrame 24.0;-frameStep 1.0;-fullPath" -typ "Arnold-USD" -pr -es "/Users/piloegao/Desktop/demo.usda";"""
+                export_options = ["-boundingBox", "-asciiAss", "-mask 6399", "-lightLinks 1", "-shadowLinks 1"]
+
+                if(frame_range[1] - frame_range[0] != 0):
+                    export_options.append("-startFrame {}".format(frame_range[0]))
+                    export_options.append("-endFrame {}".format(frame_range[1]))
+                    export_options.append("-frameStep 1.0")
+
+                export_options.append("-fullPath")
+
+                cmds.file(filepath,
                     force=True,
-                    options="-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-fullPath",
+                    options=";".join(export_options),
                     type="Arnold-USD",
                     preserveReferences=True,
                     exportSelected=True)
-                
+
                 # if extension not "usd" > convert to selected extension.
                 if(extension != "usd"):
-                    USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter() ,output=path)
+                    USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter(), output=path, )
                     os.remove(filepath)
             else:
                 logger.warning("Current render engine set to \"legacy\", using Maya USD plugin export function (materials not exported).")
