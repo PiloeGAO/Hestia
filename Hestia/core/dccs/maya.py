@@ -310,7 +310,7 @@ class MayaIntegration(DefaultIntegration):
         logger.error("Failed to save the file : %s" % path)
         return False
 
-    def export_selection(self, path, extension, export_selection_only=True, frame_range=[1, 1]):
+    def export_selection(self, path, extension, export_selection_only=True, export_animation_datas=False, frame_range=[1, 1]):
         """Export selection to the path with the correct format.
 
         Args:
@@ -330,12 +330,17 @@ class MayaIntegration(DefaultIntegration):
         
         extension = extension.lower()
 
+        # Get start and end frame in case of animation export.
+        if(export_animation_datas and frame_range == [1, 1]):
+            frame_range[0] = cmds.playbackOptions(q=True, min=True)
+            frame_range[1] = cmds.playbackOptions(q=True, max=True)
+
         if(extension == ".ma"):
             cmds.file(path, type='mayaAscii', exportSelected=export_selection_only)
         elif(extension == ".mb"):
             cmds.file(path, type='mayaBinary', exportSelected=export_selection_only)
         elif(extension in get_usd_extensions()):
-            if(self._current_render_engine == "arnold"):
+            if(self._current_render_engine == "arnold" and not export_animation_datas):
                 filepath = "{}.usd".format(os.path.splitext(path)[0])
 
                 """Maya mel command: file -force -options "-boundingBox;-asciiAss;-mask 6399;-lightLinks 1;-shadowLinks 1;-startFrame 1.0;-endFrame 24.0;-frameStep 1.0;-fullPath" -typ "Arnold-USD" -pr -es "/Users/piloegao/Desktop/demo.usda";"""
@@ -360,7 +365,7 @@ class MayaIntegration(DefaultIntegration):
                     USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter(), output=path, )
                     os.remove(filepath)
             else:
-                logger.warning("Current render engine set to \"legacy\", using Maya USD plugin export function (materials not exported).")
+                logger.warning("Using Maya USD plugin export function (materials not exported but animation will be).")
                 # Use default maya export function.
                 cmds.mayaUSDExport(
                     file=path,

@@ -138,6 +138,9 @@ class PublishWindow(QWidget):
 
         self.mainLayout.addLayout(self.outputButtonsLayout)
 
+        self.export_anim_datas_checkbox = QCheckBox("Export animation datas")
+        self.mainLayout.addWidget(self.export_anim_datas_checkbox)
+
         # Preview path.
         self.previewLayout = QHBoxLayout()
 
@@ -286,6 +289,7 @@ class PublishWindow(QWidget):
         output_path = TemplateManager().get_folderpath(exportType="output", project=self._current_project, category=self._category, entity=self._entity, task_type=publish_task, version_number=publishVersion)
         output_filenames = []
         output_extensions = []
+        export_animation_datas = bool(self.export_anim_datas_checkbox.isChecked())
         previewFilename = TemplateManager().get_filename(exportType="output", project=self._current_project, category=self._category, entity=self._entity, task_type=publish_task, version_number=publishVersion) + "_preview"
 
         for i, widget in enumerate(self.outputsList):
@@ -342,7 +346,7 @@ class PublishWindow(QWidget):
                         # Auto export should be done if input not match the output (ex: .usd > .usda).
                         path = output_path + os.sep + output_filename + "." + os.path.splitext(self._workfile_path)[1][1:]
                     else:
-                        export_status = self._manager.integration.export_selection(path=path, extension=extension.lower())
+                        export_status = self._manager.integration.export_selection(path=path, extension=extension.lower(), export_animation_datas=export_animation_datas)
 
                     # If export failed for current export (example: file already exist),
                     # remove the unnecessary file.
