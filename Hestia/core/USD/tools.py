@@ -5,7 +5,11 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+import os
+
 from ..IO.command import run_shell_command
+
+USDTOOLS_INSTALL_DIR = os.environ.get("USD_INSTALL_DIR", "")
 
 class USDTools():
 	"""Class to create shortcut to USD Toolset.
@@ -15,12 +19,13 @@ class USDTools():
 		pass
 
 	@staticmethod
-	def open_usdview(path, help=False, renderer=None, primpath=None, camera=None, mask=None, clearsettings=False, defaultsettings=False, norender=False, noplugins=False, unloaded=False, timing=False, memstats="", numThreads=0, ff=None, lf=None, cf=None, complexity="", quitAfterStartup=False, sessionLayer=None):
+	def open_usdview(path, interpreter=None, help=False, renderer=None, primpath=None, camera=None, mask=None, clearsettings=False, defaultsettings=False, norender=False, noplugins=False, unloaded=False, timing=False, memstats="", numThreads=0, ff=None, lf=None, cf=None, complexity="", quitAfterStartup=False, sessionLayer=None):
 		"""Open USD View from USD toolset.
 		For more informations, please read: https://graphics.pixar.com/usd/docs/USD-Toolset.html#USDToolset-usdview
 		
 		Args:
 		    path (str): Path to USD scene.
+		    interpreter (str, optional): Path to python interpreter.
 		    help (bool, optional): Show help and quit.
 		    renderer (str, optional): Renderer name.
 		    primpath (str, optional): Path to the prim to select and frame.
@@ -41,7 +46,16 @@ class USDTools():
 		    quitAfterStartup (bool, optional): Quit USDView after startup.
 		    sessionLayer (None, optional): Stage to open with the 'sessionLayer' in place of the default anonymous.
 		"""
-		command = ["usdview"]
+		command = []
+
+		if(type(interpreter) == str):
+			if(os.path.isfile(interpreter)):
+				command.append(interpreter)
+				command.append(os.path.join(USDTOOLS_INSTALL_DIR, "bin", "usdview"))
+			else:
+				raise CoreError(f"Couldn't find the python interpreter from given path: {interpreter}")
+		else:
+			command.append("usdview")
 
 		if(help):
 			command.append("--help")
@@ -113,24 +127,34 @@ class USDTools():
 
 		command.append(path)
 
-		run_shell_command(command)
+		run_shell_command(command, shell=True)
 
 
 
 	@staticmethod
-	def open_usdcat(path=[], help=False, output="", usdFormat="usda", flatten=False, mask=""):
+	def open_usdcat(path=[], interpreter=None, help=False, output="", usdFormat="usda", flatten=False, mask=""):
 		"""Open USD cat from USD toolset.
-		For more informations, please read: https://graphics.pixar.com/usd/docs/USD-Toolset.html#USDToolset-usdview
+		For more informations, please read: https://graphics.pixar.com/usd/docs/USD-Toolset.html#USDToolset-usdcat
 		
 		Args:
 		    path (str): Path to USD scene.
+		    interpreter (str, optional): Path to python interpreter.
 		    help (bool, optional): Show help and quit.
 		    output (str, optional): Output path to converted file.
 		    usdFormat (str, optional): Output format.
 		    flatten (bool, optional): Flatten output file.
 		    mask (str, optional): Paths to prims to use as mask.
 		"""
-		command = ["usdcat"]
+		command = []
+
+		if(type(interpreter) == str):
+			if(os.path.isfile(interpreter)):
+				command.append(interpreter)
+				command.append(os.path.join(USDTOOLS_INSTALL_DIR, "bin", "usdcat"))
+			else:
+				raise CoreError(f"Couldn't find the python interpreter from given path: {interpreter}")
+		else:
+			command.append("usdcat")
 
 		if(help):
 			command.append("--help")
@@ -141,7 +165,8 @@ class USDTools():
 		else:
 			raise CoreError("USDCAT not support console output to Hestia.")
 
-		if(usdFormat in ["usda", "usdb", "usdc"]):
+		if(usdFormat in ["usda", "usdb", "usdc"]
+			and os.path.splitext(path[0])[1] == ".usd"):
 			command.append("--usdFormat")
 			command.append(usdFormat)
 
@@ -158,4 +183,4 @@ class USDTools():
 		else:
 			command.append(path)
 
-		run_shell_command(command)
+		run_shell_command(command, shell=True)

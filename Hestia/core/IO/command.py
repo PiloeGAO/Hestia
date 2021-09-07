@@ -13,10 +13,9 @@ from ..exceptions import CoreError
 from ..logger import get_logging
 logging = get_logging(__name__)
 
-def run_shell_command(command_line):
+def run_shell_command(command_line, shell=False, get_log=False):
     """Start a command with subprocess and log outputs.
 
-    FOR MAYA: https://discourse.techart.online/t/run-maya-and-execute-a-script/11999/7
     Add python case in each dccs, with argument in this command in case of python command.
     
     Args:
@@ -35,11 +34,11 @@ def run_shell_command(command_line):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             stdin=subprocess.PIPE,
-            shell=False
+            shell=shell
         )
 
-        # FOR DEBUG ONLY (freeze the main thread, threading management should be added later):
-        # logging.debug(command_line_process.communicate()[1].decode("UTF-8"))
+        if(get_log):
+            logging.debug(command_line_process.communicate()[1].decode("UTF-8"))
     except Exception as e:
         logging.error(e)
         raise CoreError("Failed to start command: {}".format(command_line))

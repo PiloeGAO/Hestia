@@ -6,6 +6,7 @@
     :version:   0.0.5
 """
 import os
+import sys
 
 from Hestia.core.USD import get_usd_extensions
 from Hestia.core.USD.tools import USDTools
@@ -27,6 +28,12 @@ class DefaultIntegration(object):
         self._available_formats = get_usd_extensions()
 
         self._support_screenshots = False
+
+    @staticmethod
+    def get_interpreter():
+        """Get the path to python interpreter.
+        """
+        return sys.executable
     
     @property
     def name(self):

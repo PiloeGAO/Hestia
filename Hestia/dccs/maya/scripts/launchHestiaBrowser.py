@@ -12,7 +12,7 @@ from    PySide2                         import QtWidgets, QtCore
 from    Hestia.mainWindow               import MainWindow
 from    Hestia.core.manager             import *
 
-def launchBrowser():
+def launch_browser():
     """ This function load UI in Maya.
     """
     ptr             = OpenMayaUI.MQtUtil.mainWindow()

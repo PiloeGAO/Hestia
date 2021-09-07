@@ -62,6 +62,22 @@ class MayaIntegration(DefaultIntegration):
         self.check_render_engine()
 
         self._support_screenshots   = True
+
+    @staticmethod
+    def get_interpreter():
+        """Get the path to python interpreter.
+        """
+        mayaexec_path = sys.executable
+
+        interpreter_path = ""
+        if(sys.platform.startswith('win32')):
+            interpreter_path = "{}py.exe".format(mayaexec_path.split(".")[0])
+        elif(sys.platform.startswith('darwin')):
+            raise CoreError("MacOS not supported yet.")
+        else:
+            raise CoreError("Linux not supported yet.")
+
+        return interpreter_path
     
     def initialize_plugins(self, plugins={}):
         """Initialize the file formats list.
@@ -329,9 +345,10 @@ class MayaIntegration(DefaultIntegration):
                     type="Arnold-USD",
                     preserveReferences=True,
                     exportSelected=True)
+                
                 # if extension not "usd" > convert to selected extension.
                 if(extension != "usd"):
-                    USDTools.open_usdcat(filepath, output=path)
+                    USDTools.open_usdcat(filepath, interpreter=MayaIntegration.get_interpreter() ,output=path)
                     os.remove(filepath)
             else:
                 logger.warning("Current render engine set to \"legacy\", using Maya USD plugin export function (materials not exported).")

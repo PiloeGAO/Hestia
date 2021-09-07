@@ -18,7 +18,7 @@ def initHestiaToolsMenu():
     cmds.menu("hestiaToolsMenu", label="Hestia", parent="MayaWindow", tearOff=False)
 
     # Add browser to menu.
-    cmds.menuItem("projectBrowser", label="Browser", command="from Hestia.dccs.maya.scripts.launchHestiaBrowser import launchBrowser; launchBrowser()", parent="hestiaToolsMenu")
+    cmds.menuItem("projectBrowser", label="Browser", command="from Hestia.dccs.maya.scripts.launchHestiaBrowser import launch_browser; launch_browser()", parent="hestiaToolsMenu")
 
 # Delay execution on UI startup
 utils.executeDeferred(initHestiaToolsMenu)
