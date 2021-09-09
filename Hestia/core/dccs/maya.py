@@ -130,7 +130,14 @@ class MayaIntegration(DefaultIntegration):
         else:
             self._current_render_engine = "legacy"
 
-    
+    def is_usd_stage_in_stage(self):
+        """Check if current scene has a usd stage object.
+        
+        Returns:
+            bool: Status
+        """
+        return len(cmds.ls(type="mayaUsdProxyShape"))>0
+
     def load_asset(self, asset=None, version=None):
         """Load the selected asset inside of the scene.
 
@@ -150,9 +157,7 @@ class MayaIntegration(DefaultIntegration):
             if(len(cmds.ls(sl=True))>0):
                 parent_obj = cmds.ls(sl=True)[0]
 
-            hard_import = True
-
-            if(hard_import):
+            if(not self.is_usd_stage_in_stage()):
                 cmds.mayaUSDImport(
                     file=version.output_path,
                     parent=parent_obj,
@@ -160,7 +165,19 @@ class MayaIntegration(DefaultIntegration):
                     preferredMaterial="aiStandardSurface"
                 )
             else:
-                raise CoreError("Reference system not implemented.")
+                stage_object = cmds.ls(type="mayaUsdProxyShape")[0]
+
+                stage_childs = []
+                if(cmds.listRelatives(stage_object) != None):
+                    stage_childs = cmds.listRelatives(stage_object)
+
+                if(parent_obj in stage_childs
+                    or parent_obj == stage_object):
+                    # TODO: Add support for editing USD directly in Maya (using UFE).
+                    pass
+                
+                else:
+                    return False
 
         return True
     
