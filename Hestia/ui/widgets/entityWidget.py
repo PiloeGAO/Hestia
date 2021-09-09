@@ -7,16 +7,9 @@
 """
 import os
 
-global pysideVers
-try:
-    from PySide2.QtCore     import *
-    from PySide2.QtGui      import *
-    from PySide2.QtWidgets  import *
-    pysideVers = 2
-except:
-    from PySide.QtCore      import *
-    from PySide.QtGui       import *
-    pysideVers = 1
+from PySide2.QtCore     import *
+from PySide2.QtGui      import *
+from PySide2.QtWidgets  import *
 
 from Hestia.core.USD        import get_usd_extensions
 from Hestia.core.USD.tools  import USDTools
@@ -43,12 +36,8 @@ class EntityWidget(QWidget):
         self._root_path = os.path.dirname(os.path.abspath(__file__))
 
 
-        self._default_icon = ""
-        if(pysideVers == 2):
-            self._default_icon = self._root_path + "/../icons/card-image.svg"
-        else:
-            self._default_icon = self._root_path + "/../icons/card-image.png"
-
+        self._default_icon = self._root_path + "/../icons/image_black.svg"
+        
         self._name            = asset.name
         self._description     = asset.description
         self._icon            = asset.preview_file if os.path.isfile(asset.preview_file) else self._default_icon

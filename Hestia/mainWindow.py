@@ -7,16 +7,9 @@
 """
 import sys
 
-global pysideVers
-try:
-    from PySide2.QtCore     import *
-    from PySide2.QtGui      import *
-    from PySide2.QtWidgets  import *
-    pysideVers = 2
-except:
-    from PySide.QtCore      import *
-    from PySide.QtGui       import *
-    pysideVers = 1
+from PySide2.QtCore     import *
+from PySide2.QtGui      import *
+from PySide2.QtWidgets  import *
 
 from .core.manager          import start_manager, current_manager
 
@@ -45,11 +38,6 @@ class MainWindow(QWidget):
                 self.__manager = start_manager(integration=integration)
             except RuntimeError:
                 self.__manager = current_manager()
-
-        # TODO: Test this with the correct versions.
-        # Display warning message when PySide1 or Python 2 is used.
-        if(pysideVers == 1 or sys.version_info[0] == 2):
-            self.__manager.logging.warning("PySide 1 and Python 2.XX are deprecated, please upgrade.")
 
         # Set window preferences.
         self.__windowWidth, self.__windowHeight = [int(coord) for coord in self.__manager.preferences.getValue("MANAGER", "windowSize").split("x")]

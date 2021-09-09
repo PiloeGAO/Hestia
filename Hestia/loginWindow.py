@@ -7,16 +7,9 @@
 """
 import os
 
-global pysideVers
-try:
-    from PySide2.QtCore     import *
-    from PySide2.QtGui      import *
-    from PySide2.QtWidgets  import *
-    pysideVers = 2
-except:
-    from PySide.QtCore      import *
-    from PySide.QtGui       import *
-    pysideVers = 1
+from PySide2.QtCore     import *
+from PySide2.QtGui      import *
+from PySide2.QtWidgets  import *
 
 from .ui.widgets.lineEdit   import LineEdit
 from .ui.widgets.iconButton import IconButton
@@ -96,10 +89,7 @@ class LoginWindow(QWidget):
         self.mainLayout.addWidget(self.rememberLogin, 3, 0)
 
         # Create the login button.
-        if(pysideVers == 2):
-            iconPath = self.__rootPath + "/ui/icons/check-square.svg"
-        else:
-            iconPath = self.__rootPath + "/ui/icons/check-square.png"
+        iconPath = self.__rootPath + "/ui/icons/done_black.svg"
         self.loginButton = IconButton(name="Login", description="Login", iconPath=iconPath, iconScale=64, status=1, functionToInvoke=self.login)
         self.mainLayout.addWidget(self.loginButton, 5, 0)
 

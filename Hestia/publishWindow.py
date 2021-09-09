@@ -9,16 +9,9 @@ import os
 from datetime               import datetime
 import sys
 
-global pysideVers
-try:
-    from PySide2.QtCore     import *
-    from PySide2.QtGui      import *
-    from PySide2.QtWidgets  import *
-    pysideVers = 2
-except:
-    from PySide.QtCore      import *
-    from PySide.QtGui       import *
-    pysideVers = 1
+from PySide2.QtCore     import *
+from PySide2.QtGui      import *
+from PySide2.QtWidgets  import *
 
 from Hestia.core.manager import current_manager
 
@@ -106,10 +99,7 @@ class PublishWindow(QWidget):
 
             self.workLayout.addStretch()
 
-            if(pysideVers == 2):
-                iconPath = self._root_path + "/ui/icons/folder2-open.svg"
-            else:
-                iconPath = self._root_path + "/ui/icons/folder2-open.png"
+            iconPath = self._root_path + "/ui/icons/folder_open_black.svg"
             self.workButton = IconButton(name="Open file browser",description="Locate the workfile",
                                                 iconPath=iconPath, iconScale=16,
                                                 functionToInvoke=self.openWorkfileExplorer)
@@ -152,29 +142,20 @@ class PublishWindow(QWidget):
 
         self.previewLayout.addStretch()
 
-        if(pysideVers == 2):
-            iconPath = self._root_path + "/ui/icons/folder2-open.svg"
-        else:
-            iconPath = self._root_path + "/ui/icons/folder2-open.png"
+        iconPath = self._root_path + "/ui/icons/folder_open_black.svg"
         self.previewButton = IconButton(name="Open file browser",description="Locate the screenshot",
                                             iconPath=iconPath, iconScale=16,
                                             functionToInvoke=self.open_screenshot_explorer)
         self.previewLayout.addWidget(self.previewButton)
 
         if(self._screenshot_support):
-            if(pysideVers == 2):
-                iconPath = self._root_path + "/ui/icons/camera.svg"
-            else:
-                iconPath = self._root_path + "/ui/icons/camera.png"
+            iconPath = self._root_path + "/ui/icons/photo_camera_black.svg"
             self.screenshotButton = IconButton(name="Take screenshot", description="Take screenshot of current scene.",
                                                 iconPath=iconPath, iconScale=16,
                                                 status=1, functionToInvoke=self.take_screenshot)
             self.previewLayout.addWidget(self.screenshotButton)
             
-            if(pysideVers == 2):
-                iconPath = self._root_path + "/ui/icons/camera-reels.svg"
-            else:
-                iconPath = self._root_path + "/ui/icons/camera-reels.png"
+            iconPath = self._root_path + "/ui/icons/camera_roll_black.svg"
             self.playblastButton = IconButton(name="Take a video", description="Take video of current scene.",
                                                 iconPath=iconPath, iconScale=16,
                                                 status=1, functionToInvoke=self.take_playblast)

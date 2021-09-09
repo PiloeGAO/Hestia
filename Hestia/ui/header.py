@@ -7,16 +7,9 @@
 """
 import os
 
-global pysideVers
-try:
-    from PySide2.QtCore     import *
-    from PySide2.QtGui      import *
-    from PySide2.QtWidgets  import *
-    pysideVers = 2
-except:
-    from PySide.QtCore      import *
-    from PySide.QtGui       import *
-    pysideVers = 1
+from PySide2.QtCore     import *
+from PySide2.QtGui      import *
+from PySide2.QtWidgets  import *
 
 from .widgets.dropDown      import DropDown
 from .widgets.iconButton    import IconButton
@@ -55,10 +48,7 @@ class Header(QWidget):
         self.mainLayout.addWidget(self.projectSelector)
 
         # Add preference button.
-        if(pysideVers == 2):
-            iconPath = self.__rootPath + "/../ui/icons/gear.svg"
-        else:
-            iconPath = self.__rootPath + "/../ui/icons/gear.png"
+        iconPath = self.__rootPath + "/../ui/icons/settings_black.svg"
         self.preferenceButton = IconButton(name="Preferences",
                                             description="Open preferences window.",
                                             iconPath=iconPath,

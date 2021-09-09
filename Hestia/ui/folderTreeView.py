@@ -5,13 +5,9 @@
     :version:   0.0.4
     :brief:     Class to create the folder tree of the window.  
 """
-try:
-    from PySide2.QtCore         import *
-    from PySide2.QtGui          import *
-    from PySide2.QtWidgets      import *
-except:
-    from PySide.QtCore          import *
-    from PySide.QtGui           import *
+from PySide2.QtCore         import *
+from PySide2.QtGui          import *
+from PySide2.QtWidgets      import *
 
 from .widgets.dropDown          import DropDown
 from .widgets.categoryWidget    import CategoryWidget
