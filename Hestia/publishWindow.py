@@ -19,7 +19,7 @@ from Hestia.core.USD import get_usd_extensions
 from Hestia.core.USD.stage import USDStage
 
 from .core.IO.path import TemplateManager, FileManager
-from .core.IO.encoding import *
+from .core.IO.encoding import video_converter
 
 from .ui.widgets.iconButton import IconButton
 from .ui.widgets.dropDown   import DropDown
@@ -246,18 +246,18 @@ class PublishWindow(QWidget):
         else:
             return False
         
-        path_raw = FileManager().temp_directory + os.sep + "preview_raw." + format
+        path_raw = os.path.join(FileManager().temp_directory, f"preview_raw.{format}")
         self._manager.integration.take_playblast(start_frame=-2, end_frame=0, path=path_raw)
 
-        path = FileManager().temp_directory + os.sep + "preview.mp4"
+        path = os.path.join(FileManager().temp_directory, "preview.mp4")
         conversionStatus = video_converter(path_raw, path)
         os.remove(path_raw)
 
         if(conversionStatus and os.path.isfile(path)):
             self._screenshot_path = path
-            self.previewTitle.setText("Preview : %s" % self._screenshot_path)
+            self.previewTitle.setText("Preview : {}".format(self._screenshot_path))
         else:
-            self._manager.logging.error("Conversion failed, aborting.")
+            self._manager.logging.error(f"Conversion failed, aborting (Status {conversionStatus} - Path to output: {path}).")
         
     def publish(self):
         """Publish function.

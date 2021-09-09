@@ -38,7 +38,9 @@ def run_shell_command(command_line, shell=False, get_log=False):
         )
 
         if(get_log):
-            logging.debug(command_line_process.communicate()[1].decode("UTF-8"))
+            output = command_line_process.communicate()[1].decode("UTF-8")
+            for line in output.split("\n"):
+                logging.debug(line)
     except Exception as e:
         logging.error(e)
         raise CoreError("Failed to start command: {}".format(command_line))
