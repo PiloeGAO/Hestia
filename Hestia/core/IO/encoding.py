@@ -11,7 +11,7 @@ import shutil
 from .command import run_shell_command
 
 from ..logger import get_logging
-logging = get_logging(__name__)
+logging = get_logging()
 
 def video_converter(file_path, target_path, codec="h264"):
     """Convert video to MP4.

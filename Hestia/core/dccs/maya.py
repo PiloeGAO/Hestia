@@ -27,7 +27,7 @@ from ..exceptions import CoreError
 from Hestia.core.dccs.default import DefaultIntegration
 
 from Hestia.core.logger import get_logging
-logger = get_logging(__name__)
+logger = get_logging()
 
 class MayaIntegration(DefaultIntegration):
     """Default integration class.

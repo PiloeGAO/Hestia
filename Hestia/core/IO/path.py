@@ -290,13 +290,14 @@ class FileManager():
         if(not os.path.isfile(targetPath + os.sep + oldFilename)):
             shutil.copy(filePath, targetPath)
 
-            if(isinstance(kwargs["new_name"], str)):
-                extension = kwargs["new_extension"] if "new_extension" in kwargs else os.path.splitext(oldFilename)[1][1:]
-                dst = targetPath + os.sep + kwargs["new_name"] + "." + extension
+            if("new_name" in kwargs):
+                if(isinstance(kwargs["new_name"], str)):
+                    extension = kwargs["new_extension"] if "new_extension" in kwargs else os.path.splitext(oldFilename)[1][1:]
+                    dst = targetPath + os.sep + kwargs["new_name"] + "." + extension
 
-                if(os.path.isfile(dst) != True):
-                    src = targetPath + os.sep + oldFilename
-                    os.rename(src, dst)
+                    if(os.path.isfile(dst) != True):
+                        src = targetPath + os.sep + oldFilename
+                        os.rename(src, dst)
 
             return True
         return False

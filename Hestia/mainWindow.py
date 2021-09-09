@@ -13,15 +13,6 @@ from PySide2.QtWidgets  import *
 
 from .core.manager          import start_manager, current_manager
 
-from .loginWindow           import LoginWindow
-from .publishWindow         import PublishWindow
-from .preferencesWindow     import PreferencesWindow
-
-from .ui.header             import Header
-from .ui.folderTreeView     import FolderTreeView
-from .ui.contentView        import ContentView
-from .ui.footer             import Footer
-
 class MainWindow(QWidget):
     """Main Window class.
 
@@ -66,8 +57,12 @@ class MainWindow(QWidget):
         # Show online login modal if not set to local.
         self.loginWindow = None
         if(self.__manager.mode != "local" and not self.__manager.link.connected):
+            from .loginWindow           import LoginWindow
+            
             self.loginWindow = LoginWindow(manager=self.__manager, mainWindow=self)
             self.loginWindow.show()
+
+            del LoginWindow
     
     def resizeEvent(self, event):
         """Get the size of the window on window resize.
@@ -98,13 +93,9 @@ class MainWindow(QWidget):
             if(self.loginWindow != None): self.loginWindow.hide()
             if(self.preferencesWindow != None): self.preferencesWindow.hide()
             if(self.publishWindow != None): self.publishWindow.hide()
-            """
-            if(self.__manager.integration.name != "standalone"):
-                # This is needed for embedded Python versions
-                # that won't support *atexit* lib.
-                self.__manager.preferences.savePreferences()
-                self.__manager.cleanTemporaryFolder()
-            """
+            
+            # self.__manager.close_manager()
+            
             event.accept()
         else:
             event.ignore()
@@ -112,6 +103,11 @@ class MainWindow(QWidget):
     def initUI(self):
         """Generate the window.
         """
+        from .ui.header             import Header
+        from .ui.folderTreeView     import FolderTreeView
+        from .ui.contentView        import ContentView
+        from .ui.footer             import Footer
+
         # Set the window title.
         self.setWindowTitle("Hestia Browser")
         
@@ -150,8 +146,12 @@ class MainWindow(QWidget):
     def openPreferencesWindow(self):
         """Display the preferences window.
         """
+        from .preferencesWindow     import PreferencesWindow
+
         self.preferencesWindow = PreferencesWindow(manager=self.__manager)
         self.preferencesWindow.show()
+
+        del PreferencesWindow
     
     def openPublishWindow(self, entity):
         """Display the publish window.
@@ -159,11 +159,15 @@ class MainWindow(QWidget):
         Args:
             entity (class:`Entity`): Entity datas to publish.
         """
+        from .publishWindow         import PublishWindow
+
         if(self.publishWindow != None):
             self.publishWindow.close()
             self.publishWindow = None
         self.publishWindow = PublishWindow(mainWindow=self, entity=entity)
         self.publishWindow.show()
+
+        del PublishWindow
 
     def updateLog(self, text=""):
         """Update log in the footer.

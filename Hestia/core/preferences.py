@@ -16,7 +16,7 @@ class Preferences():
     def __init__(self, manager=None):
         self.__manager = manager
 
-        self.__path = os.path.expanduser("~") + os.sep + ".hestia.config"
+        self.__path = os.path.join(os.path.expanduser("~"), ".hestia.config")
 
         self.__config = configparser.RawConfigParser()
     

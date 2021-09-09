@@ -5,44 +5,46 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+import sys
+import os
 import shutil
 import tempfile
 import atexit
+import traceback
 
-from .logger                    import get_logging
-from .exceptions                import CoreError
-from .IO.path                   import FileManager
-from .USD                       import *
+from .logger    import get_logging, shutdown_logger
+logger = get_logging(debug = bool(os.environ.get("DEBUG", "False")))
 
-from .preferences               import Preferences
+from .exceptions    import CoreError
+from .IO.path   import FileManager
+from .preferences   import Preferences
 
-from .links.defaultWrapper      import DefaultWrapper
+from .USD   import check_usd_install
 
 from .pmObj.project import Project
+
 
 class Manager():
     """Manager class.
     """
     def __init__(self, integration="standalone", **kwargs):
+        # Set Manager version.
         self._version  = "0.0.5Dev"
 
         # Loading preferences.
         self._preferences = Preferences(manager=self)
         isPreferencesLoaded = self._preferences.loadPreferences()
-        atexit.register(self._preferences.savePreferences)
 
         if(not isPreferencesLoaded):
             # Saving blank preferences on install
             self._preferences.generatePreferences()
             self._preferences.savePreferences()
 
-        self._debugMode = bool(int(self._preferences.getValue("MANAGER", "debugMode")))
+        # Setup custom exception handling.
+        sys.excepthook = self.custom_except_hook
 
-        # Initialize the custom logging system.
-        self._logging = get_logging(__name__, self._debugMode)
-
-        # Remove temp directory at exit (standalone only).
-        atexit.register(shutil.rmtree, FileManager().temp_directory)
+        # Check if USD library is available.
+        check_usd_install() 
 
         # Setup projects.
         self._projects = [Project(name="local", description="Local file system.", is_downloaded=True)]
@@ -53,17 +55,20 @@ class Manager():
             from Hestia.core.dccs.maya import MayaIntegration
             self._integration = MayaIntegration(manager=self)
         else:
-            from Hestia.core.dccs.default   import DefaultIntegration
+            from Hestia.core.dccs.default import DefaultIntegration
             self._integration = DefaultIntegration()
         
         # Setting up the service.
         if(self._preferences.getValue("MANAGER", "service") == "kitsu"):
-            from .links.kitsuWrapper    import KitsuWrapper
+            from .links.kitsuWrapper import KitsuWrapper
             self._mode = "kitsu"
             self._link = KitsuWrapper(manager=self, api=self._preferences.getValue("MANAGER", "onlineHost"))
         else:
+            from .links.defaultWrapper import DefaultWrapper
             self._mode = "local"
             self._link = DefaultWrapper()
+
+        atexit.register(self.close_manager)
     
     @property
     def logging(self):
@@ -72,7 +77,7 @@ class Manager():
         Returns:
             class: "logging": Logging system.
         """
-        return self._logging
+        return logger
     
     @property
     def debug(self):
@@ -223,6 +228,25 @@ class Manager():
 
             return False
         return False
+
+    def close_manager(self):
+        """Function to exec before close handlers.
+        """
+        self._preferences.savePreferences()
+        shutdown_logger()
+        shutil.rmtree(FileManager().temp_directory)
+
+    def custom_except_hook(self, exc_type, exc_val, tb):
+        """Original function: https://docs.python.org/3/library/sys.html#sys.excepthook
+        """
+        # Display crash informations.
+        tb = '\n'.join([''.join(traceback.format_tb(tb)),
+                        '{0}: {1}'.format(exc_type.__name__, exc_val)])
+        logger.critical('unhandled exception:\n{}'.format(tb))
+
+        # Copy temp directory to zip archive in user home(needed for debug).
+        FileManager().copy_file(os.path.join(os.path.expanduser("~"), ".hestia.config"), FileManager().temp_directory)
+        shutil.make_archive(os.path.join(os.path.expanduser('~'), "hestia_crash_report"), "zip", FileManager().temp_directory)
 
 #################################################################################
 # Manager management

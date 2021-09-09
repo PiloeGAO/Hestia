@@ -12,7 +12,7 @@ from Hestia.core.USD import get_usd_extensions
 from Hestia.core.USD.tools import USDTools
 
 from Hestia.core.logger import get_logging
-logger = get_logging(__name__)
+logger = get_logging()
 
 class DefaultIntegration(object):
     """Default integration class.

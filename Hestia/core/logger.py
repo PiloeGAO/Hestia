@@ -5,9 +5,12 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
+import os
 import logging
 
-def get_logging(module_name, debug=True):
+from .IO.path import FileManager
+
+def get_logging(module_name="Hestia", debug=True):
     """Get logging system for Hestia.
 
     Args:
@@ -21,13 +24,23 @@ def get_logging(module_name, debug=True):
     
     if(not logger.handlers):
         # If logger isn't setup, create one.
-        streamHandler = logging.StreamHandler()
         formatter = logging.Formatter(
             "HESTIA | %(levelname)s - %(message)s @ [%(asctime)s] | %(pathname)s:%(lineno)d",
             "%y-%m-%d %H:%M:%S"
         )
-        streamHandler.setFormatter(formatter)
-        logger.addHandler(streamHandler)
+
+        stream_handler = logging.StreamHandler()
+        stream_handler.setFormatter(formatter)
+        logger.addHandler(stream_handler)
+
+        log_path = os.path.join(FileManager().temp_directory, "logs.log")
+        if(os.path.isfile(log_path)):
+            os.remove(log_path)
+
+        file_handler = logging.FileHandler(log_path)
+        file_handler.setFormatter(formatter)
+        logger.addHandler(file_handler)
+
         if(debug):
             logger.setLevel(logging.DEBUG)
         else:
@@ -36,3 +49,6 @@ def get_logging(module_name, debug=True):
         logger.debug("Logging system setup successfully.")
     
     return logger
+
+def shutdown_logger():
+    logging.shutdown()

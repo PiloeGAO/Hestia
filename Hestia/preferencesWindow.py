@@ -14,7 +14,10 @@ from PySide2.QtWidgets  import *
 
 from Hestia.core.IO.path         import TemplateManager
 
-from .ui.widgets.dropDown   import DropDown
+from Hestia.ui.widgets.dropDown   import DropDown
+
+from Hestia.core.logger import get_logging
+logging = get_logging()
 
 class PreferencesWindow(QWidget):
     """Preferences Window class.
@@ -37,7 +40,6 @@ class PreferencesWindow(QWidget):
         self.__currentService       = [i for i,x in enumerate(self.__servicesAvailables) if x.lower() == serviceFromPreferences][0]
 
         self.__loadPreviewStatus    = bool(int(self.__manager.preferences.getValue("MANAGER",   "loadPreviews")))
-        self.__debugMode            = bool(int(self.__manager.preferences.getValue("MANAGER",   "debugMode")))
 
         # Initialize UI.
         self.initUI()
@@ -71,13 +73,6 @@ class PreferencesWindow(QWidget):
 
         self.generalSettingsLayout.addWidget(self.loadPreviews)
 
-        # Debug mode.
-        self.debugMode = QCheckBox("Debug Mode")
-        self.debugMode.setToolTip("Usefull in case of crashes.")
-        self.debugMode.setChecked(self.__debugMode)
-
-        self.generalSettingsLayout.addWidget(self.debugMode)
-
         self.generalSettingsLayout.addStretch()
 
 
@@ -110,10 +105,10 @@ class PreferencesWindow(QWidget):
         self.informationsWidget = QWidget()
         self.informationsLayout = QVBoxLayout()
 
-        aboutText = """
+        aboutText = f"""
             Hestia - A production management system for CGI/VFX productions.
-            Version: %s - %s
-            Current integration: %s
+            Version: {self.__manager.version} - {sys.platform}
+            Current integration: {self.__manager.integration.name}
 
             Made by:
                 - Leo Depoix (piloegao)
@@ -125,8 +120,8 @@ class PreferencesWindow(QWidget):
                 - Audrey Defonte
                 - Denis Koessler
 
-            Powered by: Python - PySide - Gazu (Kitsu API)
-        """ % (self.__manager.version, sys.platform, self.__manager.integration.name)
+            Powered by: Python3.7+ - PySide2 - Gazu (Kitsu API)
+        """
 
         self.aboutTextWidget = QLabel(aboutText)
         self.informationsLayout.addWidget(self.aboutTextWidget)
@@ -148,16 +143,15 @@ class PreferencesWindow(QWidget):
     def buildProjectFolderTree(self):
         """Build project foldertree.
         """
-        self.__manager.logging.info("Folder tree generation started.")
+        logger.info("Folder tree generation started.")
         TemplateManager.build_folder_tree(self.__manager.get_current_project())
-        self.__manager.logging.info("Folder tree successfully generated.")
+        logger.info("Folder tree successfully generated.")
     
     def savePreferences(self):
         """Save preferences.
         """
         self.__manager.preferences.setValue("MANAGER", "service", self.__servicesAvailables[self.serviceButton.currentValue].lower())
         self.__manager.preferences.setValue("MANAGER", "loadPreviews", str(int(self.loadPreviews.isChecked())))
-        self.__manager.preferences.setValue("MANAGER", "debugMode", str(int(self.debugMode.isChecked())))
         self.__manager.preferences.savePreferences()
 
         # Show information message.

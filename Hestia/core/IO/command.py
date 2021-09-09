@@ -11,7 +11,7 @@ import subprocess
 from ..exceptions import CoreError
 
 from ..logger import get_logging
-logging = get_logging(__name__)
+logging = get_logging()
 
 def run_shell_command(command_line, shell=False, get_log=False):
     """Start a command with subprocess and log outputs.

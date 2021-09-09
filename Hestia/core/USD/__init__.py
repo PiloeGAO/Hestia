@@ -7,10 +7,16 @@
 """
 from ..exceptions import CoreError
 
-try:
-    from pxr import Usd
-except ImportError:
-    raise CoreError("Please add USD in your PYTHONPATH and PATH,\nthe procedure can be found here: https://graphics.pixar.com/usd/docs/USD-Tutorials.html")
+def check_usd_install():
+    """Helper function to check if USD is available.
+    """
+    try:
+        from pxr import Usd
+        return True
+    except ImportError:
+        raise CoreError("Please add USD in your PYTHONPATH and PATH,\nthe procedure can be found here: https://graphics.pixar.com/usd/docs/USD-Tutorials.html")
+    else:
+        return False
 
 def get_usd_extensions():
     """Get extensions associated to USD.
