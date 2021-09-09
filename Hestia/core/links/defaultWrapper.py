@@ -18,12 +18,23 @@ class DefaultWrapper(object):
         manager (class: `Manager`): The Hestia Manager.
     """
     def __init__(self, manager=None):
-        self._manager       = manager
+        self._manager = manager
 
-        self._current_user  = User(username=getpass.getuser() + "(Local Mode)", is_downloaded=True)
-        self._active        = False
+        self._name = "DEFAULT"
 
-        self._users         = []
+        self._current_user = User(username=getpass.getuser() + "(Local Mode)", is_downloaded=True)
+        self._active = False
+
+        self._users = []
+
+    @property
+    def name(self):
+        """Name of the current link used.
+
+        Returns:
+            str: Link name.
+        """
+        return self._name
     
     @property
     def connected(self):

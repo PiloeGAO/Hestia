@@ -32,7 +32,7 @@ class LoginWindow(QWidget):
 
         # Getting data from preferences.
         self.__api            = self.__manager.link.api
-        self.__username       = self.__manager.preferences.getValue("MANAGER", "onlineUsername")
+        self.__username       = self.__manager.preferences.getValue(self.__manager.link.name, "username")
         self.__isRememberLogin = bool(int(self.__manager.preferences.getValue("MANAGER", "rememberLogin")))
 
         # Set window preferences.
@@ -106,9 +106,9 @@ class LoginWindow(QWidget):
             self.__api = self.api.currentValue + "/api"
         
         # Save user preferences.
-        self.__manager.preferences.setValue("MANAGER", "onlineHost",        self.api.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
-        self.__manager.preferences.setValue("MANAGER", "onlineUsername",    self.username.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
-        self.__manager.preferences.setValue("MANAGER", "rememberLogin",     1 if self.rememberLogin.checkState() == Qt.Checked else 0)
+        self.__manager.preferences.setValue(self.__manager.link.name, "host", self.api.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
+        self.__manager.preferences.setValue(self.__manager.link.name, "username", self.username.currentValue if self.rememberLogin.checkState() == Qt.Checked else "")
+        self.__manager.preferences.setValue("MANAGER", "rememberLogin", 1 if self.rememberLogin.checkState() == Qt.Checked else 0)
         
         self.__manager.preferences.savePreferences()
 

@@ -31,6 +31,8 @@ class KitsuWrapper(DefaultWrapper):
     def __init__(self, api="", *args, **kwargs):
         super(KitsuWrapper, self).__init__(*args, **kwargs)
 
+        self._name = "KITSU"
+
         self._api                       = api
         self._current_user              = None
 

@@ -5,20 +5,82 @@
     :author:    PiloeGAO (Leo DEPOIX)
     :version:   0.0.5
 """
-try:
-    import configparser
-except:
-    import ConfigParser as configparser
-
 import os
+
+import configparser
+
+from .logger    import get_logging, shutdown_logger
+logger = get_logging()
+
+preferences_template = {
+    "MANAGER" : [
+        {
+            "name" : "version",
+            "type" : "string",
+            "default" : "0.0.0",
+            "description" : "Manager version"
+        },
+        {
+            "name" : "windowPos",
+            "type" : "string",
+            "default" : "-1x-1",
+            "description" : "Window Position"
+        },
+        {
+            "name" : "windowSize",
+            "type" : "string",
+            "default" : "-1x-1",
+            "description" : "Window Size"
+        },
+        {
+            "name" : "service",
+            "type" : "string",
+            "default" : "kitsu",
+            "description" : "Service used by Hestia"
+        },
+        {
+            "name" : "windowSize",
+            "type" : "string",
+            "default" : "-1x-1",
+            "description" : "Window Size"
+        },
+        {
+            "name" : "rememberLogin",
+            "type" : "int",
+            "default" : "1",
+            "description" : "Allow the software to save your credentials"
+        },
+        {
+            "name" : "loadPreviews",
+            "type" : "int",
+            "default" : "1",
+            "description" : "Download preview images"
+        }
+    ],
+    "MAYA" : [],
+    "KITSU" : [
+        {
+            "name" : "host",
+            "type" : "string",
+            "default" : "",
+            "description" : "URL for the host"
+        },
+        {
+            "name" : "username",
+            "type" : "string",
+            "default" : "user@example.com",
+            "description" : "User mail"
+        }
+    ]
+}
 
 class Preferences():
     def __init__(self, manager=None):
-        self.__manager = manager
+        self._manager = manager
 
-        self.__path = os.path.join(os.path.expanduser("~"), ".hestia.config")
+        self._path = os.path.join(os.path.expanduser("~"), ".hestia.config")
 
-        self.__config = configparser.RawConfigParser()
+        self._config = configparser.RawConfigParser()
     
     @property
     def config(self):
@@ -27,7 +89,7 @@ class Preferences():
         Returns:
             class:'ConfigParser' : config.
         """
-        return self.__config
+        return self._config
     
     @config.setter
     def config(self, config):
@@ -36,7 +98,7 @@ class Preferences():
         Args:
             config (class: 'ConfigParser'): config.
         """
-        self.__config = config
+        self._config = config
     
     def getValue(self, section, key, valueType="str"):
         """Get the value from config file.
@@ -49,9 +111,23 @@ class Preferences():
             str: Value
         """
         try:
-            value = self.__config.get(section, key)
+            value = self._config.get(section, key)
         except configparser.Error as err:
-            print("Failed to get value: %s" % err)
+            logger.error("Failed to get value: %s" % err)
+
+            # Add missing datas to preferences.
+            if(not section in self._config.sections()):
+                self._config.add_section(section)
+
+            if(len([entry for entry in self._config[section] if entry == key]) == 0):
+                items = [item for item in preferences_template[section]]
+
+                if(len(items) == 0):
+                    return None
+
+                item = items[0]
+                self._config.set(section, item["name"], item["default"])
+
             return None
         else:
             return value
@@ -67,9 +143,9 @@ class Preferences():
             bool: Status.
         """
         try:
-            self.__config.set(section, key, value)
+            self._config.set(section, key, value)
         except configparser.Error as err:
-            print("Failed to get value: %s" % err)
+            logger.error("Failed to set value: %s" % err)
             return False
         else:
             return True
@@ -77,28 +153,18 @@ class Preferences():
     def generatePreferences(self):
         """Building base preference system.
         """
-        self.__config.add_section("MANAGER")
-        
-        self.__config.set("MANAGER", "version", self.__manager.version)
-        self.__config.set("MANAGER", "windowPos", "-1x-1")
-        self.__config.set("MANAGER", "windowSize", "-1x-1")
-        self.__config.set("MANAGER", "debugMode", 0)
-        self.__config.set("MANAGER", "service", "kitsu")
-        self.__config.set("MANAGER", "onlineHost", "")
-        self.__config.set("MANAGER", "onlineUsername", "")
-        self.__config.set("MANAGER", "rememberLogin", 1)
-        self.__config.set("MANAGER", "loadPreviews", 1)
-        self.__config.set("MANAGER", "downloadVideos", 1)
-        
-        self.__config.add_section("MAYA")
-        self.__config.set("MAYA", "useGPUCache", 1)
+        for section in preferences_template:
+            self._config.add_section(section)
+
+            for item in preferences_template[section]:
+                self._config.set(section, item["name"], item["default"])
     
     def loadPreferences(self):
         """Load local preferences.
         """
-        self.__config.read(self.__path)
-        if(self.__config.sections() == []):
-            print("Failed to load preferences.")
+        self._config.read(self._path)
+        if(self._config.sections() == []):
+            logger.error("Failed to load preferences.")
             return False
         else:
             return True
@@ -107,10 +173,10 @@ class Preferences():
         """save local preferences.
         """
         try:
-            with open(self.__path, "w") as configfile:
-                self.__config.write(configfile)
+            with open(self._path, "w") as configfile:
+                self._config.write(configfile)
         except OSError as err:
-            self.__manager.logging.error("Saving preferences OS error: {0}".format(err))
+            logger.error("Saving preferences OS error: {0}".format(err))
             return False
         else:
             return True

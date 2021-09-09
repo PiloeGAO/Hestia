@@ -62,7 +62,7 @@ class Manager():
         if(self._preferences.getValue("MANAGER", "service") == "kitsu"):
             from .links.kitsuWrapper import KitsuWrapper
             self._mode = "kitsu"
-            self._link = KitsuWrapper(manager=self, api=self._preferences.getValue("MANAGER", "onlineHost"))
+            self._link = KitsuWrapper(manager=self, api=self._preferences.getValue("KITSU", "host"))
         else:
             from .links.defaultWrapper import DefaultWrapper
             self._mode = "local"
