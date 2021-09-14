@@ -281,7 +281,8 @@ def start_manager(*args, **kwargs):
         class:`Manager`: Manager initialized.
     """
     if(current_manager()):
-        raise CoreError("Manager already started.")
+        logger.info("Manager already started, using it.")
+        return current_manager()
     
     integration = kwargs["integration"] if "integration" in kwargs  else "standalone"
 
