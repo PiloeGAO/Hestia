@@ -1,6 +1,6 @@
 '''
     :package:   Hestia
-    :file:      shelf.py
+    :file:      dockable_widget.py
     :author:    ldepoix
     :version:   0.0.5
     :brief:     Maya dockable widget (source: devkit/pythonScripts/dockableWorkspaceWidget.py).
@@ -17,8 +17,15 @@ from PySide2.QtWidgets import QMainWindow, QWidget, QVBoxLayout
 customMixinWindow = None
 
 class DockableWidget(MayaQWidgetDockableMixin, QWidget):
+    """Custom Maya dockable widget.
+
+    Args:
+        window_title (str): Window Title
+        widget (class: `QWidget`): Widget to use in the window.
+        parent (None, optional): - . Defaults to None.
     """
-    """
+    toolName = 'customDockableWidget'
+
     def __init__(self, window_title, widget, parent=None):
         # Delete any previous instances that is detected. Do this before parenting self to main window!
         self.deleteInstances()
@@ -61,6 +68,16 @@ class DockableWidget(MayaQWidgetDockableMixin, QWidget):
                     obj.deleteLater()
    
 def DockableWidgetUIScript(window_name="Dockable Widget", widget=None, restore=False):
+    """Util function to initialize the Custom Dockable widget.
+
+    Args:
+        window_name (str, optional): Window name. Defaults to "Dockable Widget".
+        widget (class: `QWidget`, optional): Widget to assign. Defaults to None.
+        restore (bool, optional): Use the restore functionality. Defaults to False.
+
+    Returns:
+        class: `DockableWidget`: Class initialized.
+    """
     global customMixinWindow
   
     if restore == True:

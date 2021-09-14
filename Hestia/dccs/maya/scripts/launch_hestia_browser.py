@@ -1,6 +1,6 @@
 '''
     :package:   Hestia
-    :file:      launchHestiaBrowser.py
+    :file:      launch_hestia_browser.py
     :author:    ldepoix
     :version:   0.0.5
     :brief:     Class to start UI from Autodesk Maya.

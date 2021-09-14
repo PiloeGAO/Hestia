@@ -9,17 +9,23 @@
 from maya import utils
 from maya import cmds
 
-from Hestia.dccs.maya.scripts.hestiaShelf import createHestiaShelf
+from Hestia.dccs.maya.scripts.hestia_shelf import create_hestia_shelf
 
-def initHestiaToolsMenu():
+def init_hestia_menu():
     print("Load Hestia.")
 
     # Add a menu to the main window.
     cmds.menu("hestiaToolsMenu", label="Hestia", parent="MayaWindow", tearOff=False)
 
     # Add browser to menu.
-    cmds.menuItem("projectBrowser", label="Browser", command="from Hestia.dccs.maya.scripts.launchHestiaBrowser import launch_browser; launch_browser()", parent="hestiaToolsMenu")
+    cmds.menuItem("projectBrowser", label="Browser", command="from Hestia.dccs.maya.scripts.launch_hestia_browser import launch_browser; launch_browser()", parent="hestiaToolsMenu")
+    
+    cmds.menuItem( divider=True )
+
+    # Add USD Tools.
+    cmds.menuItem("USDView_open", label="USD View", command="from Hestia.dccs.maya.scripts.usdtools import open_usdview; open_usdview()", parent="hestiaToolsMenu")
+    cmds.menuItem("USDCat_open", label="USD Cat", command="from Hestia.dccs.maya.scripts.usdtools import open_usdcat; open_usdcat()", parent="hestiaToolsMenu")
 
 # Delay execution on UI startup
-utils.executeDeferred(initHestiaToolsMenu)
-utils.executeDeferred(createHestiaShelf)
+utils.executeDeferred(init_hestia_menu)
+utils.executeDeferred(create_hestia_shelf)

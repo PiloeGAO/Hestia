@@ -1,6 +1,6 @@
 '''
     :package:   Hestia
-    :file:      shelf.py
+    :file:      hestia_shelf.py
     :author:    ldepoix
     :version:   0.0.5
     :brief:     Maya shelf (source: arnoldShelf.py [mtoa plugin]).
@@ -8,12 +8,12 @@
 import maya.cmds as cmds
 import maya
 
-def removeHestiaShelf():
+def remove_hestia_shelf():
    if cmds.shelfLayout('Hestia', exists=True):
       cmds.deleteUI('Hestia')
 
-def createHestiaShelf():
-   removeHestiaShelf()
+def create_hestia_shelf():
+   remove_hestia_shelf()
    shelfTab = maya.mel.eval('global string $gShelfTopLevel;')
    maya.mel.eval('global string $hestiaShelf;')
    maya_version = int(cmds.about(version=True))
